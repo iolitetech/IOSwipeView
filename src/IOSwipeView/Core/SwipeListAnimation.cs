@@ -58,29 +58,29 @@ public readonly record struct SwipeListAnimation(
     /// <summary>Apple Spring collapse (~320ms).</summary>
     public static SwipeListAnimation AppleSpring { get; } = Default;
 
-    /// <summary>Slide off-screen left and collapse (~280ms).</summary>
-    public static SwipeListAnimation SlideLeft { get; } = new(ListDeleteStyle.SlideLeft, 280);
+    /// <summary>Slide off-screen left and collapse (~300ms).</summary>
+    public static SwipeListAnimation SlideLeft { get; } = new(ListDeleteStyle.SlideLeft, 300, "cubic-bezier(0.2, 0.9, 0.3, 1)");
 
-    /// <summary>Slide off-screen right and collapse (~280ms).</summary>
-    public static SwipeListAnimation SlideRight { get; } = new(ListDeleteStyle.SlideRight, 280);
+    /// <summary>Slide off-screen right and collapse (~300ms).</summary>
+    public static SwipeListAnimation SlideRight { get; } = new(ListDeleteStyle.SlideRight, 300, "cubic-bezier(0.2, 0.9, 0.3, 1)");
 
-    /// <summary>Shrink scale down and slide off-screen left (~280ms).</summary>
-    public static SwipeListAnimation ShrinkSlideLeft { get; } = new(ListDeleteStyle.ShrinkSlideLeft, 280);
+    /// <summary>Shrink scale down and slide off-screen left (~320ms).</summary>
+    public static SwipeListAnimation ShrinkSlideLeft { get; } = new(ListDeleteStyle.ShrinkSlideLeft, 320, "cubic-bezier(0.2, 0.9, 0.3, 1)");
 
-    /// <summary>Shrink scale down and slide off-screen right (~280ms).</summary>
-    public static SwipeListAnimation ShrinkSlideRight { get; } = new(ListDeleteStyle.ShrinkSlideRight, 280);
+    /// <summary>Shrink scale down and slide off-screen right (~320ms).</summary>
+    public static SwipeListAnimation ShrinkSlideRight { get; } = new(ListDeleteStyle.ShrinkSlideRight, 320, "cubic-bezier(0.2, 0.9, 0.3, 1)");
 
-    /// <summary>Scale down and collapse (~260ms).</summary>
-    public static SwipeListAnimation ScaleDown { get; } = new(ListDeleteStyle.ScaleDown, 260);
+    /// <summary>Scale down vortex shrink and collapse (~300ms).</summary>
+    public static SwipeListAnimation ScaleDown { get; } = new(ListDeleteStyle.ScaleDown, 300, "cubic-bezier(0.2, 1, 0.3, 1)");
 
-    /// <summary>Elastic spring pop-out and collapse (~280ms).</summary>
-    public static SwipeListAnimation PopOut { get; } = new(ListDeleteStyle.PopOut, 280, "cubic-bezier(0.34, 1.56, 0.64, 1)");
+    /// <summary>Elastic spring pop-out and collapse (~340ms).</summary>
+    public static SwipeListAnimation PopOut { get; } = new(ListDeleteStyle.PopOut, 340, "cubic-bezier(0.34, 1.56, 0.64, 1)");
 
-    /// <summary>3D perspective card fold and collapse (~300ms).</summary>
-    public static SwipeListAnimation CardFold { get; } = new(ListDeleteStyle.CardFold, 300);
+    /// <summary>3D perspective origami card fold and collapse (~360ms).</summary>
+    public static SwipeListAnimation CardFold { get; } = new(ListDeleteStyle.CardFold, 360, "cubic-bezier(0.16, 1, 0.3, 1)");
 
-    /// <summary>Smooth dissolve fade and collapse (~220ms).</summary>
-    public static SwipeListAnimation Fade { get; } = new(ListDeleteStyle.Fade, 220, "ease");
+    /// <summary>Smooth dissolve fade and collapse (~240ms).</summary>
+    public static SwipeListAnimation Fade { get; } = new(ListDeleteStyle.Fade, 240, "ease");
 
     /// <summary>Instant deletion without animation delay.</summary>
     public static SwipeListAnimation None { get; } = new(ListDeleteStyle.None, 0, "linear");

@@ -90,14 +90,14 @@ public class SwipeListTests
     public void SwipeListAnimation_PresetsConfiguredProperly()
     {
         Assert.Equal(320, SwipeListAnimation.AppleSpring.DurationMs);
-        Assert.Equal(280, SwipeListAnimation.SlideLeft.DurationMs);
-        Assert.Equal(280, SwipeListAnimation.SlideRight.DurationMs);
-        Assert.Equal(280, SwipeListAnimation.ShrinkSlideLeft.DurationMs);
-        Assert.Equal(280, SwipeListAnimation.ShrinkSlideRight.DurationMs);
-        Assert.Equal(260, SwipeListAnimation.ScaleDown.DurationMs);
-        Assert.Equal(280, SwipeListAnimation.PopOut.DurationMs);
-        Assert.Equal(300, SwipeListAnimation.CardFold.DurationMs);
-        Assert.Equal(220, SwipeListAnimation.Fade.DurationMs);
+        Assert.Equal(300, SwipeListAnimation.SlideLeft.DurationMs);
+        Assert.Equal(300, SwipeListAnimation.SlideRight.DurationMs);
+        Assert.Equal(320, SwipeListAnimation.ShrinkSlideLeft.DurationMs);
+        Assert.Equal(320, SwipeListAnimation.ShrinkSlideRight.DurationMs);
+        Assert.Equal(300, SwipeListAnimation.ScaleDown.DurationMs);
+        Assert.Equal(340, SwipeListAnimation.PopOut.DurationMs);
+        Assert.Equal(360, SwipeListAnimation.CardFold.DurationMs);
+        Assert.Equal(240, SwipeListAnimation.Fade.DurationMs);
         Assert.Equal(0, SwipeListAnimation.None.DurationMs);
     }
 

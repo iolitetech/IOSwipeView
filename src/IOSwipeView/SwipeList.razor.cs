@@ -318,6 +318,11 @@ public partial class SwipeList<TItem> : ComponentBase where TItem : notnull
         var anim = ResolvedDeleteAnimation;
         if (anim.DurationMs > 0 && anim.Style != ListDeleteStyle.None)
         {
+            if (_rowRefs.TryGetValue(item, out var row))
+            {
+                _ = row.CloseAsync();
+            }
+
             _collapsingItems.Add(item);
             StateHasChanged();
 
@@ -349,6 +354,10 @@ public partial class SwipeList<TItem> : ComponentBase where TItem : notnull
         {
             foreach (var item in list)
             {
+                if (_rowRefs.TryGetValue(item, out var row))
+                {
+                    _ = row.CloseAsync();
+                }
                 _collapsingItems.Add(item);
             }
             StateHasChanged();
