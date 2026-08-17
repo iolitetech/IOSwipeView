@@ -342,13 +342,13 @@
                     </button>
                 </div>
 
-                <SliderField Label="Collapse Duration (ms)" Min="0" Max="600" Step="20" Value="_animDuration"
+                <SliderField Label="Collapse Duration" Min="0" Max="600" Step="20" Value="_animDuration" Unit="ms"
                              ValueChanged="OnDurationChanged" />
 
                 <div class="pt-2 border-t border-separator/40 space-y-2">
                     <ToggleField Label="Show Dividers" Hint="Hairline separators between rows"
                                  Value="_currentListOptions.ShowDividers" ValueChanged="OnDividersChanged" />
-                    <SliderField Label="Divider Inset" Min="0" Max="64" Step="4" Value="_currentListOptions.DividerInset"
+                    <SliderField Label="Divider Inset" Min="0" Max="64" Step="4" Value="_currentListOptions.DividerInset" Unit="px"
                                  ValueChanged="OnDividerInsetChanged" />
                     <ToggleField Label="Animate Insertions" Hint="Smooth glide when adding items"
                                  Value="_currentListOptions.AnimateInsert" ValueChanged="OnAnimateInsertChanged" />
@@ -477,6 +477,8 @@
             ];
         }
 
+        _animStyle = _currentListOptions.DeleteAnimation.Style;
+        _animDuration = _currentListOptions.DeleteAnimation.DurationMs;
         _log.Insert(0, $"{DateTime.Now:HH:mm:ss} — Switched to '{scenario}' scenario");
     }
 
@@ -494,15 +496,26 @@
     private void SetAnimStyle(ListDeleteStyle style)
     {
         _animStyle = style;
+        var preset = style switch
+        {
+            ListDeleteStyle.SlideLeft => SwipeListAnimation.SlideLeft,
+            ListDeleteStyle.SlideRight => SwipeListAnimation.SlideRight,
+            ListDeleteStyle.ShrinkSlideLeft => SwipeListAnimation.ShrinkSlideLeft,
+            ListDeleteStyle.ShrinkSlideRight => SwipeListAnimation.ShrinkSlideRight,
+            ListDeleteStyle.ScaleDown => SwipeListAnimation.ScaleDown,
+            ListDeleteStyle.PopOut => SwipeListAnimation.PopOut,
+            ListDeleteStyle.CardFold => SwipeListAnimation.CardFold,
+            ListDeleteStyle.Fade => SwipeListAnimation.Fade,
+            ListDeleteStyle.None => SwipeListAnimation.None,
+            _ => SwipeListAnimation.AppleSpring
+        };
+
+        _animDuration = preset.DurationMs;
         _currentListOptions = _currentListOptions with
         {
-            DeleteAnimation = _currentListOptions.DeleteAnimation with
-            {
-                Style = style,
-                DurationMs = (int)_animDuration
-            }
+            DeleteAnimation = preset
         };
-        _log.Insert(0, $"{DateTime.Now:HH:mm:ss} — Delete style: '{style}'");
+        _log.Insert(0, $"{DateTime.Now:HH:mm:ss} — Delete style: '{style}' ({_animDuration}ms)");
     }
 
     private void OnDurationChanged(double duration)
