@@ -17,11 +17,12 @@
             <SwipeList @ref="_listRef"
                        TItem="Mail"
                        Items="@_mail"
-                       Options="SwipeOptions.ClassicList"
+                       ListOptions="SwipeListOptions.ClassicList with { DividerInset = 54 }"
                        IsEditing="@_isEditing"
                        SelectedItems="@_selected"
                        SelectedItemsChanged="OnSelectionChanged"
                        OnItemDeleted="OnItemDeleted"
+                       OnItemsDeleted="OnBatchDeleted"
                        OnItemClick="OnItemClicked">
                 <LeadingActions Context="ctx">
                     <SwipeAction Background="#007aff" Foreground="white" Placement="ActionPlacement.Top"
@@ -198,13 +199,18 @@
 
     private void MarkSelectedRead()
     {
+        var count = 0;
         foreach (var item in _selected)
         {
-            item.Unread = false;
+            if (item.Unread)
+            {
+                item.Unread = false;
+                count++;
+            }
         }
-        _log.Insert(0, $"{DateTime.Now:HH:mm:ss} — Marked {_selected.Count} items as read");
-        _selected.Clear();
         _isEditing = false;
+        _selected.Clear();
+        _log.Insert(0, $"{DateTime.Now:HH:mm:ss} — Marked {count} messages as read");
     }
 
     private async Task DeleteSelected()
@@ -223,49 +229,53 @@
             _mail.RemoveAll(m => targets.Contains(m));
         }
 
-        _log.Insert(0, $"{DateTime.Now:HH:mm:ss} — Deleted {count} selected messages");
+        _log.Insert(0, $"{DateTime.Now:HH:mm:ss} — Batch deleted {count} messages");
     }
 
     private void OnItemClicked(Mail mail)
     {
-        _log.Insert(0, $"{DateTime.Now:HH:mm:ss} — Tapped '{mail.Subject}'");
+        _log.Insert(0, $"{DateTime.Now:HH:mm:ss} — Opened '{mail.Subject}'");
     }
-
-    private static List<Mail> Seed() =>
-    [
-        new() { From = "GitHub", Subject = "[dotnet/aspnetcore] PR merged", Preview = "All tests passed on net10.0 runtime.", Time = "09:41", Unread = true },
-        new() { From = "Ada Lovelace", Subject = "Notes on the Analytical Engine", Preview = "The engine weaves algebraic patterns as the Jacquard loom weaves flowers.", Time = "08:12", Unread = true },
-        new() { From = "TestFlight", Subject = "IOSwipeView 1.0 is ready", Preview = "Build 42 is now available to test. This build expires in 89 days.", Time = "Yesterday", Unread = false },
-        new() { From = "Grace Hopper", Subject = "Re: the moth", Preview = "First actual case of bug being found. Taped it into the logbook.", Time = "Yesterday", Unread = false },
-        new() { From = "Apple Developer", Subject = "Human Interface Guidelines", Preview = "Updated guidance on gestures, haptics and swipe actions.", Time = "Tuesday", Unread = false },
-    ];
 
     private void ToggleRead(Mail mail)
     {
         mail.Unread = !mail.Unread;
-        _log.Insert(0, $"{DateTime.Now:HH:mm:ss} — Marked as {(mail.Unread ? "unread" : "read")}: {mail.From}");
+        _log.Insert(0, $"{DateTime.Now:HH:mm:ss} — Marked '{mail.Subject}' as {(mail.Unread ? "unread" : "read")}");
     }
 
     private void Flag(Mail mail)
     {
-        _log.Insert(0, $"{DateTime.Now:HH:mm:ss} — Flagged: {mail.From}");
+        _log.Insert(0, $"{DateTime.Now:HH:mm:ss} — Flagged '{mail.Subject}'");
     }
 
     private async Task Archive(SwipeItemContext<Mail> ctx)
     {
-        _log.Insert(0, $"{DateTime.Now:HH:mm:ss} — Archived (Stage 1): {ctx.Item.From}");
+        _log.Insert(0, $"{DateTime.Now:HH:mm:ss} — Archived '{ctx.Item.Subject}'");
         await ctx.DeleteAsync();
     }
 
     private async Task Trash(SwipeItemContext<Mail> ctx)
     {
-        _log.Insert(0, $"{DateTime.Now:HH:mm:ss} — Trashed (Stage 2): {ctx.Item.From}");
+        _log.Insert(0, $"{DateTime.Now:HH:mm:ss} — Trashed '{ctx.Item.Subject}'");
         await ctx.DeleteAsync();
     }
 
     private void OnItemDeleted(Mail mail)
     {
         _mail.Remove(mail);
-        _log.Insert(0, $"{DateTime.Now:HH:mm:ss} — Animated delete completed: {mail.From}");
     }
+
+    private void OnBatchDeleted(IReadOnlyList<Mail> batch)
+    {
+        _mail.RemoveAll(m => batch.Contains(m));
+    }
+
+    private static List<Mail> Seed() =>
+    [
+        new() { From = "Ada Lovelace", Subject = "Notes on the Analytical Engine", Preview = "The Analytical Engine weaves algebraical patterns just as the Jacquard-loom weaves flowers and leaves.", Time = "09:41", Unread = true },
+        new() { From = "Grace Hopper", Subject = "First bug report", Preview = "First actual case of bug being found. A moth in Relay 70, Panel F.", Time = "08:12", Unread = true },
+        new() { From = "Alan Turing", Subject = "Computing Machinery and Intelligence", Preview = "I propose to consider the question, 'Can machines think?'", Time = "Yesterday", Unread = false },
+        new() { From = "Katherine Johnson", Subject = "Trajectory calculations verified", Preview = "The orbital flight path math has been checked and matches the IBM computer's output to four decimal places.", Time = "Tuesday", Unread = false },
+        new() { From = "Claude Shannon", Subject = "A Mathematical Theory of Communication", Preview = "The fundamental problem of communication is that of reproducing at one point either exactly or approximately a message.", Time = "Monday", Unread = false },
+    ];
 }

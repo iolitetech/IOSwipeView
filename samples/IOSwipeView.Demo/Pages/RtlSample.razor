@@ -26,93 +26,88 @@
 
 <div class="grid lg:grid-cols-[minmax(0,1fr)_320px] gap-6 items-start" dir="@(_isRtl ? "rtl" : "ltr")">
     <PhoneFrame Title="@(_isRtl ? "سندووقی هاتوو" : "Inbox")" BackLabel="@(_isRtl ? "نامەدانەکان" : "Mailboxes")">
-        <div class="divide-y divide-separator/60">
-            <SwipeViewGroup @key="_isRtl">
-                @foreach (var item in _items)
-                {
-                    <SwipeView @key="item" Options="SwipeOptions.ClassicList">
-                        <LeadingActions>
-                            <SwipeAction Background="#007aff" Foreground="white" Placement="ActionPlacement.Top"
-                                         OnInvoked="() => ToggleRead(item)">
-                                <Icon>
-                                    @if (item.Unread)
-                                    {
-                                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <rect width="20" height="16" x="2" y="4" rx="2"/>
-                                            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
-                                        </svg>
-                                    }
-                                    else
-                                    {
-                                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                                            <circle cx="12" cy="12" r="6"/>
-                                        </svg>
-                                    }
-                                </Icon>
-                                <ChildContent>
-                                    @(item.Unread ? (_isRtl ? "خوێندراوە" : "Read") : (_isRtl ? "نەخوێندراوە" : "Unread"))
-                                </ChildContent>
-                            </SwipeAction>
-                        </LeadingActions>
-                        <ChildContent>
-                            <ListRow Title="@(_isRtl ? item.TitleKu : item.TitleEn)"
-                                     Subtitle="@(_isRtl ? item.SubtitleKu : item.SubtitleEn)"
-                                     Preview="@(_isRtl ? item.PreviewKu : item.PreviewEn)"
-                                     Meta="@(_isRtl ? item.TimeKu : item.TimeEn)" Unread="item.Unread" />
-                        </ChildContent>
-                        <TrailingActions>
-                            <SwipeAction Background="#ff9500" Foreground="white" Placement="ActionPlacement.Top"
-                                         OnInvoked='() => LogAction(item, _isRtl ? "نیشانەکرا" : "Flagged")'>
-                                <Icon>
-                                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M3 2.25a.75.75 0 0 1 .75.75v.54l1.838-.46a9.75 9.75 0 0 1 4.725.328l.45.15a8.25 8.25 0 0 0 4.004.279l1.87-.468A.75.75 0 0 1 17.4 4.5v8.25a.75.75 0 0 1-.562.727l-1.838.46a9.75 9.75 0 0 1-4.725-.328l-.45-.15a8.25 8.25 0 0 0-4.004-.279l-1.87.468A.75.75 0 0 1 3 13.5V3A.75.75 0 0 1 3 2.25Z" clip-rule="evenodd"/>
-                                    </svg>
-                                </Icon>
-                                <ChildContent>
-                                    @(_isRtl ? "نیشانەکردن" : "Flag")
-                                </ChildContent>
-                            </SwipeAction>
-                            <SwipeAction Background="#34c759" Foreground="white" Placement="ActionPlacement.Top" TriggerStage="1"
-                                         OnInvoked='() => LogAction(item, _isRtl ? "ئەرشیڤکرا (قۆناغی ١)" : "Archived (Stage 1)")'>
-                                <Icon>
-                                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <rect width="20" height="5" x="2" y="3" rx="1"/>
-                                        <path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"/>
-                                        <path d="M10 12h4"/>
-                                    </svg>
-                                </Icon>
-                                <ChildContent>
-                                    @(_isRtl ? "ئەرشیڤ" : "Archive")
-                                </ChildContent>
-                            </SwipeAction>
-                            <SwipeAction Background="#ff3b30" Foreground="white" Placement="ActionPlacement.Top" TriggerStage="2"
-                                         OnInvoked="() => Delete(item)">
-                                <Icon>
-                                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M3 6h18"/>
-                                        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
-                                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
-                                        <line x1="10" x2="10" y1="11" y2="17"/>
-                                        <line x1="14" x2="14" y1="11" y2="17"/>
-                                    </svg>
-                                </Icon>
-                                <ChildContent>
-                                    @(_isRtl ? "سڕینەوە" : "Delete")
-                                </ChildContent>
-                            </SwipeAction>
-                        </TrailingActions>
-                    </SwipeView>
-                }
-            </SwipeViewGroup>
-
-            @if (_items.Count == 0)
-            {
+        <SwipeList @key="_isRtl"
+                   TItem="MailItem"
+                   Items="@_items"
+                   ListOptions="SwipeListOptions.ClassicList with { DividerInset = 54 }"
+                   OnItemDeleted="OnItemDeleted">
+            <LeadingActions Context="ctx">
+                <SwipeAction Background="#007aff" Foreground="white" Placement="ActionPlacement.Top"
+                             OnInvoked="() => ToggleRead(ctx.Item)">
+                    <Icon>
+                        @if (ctx.Item.Unread)
+                        {
+                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect width="20" height="16" x="2" y="4" rx="2"/>
+                                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+                            </svg>
+                        }
+                        else
+                        {
+                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                                <circle cx="12" cy="12" r="6"/>
+                            </svg>
+                        }
+                    </Icon>
+                    <ChildContent>
+                        @(ctx.Item.Unread ? (_isRtl ? "خوێندراوە" : "Read") : (_isRtl ? "نەخوێندراوە" : "Unread"))
+                    </ChildContent>
+                </SwipeAction>
+            </LeadingActions>
+            <ItemTemplate Context="item">
+                <ListRow Title="@(_isRtl ? item.TitleKu : item.TitleEn)"
+                         Subtitle="@(_isRtl ? item.SubtitleKu : item.SubtitleEn)"
+                         Preview="@(_isRtl ? item.PreviewKu : item.PreviewEn)"
+                         Meta="@(_isRtl ? item.TimeKu : item.TimeEn)" Unread="item.Unread" />
+            </ItemTemplate>
+            <TrailingActions Context="ctx">
+                <SwipeAction Background="#ff9500" Foreground="white" Placement="ActionPlacement.Top"
+                             OnInvoked='() => LogAction(ctx.Item, _isRtl ? "نیشانەکرا" : "Flagged")'>
+                    <Icon>
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                            <path fill-rule="evenodd" d="M3 2.25a.75.75 0 0 1 .75.75v.54l1.838-.46a9.75 9.75 0 0 1 4.725.328l.45.15a8.25 8.25 0 0 0 4.004.279l1.87-.468A.75.75 0 0 1 17.4 4.5v8.25a.75.75 0 0 1-.562.727l-1.838.46a9.75 9.75 0 0 1-4.725-.328l-.45-.15a8.25 8.25 0 0 0-4.004-.279l-1.87.468A.75.75 0 0 1 3 13.5V3A.75.75 0 0 1 3 2.25Z" clip-rule="evenodd"/>
+                        </svg>
+                    </Icon>
+                    <ChildContent>
+                        @(_isRtl ? "نیشانەکردن" : "Flag")
+                    </ChildContent>
+                </SwipeAction>
+                <SwipeAction Background="#34c759" Foreground="white" Placement="ActionPlacement.Top" TriggerStage="1"
+                             OnInvoked='() => LogAction(ctx.Item, _isRtl ? "ئەرشیڤکرا (قۆناغی ١)" : "Archived (Stage 1)")'>
+                    <Icon>
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect width="20" height="5" x="2" y="3" rx="1"/>
+                            <path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"/>
+                            <path d="M10 12h4"/>
+                        </svg>
+                    </Icon>
+                    <ChildContent>
+                        @(_isRtl ? "ئەرشیڤ" : "Archive")
+                    </ChildContent>
+                </SwipeAction>
+                <SwipeAction Background="#ff3b30" Foreground="white" Placement="ActionPlacement.Top" TriggerStage="2"
+                             OnInvoked="() => ctx.DeleteAsync()">
+                    <Icon>
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 6h18"/>
+                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                            <line x1="10" x2="10" y1="11" y2="17"/>
+                            <line x1="14" x2="14" y1="11" y2="17"/>
+                        </svg>
+                    </Icon>
+                    <ChildContent>
+                        @(_isRtl ? "سڕینەوە" : "Delete")
+                    </ChildContent>
+                </SwipeAction>
+            </TrailingActions>
+            <EmptyContent>
                 <div class="px-4 py-16 text-center">
                     <p class="text-body text-label-secondary">@(_isRtl ? "سندووقی هاتوو بەتاڵە" : "Inbox zero")</p>
                     <button type="button" class="btn-ghost mt-3" @onclick="Reset">@(_isRtl ? "گەڕاندنەوەی نامەکان" : "Restore messages")</button>
                 </div>
-            }
-        </div>
+            </EmptyContent>
+        </SwipeList>
     </PhoneFrame>
 
     <div class="space-y-4" dir="ltr">
@@ -193,8 +188,8 @@
                 TitleKu = "ئاگادارییەکانی گیت هاب",
                 SubtitleEn = "PR #42 merged into master",
                 SubtitleKu = "داواکاری یەکخستن #٤٢ بە سەرکەوتوویی پەسەند کرا",
-                PreviewEn = "All 32 tests passed on .NET 10.0 runtime with zero errors.",
-                PreviewKu = "هەموو ٣٢ تاقیکردنەوەکە بە سەرکەوتوویی لەسەر دۆتی نێت ١٠ تێپەڕین.",
+                PreviewEn = "All 42 tests passed on .NET 10.0 runtime with zero errors.",
+                PreviewKu = "هەموو ٤٢ تاقیکردنەوەکە بە سەرکەوتوویی لەسەر دۆتی نێت ١٠ تێپەڕین.",
                 TimeEn = "09:15",
                 TimeKu = "٠٩:١٥",
                 Unread = true,
@@ -226,7 +221,7 @@
         _log.Insert(0, $"{DateTime.Now:HH:mm:ss} — {action} لەسەر '{(_isRtl ? item.TitleKu : item.TitleEn)}'");
     }
 
-    private void Delete(MailItem item)
+    private void OnItemDeleted(MailItem item)
     {
         _items.Remove(item);
         _log.Insert(0, $"{DateTime.Now:HH:mm:ss} — {(_isRtl ? "سڕایەوە" : "Deleted")} '{(_isRtl ? item.TitleKu : item.TitleEn)}'");

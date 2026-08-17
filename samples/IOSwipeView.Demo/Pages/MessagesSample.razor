@@ -8,73 +8,73 @@
 
 <div class="grid lg:grid-cols-2 gap-6 items-start">
     <PhoneFrame Title="Messages" BackLabel="Edit">
-        <div class="divide-y divide-separator/60">
-            <SwipeViewGroup>
-                @foreach (var chat in _chats)
-                {
-                    <SwipeView Options="SwipeOptions.ClassicList">
-                        <LeadingActions>
-                            <SwipeAction Background="#007aff" Foreground="white" OnInvoked="() => Pin(chat)">
-                                @(chat.Pinned ? "Unpin" : "Pin")
-                            </SwipeAction>
-                        </LeadingActions>
-                        <ChildContent>
-                            <ListRow Glyph="@chat.Initials" GlyphColor="@chat.Color" Title="@chat.Name"
-                                     Preview="@chat.Message" Meta="@chat.Time" Unread="chat.Unread" />
-                        </ChildContent>
-                        <TrailingActions>
-                            <SwipeAction Background="#5856d6" Foreground="white" OnInvoked="() => Mute(chat)">
-                                @(chat.Muted ? "Unmute" : "Mute")
-                            </SwipeAction>
-                            <SwipeAction Background="#ff3b30" Foreground="white" AllowSwipeToTrigger
-                                         OnInvoked="() => Delete(chat)">Delete</SwipeAction>
-                        </TrailingActions>
-                    </SwipeView>
-                }
-            </SwipeViewGroup>
-        </div>
+        <SwipeList TItem="Chat"
+                   Items="@_chats"
+                   ListOptions="SwipeListOptions.ClassicList with { DividerInset = 64 }"
+                   OnItemDeleted="OnChatDeleted">
+            <LeadingActions Context="ctx">
+                <SwipeAction Background="#007aff" Foreground="white" OnInvoked="() => Pin(ctx.Item)">
+                    @(ctx.Item.Pinned ? "Unpin" : "Pin")
+                </SwipeAction>
+            </LeadingActions>
+            <ItemTemplate Context="chat">
+                <ListRow Glyph="@chat.Initials" GlyphColor="@chat.Color" Title="@chat.Name"
+                         Preview="@chat.Message" Meta="@chat.Time" Unread="chat.Unread" />
+            </ItemTemplate>
+            <TrailingActions Context="ctx">
+                <SwipeAction Background="#5856d6" Foreground="white" OnInvoked="() => Mute(ctx.Item)">
+                    @(ctx.Item.Muted ? "Unmute" : "Mute")
+                </SwipeAction>
+                <SwipeAction Background="#ff3b30" Foreground="white" TriggerStage="1"
+                             OnInvoked="() => ctx.DeleteAsync()">Delete</SwipeAction>
+            </TrailingActions>
+            <EmptyContent>
+                <div class="text-center py-16">
+                    <p class="text-subheadline text-label-secondary">No conversations</p>
+                    <button type="button" class="btn-ghost mt-3 text-footnote" @onclick="ResetChats">Restore messages</button>
+                </div>
+            </EmptyContent>
+        </SwipeList>
     </PhoneFrame>
 
     <div class="space-y-4">
         <div class="rounded-ios-device p-[10px] bg-black shadow-2xl ring-1 ring-white/10">
-            <div class="rounded-[44px] overflow-hidden p-4 pt-14 pb-10"
-                 style="min-height:520px;background:linear-gradient(160deg,#1c1c3a 0%,#3b2b5c 45%,#7b3f61 100%)">
-                <div class="text-center text-white mb-8">
+            <div class="rounded-[44px] overflow-hidden p-4 pt-14 pb-10 flex flex-col h-[700px] max-h-[85vh]"
+                 style="background:linear-gradient(160deg,#1c1c3a 0%,#3b2b5c 45%,#7b3f61 100%)">
+                <div class="text-center text-white mb-6 flex-shrink-0">
                     <p class="text-6xl font-light tracking-tight">9:41</p>
                     <p class="text-callout opacity-80">Tuesday, 16 August</p>
                 </div>
 
-                <div class="space-y-2.5">
-                    @foreach (var note in _notifications)
-                    {
-                        <SwipeView Options="SwipeOptions.Notification">
-                            <ChildContent>
-                                <div class="rounded-ios-lg p-3 select-none"
-                                     style="background:rgb(255 255 255 / 0.16);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)">
-                                    <div class="flex items-center gap-2 text-white/70 text-caption1 mb-0.5">
-                                        <span class="grid place-items-center w-4 h-4 rounded-[4px] text-[9px]" style="background:@note.Color">@note.Badge</span>
-                                        <span>@note.App</span>
-                                        <span class="ml-auto">@note.Time</span>
-                                    </div>
-                                    <p class="text-white text-subheadline font-semibold">@note.Title</p>
-                                    <p class="text-white/80 text-subheadline">@note.Body</p>
+                <div class="flex-1 overflow-y-auto min-h-0 space-y-2.5">
+                    <SwipeList TItem="NotificationItem"
+                               Items="@_notifications"
+                               ListOptions="SwipeListOptions.Notification with { DeleteAnimation = SwipeListAnimation.PopOut }"
+                               OnItemDeleted="OnNotificationCleared">
+                        <ItemTemplate Context="note">
+                            <div class="rounded-ios-lg p-3 select-none mb-2"
+                                 style="background:rgb(255 255 255 / 0.16);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)">
+                                <div class="flex items-center gap-2 text-white/70 text-caption1 mb-0.5">
+                                    <span class="grid place-items-center w-4 h-4 rounded-[4px] text-[9px]" style="background:@note.Color">@note.Badge</span>
+                                    <span>@note.App</span>
+                                    <span class="ml-auto">@note.Time</span>
                                 </div>
-                            </ChildContent>
-                            <TrailingActions>
-                                <SwipeAction Background="rgb(255 255 255 / 0.22)" Foreground="white">Options</SwipeAction>
-                                <SwipeAction Background="#ff3b30" Foreground="white" AllowSwipeToTrigger
-                                             OnInvoked="() => Clear(note)">Clear</SwipeAction>
-                            </TrailingActions>
-                        </SwipeView>
-                    }
-
-                    @if (_notifications.Count == 0)
-                    {
-                        <div class="text-center py-10">
-                            <p class="text-white/70 text-subheadline">No notifications</p>
-                            <button type="button" class="btn-ghost mt-3" @onclick="ResetNotifications">Restore</button>
-                        </div>
-                    }
+                                <p class="text-white text-subheadline font-semibold">@note.Title</p>
+                                <p class="text-white/80 text-subheadline">@note.Body</p>
+                            </div>
+                        </ItemTemplate>
+                        <TrailingActions Context="ctx">
+                            <SwipeAction Background="rgb(255 255 255 / 0.22)" Foreground="white">Options</SwipeAction>
+                            <SwipeAction Background="#ff3b30" Foreground="white" TriggerStage="1"
+                                         OnInvoked="() => ctx.DeleteAsync()">Clear</SwipeAction>
+                        </TrailingActions>
+                        <EmptyContent>
+                            <div class="text-center py-10">
+                                <p class="text-white/70 text-subheadline">No notifications</p>
+                                <button type="button" class="btn-ghost text-white mt-3" @onclick="ResetNotifications">Restore</button>
+                            </div>
+                        </EmptyContent>
+                    </SwipeList>
                 </div>
             </div>
         </div>
@@ -83,7 +83,7 @@
             <p class="text-subheadline text-label-secondary">
                 The conversation list uses <code class="font-mono text-footnote">ClassicList</code> — flush, square, edge to edge.
                 The lock screen uses <code class="font-mono text-footnote">Notification</code> — 16px pills with 6px spacing so the
-                actions read as separate floating objects over the wallpaper. Same component, same physics.
+                actions read as separate floating objects over the wallpaper. Both powered by <code class="font-mono text-footnote">SwipeList&lt;TItem&gt;</code>.
             </p>
         </Panel>
     </div>
@@ -102,7 +102,7 @@
         public bool Muted { get; set; }
     }
 
-    private sealed class Notification
+    private sealed class NotificationItem
     {
         public required string App { get; init; }
         public required string Badge { get; init; }
@@ -113,34 +113,38 @@
     }
 
     private List<Chat> _chats = [];
-    private List<Notification> _notifications = [];
+    private List<NotificationItem> _notifications = [];
 
     protected override void OnInitialized()
     {
-        _chats =
-        [
-            new() { Initials = "AL", Color = "var(--sys-pink)", Name = "Ada Lovelace", Message = "The engine can do whatever we know how to order it to perform.", Time = "09:41", Unread = true },
-            new() { Initials = "GH", Color = "var(--sys-teal)", Name = "Grace Hopper", Message = "It is easier to ask forgiveness than permission.", Time = "08:03", Unread = true },
-            new() { Initials = "AT", Color = "var(--sys-orange)", Name = "Alan Turing", Message = "We can only see a short distance ahead.", Time = "Yesterday" },
-            new() { Initials = "MH", Color = "var(--sys-indigo)", Name = "Margaret Hamilton", Message = "The software eventually saved the mission.", Time = "Monday" },
-        ];
-
+        ResetChats();
         ResetNotifications();
     }
 
-    private void ResetNotifications() =>
+    private void ResetChats()
+    {
+        _chats =
+        [
+            new() { Initials = "AL", Color = "var(--sys-pink)", Name = "Ada Lovelace", Message = "The analytical engine weaves algebraical patterns...", Time = "09:41", Unread = true },
+            new() { Initials = "GH", Color = "var(--sys-teal)", Name = "Grace Hopper", Message = "First actual case of bug being found.", Time = "08:12", Unread = true, Pinned = true },
+            new() { Initials = "AT", Color = "var(--sys-orange)", Name = "Alan Turing", Message = "Can machines think?", Time = "Yesterday", Unread = false },
+            new() { Initials = "KJ", Color = "var(--sys-purple)", Name = "Katherine Johnson", Message = "Orbital flight coordinates verified.", Time = "Tuesday", Unread = false },
+            new() { Initials = "CS", Color = "var(--sys-blue)", Name = "Claude Shannon", Message = "The fundamental problem of communication...", Time = "Monday", Unread = false },
+        ];
+    }
+
+    private void ResetNotifications()
+    {
         _notifications =
         [
-            new() { App = "MAIL", Badge = "✉", Color = "#007aff", Title = "Ada Lovelace", Body = "Notes on the Analytical Engine", Time = "now" },
-            new() { App = "CALENDAR", Badge = "17", Color = "#ff3b30", Title = "Design review", Body = "In 15 minutes · Conference room 2", Time = "9:26" },
-            new() { App = "MESSAGES", Badge = "💬", Color = "#34c759", Title = "Grace Hopper", Body = "Found the bug. It was an actual moth.", Time = "8:03" },
+            new() { App = "Messages", Badge = "💬", Color = "var(--sys-green)", Title = "Ada Lovelace", Body = "The analytical engine is ready for testing.", Time = "2m ago" },
+            new() { App = "Calendar", Badge = "📅", Color = "var(--sys-red)", Title = "Team Standup", Body = "Starting in 10 minutes (Room B)", Time = "10m ago" },
+            new() { App = "Reminders", Badge = "📋", Color = "var(--sys-orange)", Title = "Deploy IOSwipeView v1.0", Body = "Review package manifest and push to NuGet", Time = "1h ago" },
         ];
+    }
 
     private void Pin(Chat chat) => chat.Pinned = !chat.Pinned;
-
     private void Mute(Chat chat) => chat.Muted = !chat.Muted;
-
-    private void Delete(Chat chat) => _chats.Remove(chat);
-
-    private void Clear(Notification note) => _notifications.Remove(note);
+    private void OnChatDeleted(Chat chat) => _chats.Remove(chat);
+    private void OnNotificationCleared(NotificationItem note) => _notifications.Remove(note);
 }

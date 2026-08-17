@@ -18,50 +18,46 @@
                         <span class="ml-auto text-footnote text-label-tertiary">@list.Tasks.Count</span>
                     </div>
 
-                    <div class="rounded-ios-card overflow-hidden divide-y divide-separator/60">
-                        <SwipeViewGroup>
-                            @foreach (var task in list.Tasks)
-                            {
-                                <SwipeView Options="SwipeOptions.InsetGrouped">
-                                    <LeadingActions>
-                                        <SwipeAction Background="#34c759" Foreground="white" AllowSwipeToTrigger
-                                                     OnInvoked="() => Complete(list, task)">Done</SwipeAction>
-                                    </LeadingActions>
-                                    <ChildContent>
-                                        <div class="flex items-start gap-3 bg-grouped-secondary px-4 py-3 select-none">
-                                            <span class="mt-0.5 w-[22px] h-[22px] shrink-0 rounded-full border-2 border-label-tertiary"></span>
-                                            <div class="min-w-0 flex-1">
-                                                <p class="text-body text-label">@task.Title</p>
-                                                @if (!string.IsNullOrWhiteSpace(task.Note))
-                                                {
-                                                    <p class="text-subheadline text-label-secondary">@task.Note</p>
-                                                }
-                                                @if (!string.IsNullOrWhiteSpace(task.Due))
-                                                {
-                                                    <p class="text-footnote mt-0.5" style="color:@(task.Overdue ? "var(--sys-red)" : "var(--sys-label-secondary)")">@task.Due</p>
-                                                }
-                                            </div>
-                                            @if (task.Flagged)
-                                            {
-                                                <span class="text-sys-orange">⚑</span>
-                                            }
-                                        </div>
-                                    </ChildContent>
-                                    <TrailingActions>
-                                        <SwipeAction Background="#ff9500" Foreground="white" OnInvoked="() => Flag(task)">Flag</SwipeAction>
-                                        <SwipeAction Background="#ff3b30" Foreground="white" AllowSwipeToTrigger
-                                                     OnInvoked="() => Delete(list, task)">Delete</SwipeAction>
-                                    </TrailingActions>
-                                </SwipeView>
-                            }
-                        </SwipeViewGroup>
-
-                        @if (list.Tasks.Count == 0)
-                        {
-                            <div class="bg-grouped-secondary px-4 py-8 text-center">
-                                <p class="text-subheadline text-label-secondary">All caught up</p>
-                            </div>
-                        }
+                    <div class="rounded-ios-card overflow-hidden">
+                        <SwipeList TItem="ReminderTask"
+                                   Items="@list.Tasks"
+                                   ListOptions="SwipeListOptions.InsetGrouped with { DeleteAnimation = SwipeListAnimation.PopOut }"
+                                   OnItemDeleted="task => OnTaskDeleted(list, task)">
+                            <LeadingActions Context="ctx">
+                                <SwipeAction Background="#34c759" Foreground="white" TriggerStage="1"
+                                             OnInvoked="() => Complete(list, ctx.Item)">Done</SwipeAction>
+                            </LeadingActions>
+                            <ItemTemplate Context="task">
+                                <div class="flex items-start gap-3 bg-grouped-secondary px-4 py-3 select-none">
+                                    <span class="mt-0.5 w-[22px] h-[22px] shrink-0 rounded-full border-2 border-label-tertiary"></span>
+                                    <div class="min-w-0 flex-1">
+                                        <p class="text-body text-label font-medium">@task.Title</p>
+                                        @if (!string.IsNullOrWhiteSpace(task.Note))
+                                        {
+                                            <p class="text-subheadline text-label-secondary">@task.Note</p>
+                                        }
+                                        @if (!string.IsNullOrWhiteSpace(task.Due))
+                                        {
+                                            <p class="text-footnote mt-0.5" style="color:@(task.Overdue ? "var(--sys-red)" : "var(--sys-label-secondary)")">@task.Due</p>
+                                        }
+                                    </div>
+                                    @if (task.Flagged)
+                                    {
+                                        <span class="text-sys-orange">⚑</span>
+                                    }
+                                </div>
+                            </ItemTemplate>
+                            <TrailingActions Context="ctx">
+                                <SwipeAction Background="#ff9500" Foreground="white" OnInvoked="() => Flag(ctx.Item)">Flag</SwipeAction>
+                                <SwipeAction Background="#ff3b30" Foreground="white" TriggerStage="1"
+                                             OnInvoked="() => ctx.DeleteAsync()">Delete</SwipeAction>
+                            </TrailingActions>
+                            <EmptyContent>
+                                <div class="bg-grouped-secondary px-4 py-8 text-center">
+                                    <p class="text-subheadline text-label-secondary">All caught up</p>
+                                </div>
+                            </EmptyContent>
+                        </SwipeList>
                     </div>
                 </div>
             }
@@ -71,7 +67,7 @@
     <div class="space-y-4">
         <Panel Title="Inset grouped geometry">
             <p class="text-subheadline text-label-secondary">
-                <code class="font-mono text-footnote">SwipeOptions.InsetGrouped</code> sets a 12px mask radius with 0 action
+                <code class="font-mono text-footnote">SwipeListOptions.InsetGrouped</code> sets a 12px mask radius with 0 action
                 radius and 0 spacing. The revealed strip is clipped by the rounded section, so actions square off against
                 each other inside but follow the card's curve at the edge.
             </p>
@@ -86,10 +82,10 @@
                 {
                     <p class="text-subheadline text-label-tertiary">Swipe a task right to complete it.</p>
                 }
-                <ul class="space-y-1.5">
+                <ul class="space-y-1.5 font-mono text-caption1">
                     @foreach (var done in _completed)
                     {
-                        <li class="flex items-center gap-2 text-subheadline text-label-secondary">
+                        <li class="flex items-center gap-2 text-label-secondary">
                             <span class="text-sys-green">✓</span>
                             <span class="line-through">@done</span>
                         </li>
@@ -101,20 +97,20 @@
 </div>
 
 @code {
-    private sealed class TaskItem
+    private sealed class TaskList
+    {
+        public required string Name { get; init; }
+        public required string Color { get; init; }
+        public required List<ReminderTask> Tasks { get; init; }
+    }
+
+    private sealed class ReminderTask
     {
         public required string Title { get; init; }
         public string? Note { get; init; }
         public string? Due { get; init; }
         public bool Overdue { get; init; }
         public bool Flagged { get; set; }
-    }
-
-    private sealed class TaskList
-    {
-        public required string Name { get; init; }
-        public required string Color { get; init; }
-        public required List<TaskItem> Tasks { get; init; }
     }
 
     private List<TaskList> _lists = [];
@@ -124,19 +120,18 @@
 
     private void Reset()
     {
-        _completed.Clear();
         _lists =
         [
             new()
             {
-                Name = "IOSwipeView",
+                Name = "Work",
                 Color = "var(--sys-blue)",
                 Tasks =
                 [
-                    new() { Title = "Verify drag on a real device", Note = "iOS Safari and Android Chrome", Due = "Today, 09:00", Overdue = true },
-                    new() { Title = "Keyboard accessibility", Note = "Open and close without a pointer" },
-                    new() { Title = "RTL verification", Note = "Logical properties are in, untested", Flagged = true },
-                ],
+                    new() { Title = "Review design system changes", Note = "Check Figma tokens against CSS vars", Due = "Today, 17:00", Overdue = false, Flagged = true },
+                    new() { Title = "Ship release notes", Due = "Today, 18:30", Overdue = false },
+                    new() { Title = "Submit app review", Due = "Yesterday", Overdue = true },
+                ]
             },
             new()
             {
@@ -144,20 +139,24 @@
                 Color = "var(--sys-orange)",
                 Tasks =
                 [
-                    new() { Title = "Renew domain", Due = "Tomorrow" },
-                    new() { Title = "Water the plants", Note = "The fern especially" },
-                ],
-            },
+                    new() { Title = "Renew developer account" },
+                    new() { Title = "Order mechanical keyboard switches" },
+                ]
+            }
         ];
+        _completed.Clear();
     }
 
-    private void Complete(TaskList list, TaskItem task)
+    private void Flag(ReminderTask task) => task.Flagged = !task.Flagged;
+
+    private void Complete(TaskList list, ReminderTask task)
     {
         list.Tasks.Remove(task);
         _completed.Insert(0, task.Title);
     }
 
-    private void Delete(TaskList list, TaskItem task) => list.Tasks.Remove(task);
-
-    private void Flag(TaskItem task) => task.Flagged = !task.Flagged;
+    private void OnTaskDeleted(TaskList list, ReminderTask task)
+    {
+        list.Tasks.Remove(task);
+    }
 }
