@@ -1,0 +1,275 @@
+@page "/swipeview"
+
+<PageTitle>SwipeView Studio — IOSwipeView</PageTitle>
+
+<PageHeader Eyebrow="Component Showcase"
+            Title="SwipeView &amp; Card Gestures"
+            Subtitle="Explore standalone SwipeView rows, custom card widgets, media player strips, programmatic APIs, and spring physics comparisons." />
+
+<div class="grid lg:grid-cols-[minmax(0,1fr)_360px] gap-8 items-start">
+    <div class="space-y-8 min-w-0">
+        <!-- 1. Interactive Music Player Track -->
+        <div class="bg-grouped-secondary rounded-ios-xl border border-separator/60 p-5 space-y-3">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 class="text-headline text-label font-semibold">1. Apple Music Track Row</h3>
+                    <p class="text-footnote text-label-secondary">Swipe right to Like/Queue, swipe left to Share/Remove</p>
+                </div>
+                <span class="text-caption1 font-mono text-sys-blue bg-sys-blue/10 px-2 py-0.5 rounded-full">ClassicList</span>
+            </div>
+
+            <div class="rounded-2xl overflow-hidden border border-separator/40 bg-grouped shadow-xs">
+                <SwipeViewGroup>
+                    <SwipeView Options="SwipeOptions.ClassicList">
+                        <LeadingActions>
+                            <SwipeAction Background="#ff2d55" Foreground="white" Placement="ActionPlacement.Top"
+                                         OnInvoked='() => LogAction("❤️", "Added to Favorites")'>
+                                <Icon>❤️</Icon>
+                                <ChildContent>Favorite</ChildContent>
+                            </SwipeAction>
+                            <SwipeAction Background="#5856d6" Foreground="white" Placement="ActionPlacement.Top"
+                                         OnInvoked='() => LogAction("🎵", "Added to Up Next Queue")'>
+                                <Icon>➕</Icon>
+                                <ChildContent>Queue</ChildContent>
+                            </SwipeAction>
+                        </LeadingActions>
+
+                        <ChildContent>
+                            <div class="flex items-center gap-3.5 p-3.5 bg-grouped-secondary select-none">
+                                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center text-white text-xl shadow-sm flex-shrink-0">
+                                    🎧
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <h4 class="text-subheadline text-label font-semibold truncate">Midnight City (Remix)</h4>
+                                    <p class="text-footnote text-label-secondary truncate mt-0.5">M83 • Hurry Up, We're Dreaming</p>
+                                </div>
+                                <span class="text-footnote font-mono text-label-tertiary">4:04</span>
+                            </div>
+                        </ChildContent>
+
+                        <TrailingActions>
+                            <SwipeAction Background="#007aff" Foreground="white" Placement="ActionPlacement.Top"
+                                         OnInvoked='() => LogAction("📤", "Shared Song Link")'>
+                                <Icon>📤</Icon>
+                                <ChildContent>Share</ChildContent>
+                            </SwipeAction>
+                            <SwipeAction Background="#ff3b30" Foreground="white" Placement="ActionPlacement.Top" AllowSwipeToTrigger
+                                         OnInvoked='() => LogAction("🗑️", "Removed Track from Library")'>
+                                <Icon>🗑️</Icon>
+                                <ChildContent>Remove</ChildContent>
+                            </SwipeAction>
+                        </TrailingActions>
+                    </SwipeView>
+                </SwipeViewGroup>
+            </div>
+        </div>
+
+        <!-- 2. Wallet Card Widget (Floating Capsule) -->
+        <div class="bg-grouped-secondary rounded-ios-xl border border-separator/60 p-5 space-y-3">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 class="text-headline text-label font-semibold">2. Apple Wallet Card Widget</h3>
+                    <p class="text-footnote text-label-secondary">Modern 32px bubble capsule with 8px floating gaps</p>
+                </div>
+                <span class="text-caption1 font-mono text-sys-green bg-sys-green/10 px-2 py-0.5 rounded-full">Capsule</span>
+            </div>
+
+            <div class="py-2">
+                <SwipeViewGroup>
+                    <SwipeView Options="SwipeOptions.Capsule">
+                        <LeadingActions>
+                            <SwipeAction Background="#34c759" Foreground="white"
+                                         OnInvoked='() => LogAction("🔒", "Card Locked / Unlocked")'>
+                                Lock
+                            </SwipeAction>
+                        </LeadingActions>
+
+                        <ChildContent>
+                            <div class="p-5 rounded-3xl bg-gradient-to-r from-slate-900 to-slate-800 text-white shadow-lg select-none border border-white/10">
+                                <div class="flex justify-between items-start mb-6">
+                                    <div>
+                                        <span class="text-caption2 uppercase tracking-widest text-slate-400 font-semibold">Titanium Card</span>
+                                        <h4 class="text-title3 font-bold mt-1">$4,850.20</h4>
+                                    </div>
+                                    <span class="text-2xl font-bold tracking-tight text-white/90">Pay</span>
+                                </div>
+                                <div class="flex justify-between items-end font-mono text-footnote text-slate-300">
+                                    <span>•••• •••• •••• 8842</span>
+                                    <span>09/29</span>
+                                </div>
+                            </div>
+                        </ChildContent>
+
+                        <TrailingActions>
+                            <SwipeAction Background="#ff9500" Foreground="white"
+                                         OnInvoked='() => LogAction("📋", "Copied Virtual Card Number")'>
+                                Copy
+                            </SwipeAction>
+                            <SwipeAction Background="#ff3b30" Foreground="white" AllowSwipeToTrigger
+                                         OnInvoked='() => LogAction("✕", "Deactivated Card")'>
+                                Delete
+                            </SwipeAction>
+                        </TrailingActions>
+                    </SwipeView>
+                </SwipeViewGroup>
+            </div>
+        </div>
+
+        <!-- 3. Programmatic Control Studio -->
+        <div class="bg-grouped-secondary rounded-ios-xl border border-separator/60 p-5 space-y-4">
+            <div>
+                <h3 class="text-headline text-label font-semibold">3. Programmatic API Control Deck</h3>
+                <p class="text-footnote text-label-secondary">Control the drawer state programmatically via C# methods</p>
+            </div>
+
+            <div class="rounded-2xl overflow-hidden border border-separator/40 bg-grouped shadow-xs">
+                <SwipeView @ref="_programmaticView" Options="SwipeOptions.ClassicList" OnStateChanged="OnProgrammaticStateChanged">
+                    <LeadingActions>
+                        <SwipeAction Background="#007aff" Foreground="white" OnInvoked='() => LogAction("🔵", "Primary Leading Invoked")'>
+                            Primary
+                        </SwipeAction>
+                    </LeadingActions>
+
+                    <ChildContent>
+                        <div class="p-4 bg-grouped-secondary select-none flex items-center justify-between">
+                            <div>
+                                <h4 class="text-subheadline text-label font-semibold">Interactive C# Target Row</h4>
+                                <p class="text-footnote text-label-secondary mt-0.5">Current State: <span class="font-mono text-sys-blue font-medium">@_currentState</span></p>
+                            </div>
+                            <span class="text-xl">🕹️</span>
+                        </div>
+                    </ChildContent>
+
+                    <TrailingActions>
+                        <SwipeAction Background="#ff9500" Foreground="white" OnInvoked='() => LogAction("⭐", "Starred")'>
+                            Star
+                        </SwipeAction>
+                        <SwipeAction Background="#ff3b30" Foreground="white" AllowSwipeToTrigger
+                                     OnInvoked='() => LogAction("🗑️", "Triggered Action")'>
+                            Trigger
+                        </SwipeAction>
+                    </TrailingActions>
+                </SwipeView>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
+                <button type="button" class="btn-ghost text-footnote py-2" @onclick="OpenLeading">
+                    Open Leading
+                </button>
+                <button type="button" class="btn-ghost text-footnote py-2" @onclick="OpenTrailing">
+                    Open Trailing
+                </button>
+                <button type="button" class="btn-ghost text-footnote py-2 text-sys-red" @onclick="TriggerTrailing">
+                    Trigger Trailing
+                </button>
+                <button type="button" class="btn-primary text-footnote py-2" @onclick="CloseRow">
+                    Close Row
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Sidebar Controls & Telemetry -->
+    <div class="space-y-5">
+        <Panel Title="Active Springs">
+            <div class="space-y-2 text-footnote text-label-secondary">
+                <div class="p-2.5 rounded-ios bg-grouped border border-separator/40 flex items-center justify-between">
+                    <span>Snappy Physics</span>
+                    <span class="font-mono text-caption2 text-sys-blue">180ms • 0 overshoot</span>
+                </div>
+                <div class="p-2.5 rounded-ios bg-grouped border border-separator/40 flex items-center justify-between">
+                    <span>Bouncy Physics</span>
+                    <span class="font-mono text-caption2 text-sys-blue">320ms • Oscillation</span>
+                </div>
+                <div class="p-2.5 rounded-ios bg-grouped border border-separator/40 flex items-center justify-between">
+                    <span>Reduced Motion</span>
+                    <span class="font-mono text-caption2 text-sys-green">0ms • Instant</span>
+                </div>
+            </div>
+        </Panel>
+
+        <Panel Title="Activity Log" Subtitle="Live telemetry & gesture events">
+            <Trailing>
+                <button type="button" class="text-footnote text-sys-blue" @onclick="_log.Clear">Clear</button>
+            </Trailing>
+            <ChildContent>
+                <ul class="font-mono text-caption1 space-y-1 h-44 overflow-y-auto">
+                    @if (_log.Count == 0)
+                    {
+                        <li class="text-label-tertiary">Swipe any widget or tap API buttons…</li>
+                    }
+                    @foreach (var entry in _log)
+                    {
+                        <li class="text-label-secondary">@entry</li>
+                    }
+                </ul>
+            </ChildContent>
+        </Panel>
+
+        <Panel Title="C# Razor Code Example" BodyClass="p-4 pt-1">
+            <CodeBlock Code="@Snippet" MaxHeightClass="max-h-60" />
+        </Panel>
+    </div>
+</div>
+
+@code {
+    private SwipeView? _programmaticView;
+    private string _currentState = "Closed";
+    private readonly List<string> _log = [];
+
+    private async Task OpenLeading()
+    {
+        if (_programmaticView is not null) await _programmaticView.OpenAsync(SwipeSide.Leading);
+    }
+
+    private async Task OpenTrailing()
+    {
+        if (_programmaticView is not null) await _programmaticView.OpenAsync(SwipeSide.Trailing);
+    }
+
+    private async Task TriggerTrailing()
+    {
+        if (_programmaticView is not null) await _programmaticView.TriggerAsync(SwipeSide.Trailing);
+    }
+
+    private async Task CloseRow()
+    {
+        if (_programmaticView is not null) await _programmaticView.CloseAsync();
+    }
+
+    private void OnProgrammaticStateChanged(SwipeStateChange change)
+    {
+        _currentState = $"{change.State} ({change.Side})";
+        _log.Insert(0, $"{DateTime.Now:HH:mm:ss} — State Changed: {_currentState}");
+    }
+
+    private void LogAction(string icon, string action)
+    {
+        _log.Insert(0, $"{DateTime.Now:HH:mm:ss} — {icon} {action}");
+    }
+
+    private const string Snippet = """
+        <SwipeViewGroup>
+            <SwipeView @ref="_row" Options="SwipeOptions.Capsule" OnStateChanged="OnChanged">
+                <LeadingActions>
+                    <SwipeAction Background="#34c759" Foreground="white">Lock</SwipeAction>
+                </LeadingActions>
+
+                <ChildContent>
+                    <div class="my-card">Swipe me!</div>
+                </ChildContent>
+
+                <TrailingActions>
+                    <SwipeAction Background="#ff3b30" Foreground="white" AllowSwipeToTrigger>Delete</SwipeAction>
+                </TrailingActions>
+            </SwipeView>
+        </SwipeViewGroup>
+
+        @code {
+            private SwipeView? _row;
+            // Programmatic control:
+            private Task Open() => _row!.OpenAsync(SwipeSide.Trailing);
+            private Task Close() => _row!.CloseAsync();
+        }
+        """;
+}
