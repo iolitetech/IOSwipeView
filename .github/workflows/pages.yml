@@ -33,8 +33,11 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
-          cache-dependency-path: samples/IOSwipeView.Demo/package-lock.json
+
+      - name: Install Node Tooling
+        run: |
+          npm --prefix src/IOSwipeView/ts install
+          npm --prefix samples/IOSwipeView.Demo install
 
       - name: Publish
         run: dotnet publish samples/IOSwipeView.Demo/IOSwipeView.Demo.csproj -c Release -o release --nologo

@@ -1,0 +1,81 @@
+name: Release & Publish NuGet
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to pack & publish (e.g. 0.1.0-alpha.2)'
+        required: true
+        type: string
+
+permissions:
+  contents: write    # To create GitHub Releases and upload release assets
+  id-token: write    # Required for NuGet Trusted Publishing via OIDC (no API keys)
+
+jobs:
+  build-and-publish:
+    name: Build, Test & Publish to NuGet.org
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install TypeScript runtime tooling
+        run: |
+          npm --prefix src/IOSwipeView/ts install
+          npm --prefix samples/IOSwipeView.Demo install
+
+      - name: Restore dependencies
+        run: dotnet restore IOSwipeView.slnx
+
+      - name: Run Test Suite (100% Pass Gate)
+        run: dotnet test IOSwipeView.slnx --configuration Release --no-restore --logger "trx;LogFileName=test-results.trx"
+
+      - name: Determine Version
+        id: version_step
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            TAG_VER="${{ github.event.inputs.version }}"
+          else
+            TAG_VER="${GITHUB_REF_NAME#v}"
+          fi
+          echo "PKG_VERSION=$TAG_VER" >> $GITHUB_OUTPUT
+          echo "Packaging version: $TAG_VER"
+
+      - name: Pack NuGet Package
+        run: >
+          dotnet pack src/IOSwipeView/IOSwipeView.csproj
+          --configuration Release
+          -p:PackageVersion=${{ steps.version_step.outputs.PKG_VERSION }}
+          --output dist/
+
+      - name: Publish to NuGet.org (Trusted Publishing OIDC)
+        run: >
+          dotnet nuget push dist/*.nupkg
+          --source https://api.nuget.org/v3/index.json
+          --skip-duplicate
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/v')
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: IOSwipeView v${{ steps.version_step.outputs.PKG_VERSION }}
+          files: dist/*
+          generate_release_notes: true
