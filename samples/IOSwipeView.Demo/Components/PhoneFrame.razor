@@ -1,9 +1,11 @@
 <div class="mx-auto w-full max-w-[390px] @Class">
-    <div class="relative rounded-ios-device bg-black p-[10px] shadow-2xl ring-1 ring-white/10">
-        <div class="relative overflow-hidden rounded-[44px] bg-grouped flex flex-col h-[700px] max-h-[85vh]">
+    <!-- Apple Hardware Outer Chassis with metallic edge & shadow -->
+    <div class="relative rounded-ios-device bg-[#2c2c2e] dark:bg-[#1a1a1c] p-[9px] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.7),0_0_0_1px_rgba(0,0,0,0.3)] dark:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.9),0_0_0_1px_rgba(255,255,255,0.15)] ring-1 ring-black/30 dark:ring-white/15 border border-white/10 dark:border-white/10">
+        <!-- Inner Screen Viewport -->
+        <div class="relative overflow-hidden rounded-[42px] bg-grouped border border-separator/30 flex flex-col h-[700px] max-h-[85vh]">
             <!-- Dynamic Island / Top Notch -->
             <div class="absolute top-0 inset-x-0 z-30 flex justify-center pointer-events-none">
-                <div class="mt-2 h-[26px] w-[100px] rounded-full bg-black"></div>
+                <div class="mt-2.5 h-[26px] w-[105px] rounded-full bg-black ring-1 ring-white/10 shadow-sm"></div>
             </div>
 
             <!-- Sticky Top iOS Navigation Bar -->
@@ -11,7 +13,7 @@
                 <div class="flex items-center justify-between mb-0.5">
                     @if (!string.IsNullOrWhiteSpace(BackLabel))
                     {
-                        <div class="text-callout text-sys-blue">&lsaquo; @BackLabel</div>
+                        <div class="text-callout text-sys-blue font-normal">&lsaquo; @BackLabel</div>
                     }
                     else
                     {
@@ -22,7 +24,7 @@
                         <div>@Trailing</div>
                     }
                 </div>
-                <h2 class="text-largetitle text-label">@Title</h2>
+                <h2 class="text-largetitle text-label font-bold tracking-tight">@Title</h2>
             </div>
 
             <!-- Scrollable Viewport Body -->
@@ -32,7 +34,7 @@
 
             <!-- Bottom Home Indicator -->
             <div class="flex-shrink-0 flex justify-center py-2 bg-grouped">
-                <div class="h-[5px] w-[134px] rounded-full bg-label-tertiary"></div>
+                <div class="h-[5px] w-[134px] rounded-full bg-label-tertiary/60"></div>
             </div>
         </div>
     </div>

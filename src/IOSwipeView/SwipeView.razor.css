@@ -241,6 +241,11 @@
     transition: gap var(--ioswipe-spring-duration, 280ms) var(--ioswipe-spring-curve, cubic-bezier(0.16, 1, 0.3, 1));
 }
 
+/* Focus management: eliminate focus outline on click/touch/drag */
+.ioswipe:focus {
+    outline: none;
+}
+
 /* Accessible keyboard focus ring */
 .ioswipe:focus-visible {
     outline: 2px solid var(--sys-blue, #007aff);
