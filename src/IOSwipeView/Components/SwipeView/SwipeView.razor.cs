@@ -26,7 +26,7 @@ namespace IOSwipeView;
 /// </remarks>
 public partial class SwipeView : ComponentBase, IAsyncDisposable
 {
-    private const string ModulePath = "./_content/IOSwipeView/SwipeView.razor.js";
+    private const string ModulePath = "./_content/IOSwipeView/Components/SwipeView/SwipeView.razor.js";
 
     private readonly List<SwipeAction> _leadingActions = [];
     private readonly List<SwipeAction> _trailingActions = [];

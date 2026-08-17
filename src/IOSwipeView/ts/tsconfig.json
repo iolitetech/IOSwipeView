@@ -10,7 +10,9 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "declaration": false,
-    "sourceMap": false
+    "sourceMap": false,
+    "rootDir": "./",
+    "outDir": "../Components/SwipeView"
   },
   "include": [
     "SwipeView.razor.ts"

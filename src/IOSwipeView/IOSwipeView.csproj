@@ -34,9 +34,9 @@
     <None Include="Iolite.png" Pack="true" PackagePath="\" />
   </ItemGroup>
 
-  <Target Name="CompileTypeScript" BeforeTargets="BeforeBuild" Inputs="$(MSBuildThisFileDirectory)SwipeView.razor.ts;$(MSBuildThisFileDirectory)tsconfig.json" Outputs="$(MSBuildThisFileDirectory)SwipeView.razor.js">
-    <Message Importance="high" Text="Compiling IOSwipeView TypeScript runtime -> SwipeView.razor.js" />
-    <Exec Command="npm run build" WorkingDirectory="$(MSBuildThisFileDirectory)" />
+  <Target Name="CompileTypeScript" BeforeTargets="BeforeBuild" Inputs="$(MSBuildThisFileDirectory)ts\SwipeView.razor.ts;$(MSBuildThisFileDirectory)ts\tsconfig.json" Outputs="$(MSBuildThisFileDirectory)Components\SwipeView\SwipeView.razor.js">
+    <Message Importance="high" Text="Compiling IOSwipeView TypeScript runtime -> Components/SwipeView/SwipeView.razor.js" />
+    <Exec Command="npm run build" WorkingDirectory="$(MSBuildThisFileDirectory)ts" />
   </Target>
 
 </Project>
