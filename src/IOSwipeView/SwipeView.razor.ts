@@ -8,11 +8,42 @@
  * This keeps maths in one tested place while allowing settle animations and drag transforms
  * to run entirely in the browser with zero JS-to-C# interop per frame.
  */
-const instances = new Map();
+
+export interface DotNetObjectReference {
+    invokeMethodAsync<T = unknown>(methodName: string, ...args: unknown[]): Promise<T>;
+}
+
+export interface SwipeOptions {
+    actionWidth: number;
+    spacing: number;
+    actionsVisibleStartPoint: number;
+    actionsVisibleEndPoint: number;
+    leadingCount: number;
+    trailingCount: number;
+}
+
+export type SwipeSide = 'leading' | 'trailing';
+
+interface SwipeViewInstance {
+    root: HTMLElement;
+    options: SwipeOptions;
+    dotNetRef: DotNetObjectReference;
+    offset: number;
+    frame: number;
+    observer: ResizeObserver | null;
+    mutationObserver: MutationObserver | null;
+    isRtl: boolean;
+    width: number;
+}
+
+const instances = new Map<number, SwipeViewInstance>();
 let nextHandle = 0;
-const reducedMotionQuery = typeof globalThis.matchMedia === 'function'
-    ? globalThis.matchMedia('(prefers-reduced-motion: reduce)')
-    : null;
+
+const reducedMotionQuery: MediaQueryList | null =
+    typeof globalThis.matchMedia === 'function'
+        ? globalThis.matchMedia('(prefers-reduced-motion: reduce)')
+        : null;
+
 /**
  * Attaches the high-performance renderer to a SwipeView row.
  *
@@ -21,10 +52,15 @@ const reducedMotionQuery = typeof globalThis.matchMedia === 'function'
  * @param dotNetRef The owning C# SwipeView component reference for resize and RTL callbacks.
  * @returns An integer handle used by all subsequent exports.
  */
-export function create(root, options, dotNetRef) {
+export function create(
+    root: HTMLElement,
+    options: SwipeOptions,
+    dotNetRef: DotNetObjectReference
+): number {
     const handle = nextHandle++;
     const isRtl = isRtlElement(root);
-    const instance = {
+
+    const instance: SwipeViewInstance = {
         root,
         options,
         dotNetRef,
@@ -35,7 +71,8 @@ export function create(root, options, dotNetRef) {
         isRtl,
         width: root.clientWidth,
     };
-    const updateDirectionAndSize = () => {
+
+    const updateDirectionAndSize = (): void => {
         const width = root.clientWidth;
         const currentRtl = isRtlElement(root);
         if (instance.isRtl !== currentRtl || Math.abs(instance.width - width) > 1) {
@@ -45,6 +82,7 @@ export function create(root, options, dotNetRef) {
             render(instance, instance.offset);
         }
     };
+
     // The triggered offset must carry the row fully off-screen, so C# requires live width metrics.
     if (typeof globalThis.ResizeObserver === 'function') {
         instance.observer = new ResizeObserver((entries) => {
@@ -56,10 +94,10 @@ export function create(root, options, dotNetRef) {
             void dotNetRef.invokeMethodAsync('OnRowResized', width, currentRtl);
         });
         instance.observer.observe(root);
-    }
-    else {
+    } else {
         void dotNetRef.invokeMethodAsync('OnRowResized', root.clientWidth, isRtl);
     }
+
     if (typeof globalThis.MutationObserver === 'function') {
         instance.mutationObserver = new MutationObserver(updateDirectionAndSize);
         instance.mutationObserver.observe(document.documentElement, {
@@ -68,40 +106,45 @@ export function create(root, options, dotNetRef) {
             subtree: true,
         });
     }
+
     instances.set(handle, instance);
     applyCascadeZIndices(root);
     render(instance, 0);
+
     return handle;
 }
+
 /**
  * Replaces the options (e.g. after actions are dynamically added or removed).
  *
  * @param handle The instance handle.
  * @param options The new SwipeOptions.
  */
-export function setOptions(handle, options) {
+export function setOptions(handle: number, options: SwipeOptions): void {
     const instance = instances.get(handle);
-    if (!instance)
-        return;
+    if (!instance) return;
+
     instance.options = options;
     applyCascadeZIndices(instance.root);
     render(instance, instance.offset);
 }
+
 /**
  * Moves the row immediately. Called once per pointer move frame while dragging.
  *
  * @param handle The instance handle.
  * @param offset The signed offset in CSS pixels.
  */
-export function setOffset(handle, offset) {
+export function setOffset(handle: number, offset: number): void {
     const instance = instances.get(handle);
-    if (!instance)
-        return;
+    if (!instance) return;
+
     cancelAnimationFrame(instance.frame);
     instance.frame = 0;
     instance.root.classList.add('ioswipe--dragging');
     render(instance, offset);
 }
+
 /**
  * Marks a side as armed for drag-to-trigger, triggering haptic vibration if enabled.
  *
@@ -111,21 +154,28 @@ export function setOffset(handle, offset) {
  * @param pattern Custom vibration pattern duration in milliseconds.
  * @param armedIndex The index of the specific action slot being armed.
  */
-export function setArmed(handle, side, haptics, pattern, armedIndex) {
+export function setArmed(
+    handle: number,
+    side: SwipeSide | null,
+    haptics: boolean,
+    pattern?: number | number[] | null,
+    armedIndex?: number
+): void {
     const instance = instances.get(handle);
-    if (!instance)
-        return;
+    if (!instance) return;
+
     const { classList } = instance.root;
     classList.toggle('ioswipe--armed-leading', side === 'leading');
     classList.toggle('ioswipe--armed-trailing', side === 'trailing');
-    const strips = [
-        { el: instance.root.querySelector('.ioswipe__actions--leading'), activeSide: 'leading' },
-        { el: instance.root.querySelector('.ioswipe__actions--trailing'), activeSide: 'trailing' },
+
+    const strips: Array<{ el: HTMLElement | null; activeSide: SwipeSide }> = [
+        { el: instance.root.querySelector<HTMLElement>('.ioswipe__actions--leading'), activeSide: 'leading' },
+        { el: instance.root.querySelector<HTMLElement>('.ioswipe__actions--trailing'), activeSide: 'trailing' },
     ];
+
     for (const { el, activeSide } of strips) {
-        if (!el)
-            continue;
-        const slots = el.querySelectorAll('.ioswipe__action-slot');
+        if (!el) continue;
+        const slots = el.querySelectorAll<HTMLElement>('.ioswipe__action-slot');
         slots.forEach((slot, i) => {
             const isArmedSlot = side === activeSide && i === armedIndex;
             const isSiblingCollapsed = side === activeSide && i !== armedIndex;
@@ -133,16 +183,17 @@ export function setArmed(handle, side, haptics, pattern, armedIndex) {
             slot.classList.toggle('ioswipe__action-slot--collapsed', isSiblingCollapsed);
         });
     }
+
     // Only honoured on devices with a vibration motor after user gesture.
     if (haptics && side) {
         try {
             navigator.vibrate?.(pattern ?? 10);
-        }
-        catch {
+        } catch {
             // Silently ignore if vibration is restricted by browser policy
         }
     }
 }
+
 /**
  * Springs the row to its resting position using an analytical ODE spring solver.
  *
@@ -152,120 +203,158 @@ export function setArmed(handle, side, haptics, pattern, armedIndex) {
  * @param damping The spring damping coefficient (c).
  * @param velocity The release velocity in pixels per second.
  */
-export function settle(handle, to, stiffness, damping, velocity) {
+export function settle(
+    handle: number,
+    to: number,
+    stiffness: number,
+    damping: number,
+    velocity: number
+): void {
     const instance = instances.get(handle);
-    if (!instance)
-        return;
+    if (!instance) return;
+
     cancelAnimationFrame(instance.frame);
     instance.root.classList.remove('ioswipe--dragging');
+
     if (reducedMotionQuery?.matches) {
         instance.frame = 0;
         render(instance, to);
         return;
     }
+
     // Displacement from target so spring solves towards zero
     let x = instance.offset - to;
     let v = velocity;
     let previous = performance.now();
-    const step = (now) => {
+
+    const step = (now: number): void => {
         // Clamp frame delta so backgrounded tabs don't integrate one giant step
         let remaining = Math.min((now - previous) / 1000, 0.064);
         previous = now;
+
         // Fixed sub-step integration (240Hz) ensures stiff springs remain stable
         const h = 1 / 240;
         while (remaining > 0) {
             const dt = Math.min(h, remaining);
             remaining -= dt;
+
             const acceleration = (-stiffness * x) - (damping * v);
             v += acceleration * dt;
             x += v * dt;
         }
+
         // Settled condition: within 0.5px and moving slower than 5px/s
         if (Math.abs(x) < 0.5 && Math.abs(v) < 5) {
             instance.frame = 0;
             render(instance, to);
             return;
         }
+
         render(instance, to + x);
         instance.frame = requestAnimationFrame(step);
     };
+
     instance.frame = requestAnimationFrame(step);
 }
+
 /**
  * Detaches the renderer and disconnects all observers.
  *
  * @param handle The instance handle.
  */
-export function dispose(handle) {
+export function dispose(handle: number): void {
     const instance = instances.get(handle);
-    if (!instance)
-        return;
+    if (!instance) return;
+
     cancelAnimationFrame(instance.frame);
     instance.observer?.disconnect();
     instance.mutationObserver?.disconnect();
     instances.delete(handle);
 }
+
 /**
  * Writes the CSS custom properties that all visual aspects of the row derive from.
  */
-function render(instance, offset) {
+function render(instance: SwipeViewInstance, offset: number): void {
     const { root, options } = instance;
     instance.offset = offset;
+
     const isRtl = isRtlElement(root);
     if (instance.isRtl !== isRtl) {
         instance.isRtl = isRtl;
         void instance.dotNetRef?.invokeMethodAsync('OnRowResized', instance.width || root.clientWidth, isRtl);
     }
+
     // Under RTL, positive logical offset (leading revealed on right) translates physical content left (-X),
     // and negative logical offset (trailing revealed on left) translates physical content right (+X).
     const physicalOffset = isRtl ? -offset : offset;
+
     root.style.setProperty('--ioswipe-offset', `${physicalOffset.toFixed(2)}px`);
+
     writeSide(root, options, offset, 'leading', 1, options.leadingCount);
     writeSide(root, options, offset, 'trailing', -1, options.trailingCount);
 }
-function writeSide(root, options, offset, name, sign, count) {
+
+function writeSide(
+    root: HTMLElement,
+    options: SwipeOptions,
+    offset: number,
+    name: SwipeSide,
+    sign: number,
+    count: number
+): void {
     const dragged = offset * sign;
+
     // How much of this side's strip is uncovered, never negative
     const visible = Math.max(0, dragged - options.spacing);
+
     // Natural width so the mask style can hold actions still beneath the row
     const natural = count > 0
         ? (count * options.actionWidth) + ((count - 1) * options.spacing)
         : 0;
+
     const opacity = opacityFor(options, dragged);
+
     root.style.setProperty(`--ioswipe-${name}-width`, `${visible.toFixed(2)}px`);
     root.style.setProperty(`--ioswipe-${name}-natural-width`, `${natural.toFixed(2)}px`);
     root.style.setProperty(`--ioswipe-${name}-opacity`, opacity.toFixed(3));
-    const sideEl = root.querySelector(`.ioswipe__actions--${name}`);
+
+    const sideEl = root.querySelector<HTMLElement>(`.ioswipe__actions--${name}`);
     if (sideEl) {
         const isVisible = visible > 0.1;
         sideEl.style.visibility = isVisible ? 'visible' : 'hidden';
         sideEl.style.pointerEvents = isVisible ? 'auto' : 'none';
     }
+
     if (dragged > 0) {
         root.style.setProperty('--ioswipe-current-opacity', opacity.toFixed(3));
     }
 }
-function opacityFor(options, dragged) {
+
+function opacityFor(options: SwipeOptions, dragged: number): number {
     const beyondStart = Math.max(0, dragged - options.actionsVisibleStartPoint);
     const range = options.actionsVisibleEndPoint - options.actionsVisibleStartPoint;
+
     // Guard: zero-width range means "no fade" rather than division by zero
     if (range <= 0) {
         return beyondStart > 0 ? 1 : 0;
     }
+
     return Math.min(1, Math.max(0, beyondStart / range));
 }
-function applyCascadeZIndices(root) {
-    if (!root.classList.contains('ioswipe--cascade'))
-        return;
-    const leading = root.querySelectorAll('.ioswipe__actions--leading .ioswipe__action-slot');
+
+function applyCascadeZIndices(root: HTMLElement): void {
+    if (!root.classList.contains('ioswipe--cascade')) return;
+    const leading = root.querySelectorAll<HTMLElement>('.ioswipe__actions--leading .ioswipe__action-slot');
     leading.forEach((slot, i) => {
         slot.style.zIndex = `${leading.length - i}`;
     });
-    const trailing = root.querySelectorAll('.ioswipe__actions--trailing .ioswipe__action-slot');
+    const trailing = root.querySelectorAll<HTMLElement>('.ioswipe__actions--trailing .ioswipe__action-slot');
     trailing.forEach((slot, i) => {
         slot.style.zIndex = `${i + 1}`;
     });
 }
-function isRtlElement(element) {
+
+function isRtlElement(element: HTMLElement): boolean {
     return (element.closest('[dir="rtl"]') !== null) || (getComputedStyle(element).direction === 'rtl');
 }
