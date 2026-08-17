@@ -15,7 +15,7 @@
     <PackageTags>Blazor;SwipeActions;Swipe;Gesture;IOGesture;WASM;WebAssembly;BlazorServer;Components</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
-    <PackageIcon>Iolite.png</PackageIcon>
+    <PackageIcon>icon.png</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -31,7 +31,7 @@
   <ItemGroup>
     <None Include="..\..\README.md" Pack="true" PackagePath="\" />
     <None Include="..\..\LICENSE.txt" Pack="true" PackagePath="\" />
-    <None Include="Iolite.png" Pack="true" PackagePath="\" />
+    <None Include="icon.png" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <Target Name="CompileTypeScript" BeforeTargets="BeforeBuild" Inputs="$(MSBuildThisFileDirectory)ts\SwipeView.razor.ts;$(MSBuildThisFileDirectory)ts\tsconfig.json" Outputs="$(MSBuildThisFileDirectory)Components\SwipeView\SwipeView.razor.js">
