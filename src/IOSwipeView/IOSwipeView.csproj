@@ -9,7 +9,7 @@
   <PropertyGroup Label="Package">
     <IsPackable>true</IsPackable>
     <PackageId>IOSwipeView</PackageId>
-    <Version>1.0.0</Version>
+    <Version>1.0.1</Version>
     <Title>IOSwipeView</Title>
     <Authors>IOLite</Authors>
     <Description>Customizable swipe actions for any Blazor component. Leading and trailing actions, drag-to-trigger, rubber banding, spring animations, and accordion groups — built on IOGesture.</Description>
@@ -35,7 +35,7 @@
     <None Include="icon.png" Pack="true" PackagePath="\" />
   </ItemGroup>
 
-  <Target Name="CompileTypeScript" BeforeTargets="BeforeBuild" Inputs="$(MSBuildThisFileDirectory)ts\SwipeView.razor.ts;$(MSBuildThisFileDirectory)ts\tsconfig.json" Outputs="$(MSBuildThisFileDirectory)Components\SwipeView\SwipeView.razor.js">
+  <Target Name="CompileTypeScript" BeforeTargets="BeforeBuild" Inputs="$(MSBuildThisFileDirectory)ts/SwipeView.razor.ts;$(MSBuildThisFileDirectory)ts/tsconfig.json" Outputs="$(MSBuildThisFileDirectory)Components/SwipeView/SwipeView.razor.js">
     <Message Importance="high" Text="Compiling IOSwipeView TypeScript runtime -> Components/SwipeView/SwipeView.razor.js" />
     <Exec Command="npm run build" WorkingDirectory="$(MSBuildThisFileDirectory)ts" />
   </Target>

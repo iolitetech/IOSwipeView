@@ -65,11 +65,26 @@ jobs:
           -p:PackageVersion=${{ steps.version_step.outputs.PKG_VERSION }}
           --output dist/
 
-      - name: Publish to NuGet.org (Trusted Publishing OIDC)
+      - name: NuGet Login (OIDC Trusted Publishing -> Temp API Key)
+        uses: NuGet/login@v1
+        id: login
+        with:
+          user: ${{ secrets.NUGET_USER || 'Iolite' }}
+
+      - name: Publish to NuGet.org
         run: >
           dotnet nuget push dist/*.nupkg
+          --api-key ${{ steps.login.outputs.NUGET_API_KEY }}
           --source https://api.nuget.org/v3/index.json
           --skip-duplicate
+
+      - name: Generate Release Notes (git-cliff)
+        uses: orhun/git-cliff-action@v4
+        with:
+          config: cliff.toml
+          args: --latest --strip header
+        env:
+          OUTPUT: RELEASE_NOTES.md
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
@@ -77,5 +92,5 @@ jobs:
         with:
           tag_name: ${{ github.ref_name }}
           name: IOSwipeView v${{ steps.version_step.outputs.PKG_VERSION }}
+          body_path: RELEASE_NOTES.md
           files: dist/*
-          generate_release_notes: true

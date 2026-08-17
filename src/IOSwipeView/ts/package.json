@@ -4,8 +4,8 @@
   "private": true,
   "description": "TypeScript runtime engine for IOSwipeView Blazor component.",
   "scripts": {
-    "build": "npx -y typescript -p ./tsconfig.json",
-    "watch": "npx -y typescript -p ./tsconfig.json --watch"
+    "build": "npx --yes tsc -p ./tsconfig.json",
+    "watch": "npx --yes tsc -p ./tsconfig.json --watch"
   },
   "devDependencies": {
     "typescript": "^5.8.0"
