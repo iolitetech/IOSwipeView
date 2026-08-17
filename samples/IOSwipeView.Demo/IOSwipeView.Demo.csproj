@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+
+  <PropertyGroup>
+    <RootNamespace>IOSwipeView.Demo</RootNamespace>
+    <WasmFingerprintAssets>false</WasmFingerprintAssets>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\IOSwipeView\IOSwipeView.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="node_modules\**" />
+    <None Remove="node_modules\**" />
+    <Compile Remove="node_modules\**" />
+  </ItemGroup>
+
+  <Target Name="NpmInstall"
+          Condition="'$(SkipTailwind)' != 'true' AND !Exists('$(MSBuildProjectDirectory)/node_modules')">
+    <Message Importance="high" Text="Installing npm packages for Tailwind..." />
+    <Exec Command="npm install --no-fund --no-audit" WorkingDirectory="$(MSBuildProjectDirectory)" />
+  </Target>
+
+  <Target Name="TailwindBuild"
+          DependsOnTargets="NpmInstall"
+          BeforeTargets="BeforeBuild"
+          Condition="'$(SkipTailwind)' != 'true'">
+    <Message Importance="high" Text="Building Tailwind CSS -&gt; wwwroot/css/app.css" />
+    <Exec Command="npm run build:css" WorkingDirectory="$(MSBuildProjectDirectory)" />
+  </Target>
+
+</Project>

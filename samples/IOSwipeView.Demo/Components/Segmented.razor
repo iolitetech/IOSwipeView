@@ -1,0 +1,31 @@
+@typeparam T
+
+<div class="@Class">
+    @if (!string.IsNullOrWhiteSpace(Label))
+    {
+        <div class="text-footnote text-label-secondary mb-1.5">@Label</div>
+    }
+    <div class="grid gap-0.5 p-0.5 bg-fill-quaternary rounded-ios" style="grid-template-columns:repeat(@Options.Count,minmax(0,1fr))">
+        @foreach (var option in Options)
+        {
+            var selected = EqualityComparer<T>.Default.Equals(option.Value, Value);
+            <button type="button"
+                    class="@(selected
+                        ? "py-1.5 px-2 text-footnote font-semibold rounded-[7px] bg-bg text-label shadow-sm transition-all"
+                        : "py-1.5 px-2 text-footnote text-label-secondary rounded-[7px] hover:text-label transition-all")"
+                    @onclick="() => ValueChanged.InvokeAsync(option.Value)">
+                @option.Label
+            </button>
+        }
+    </div>
+</div>
+
+@code {
+    public record Option(T Value, string Label);
+
+    [Parameter, EditorRequired] public IReadOnlyList<Option> Options { get; set; } = [];
+    [Parameter] public T? Value { get; set; }
+    [Parameter] public EventCallback<T> ValueChanged { get; set; }
+    [Parameter] public string? Label { get; set; }
+    [Parameter] public string? Class { get; set; }
+}

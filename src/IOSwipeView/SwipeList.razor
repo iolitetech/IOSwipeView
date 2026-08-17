@@ -1,0 +1,124 @@
+@namespace IOSwipeView
+@typeparam TItem where TItem : notnull
+
+<div class="@ContainerClass"
+     style="@ContainerStyle"
+     role="list"
+     aria-multiselectable="@(IsEditing ? "true" : null)"
+     @attributes="AdditionalAttributes">
+    @if (HeaderContent is not null)
+    {
+        <div class="ioswipe-list__header">
+            @HeaderContent
+        </div>
+    }
+
+    @if (Items is null || !Items.Any())
+    {
+        @if (EmptyContent is not null)
+        {
+            <div class="ioswipe-list__empty">
+                @EmptyContent
+            </div>
+        }
+    }
+    else
+    {
+        var count = GetItemsCount();
+        var idx = 0;
+
+        <SwipeViewGroup @ref="_group">
+            <div class="ioswipe-list__items">
+                @foreach (var item in Items)
+                {
+                    var currentIndex = idx++;
+                    var isFirst = currentIndex == 0;
+                    var isLast = count >= 0 ? currentIndex == count - 1 : IsLastItem(item);
+                    var key = GetKey(item);
+                    var isSelected = SelectedItems?.Contains(item) == true;
+                    var isCollapsing = _collapsingItems.Contains(item);
+                    var customRowClass = RowClassProvider?.Invoke(item);
+                    var options = ResolveSwipeOptions(item);
+                    var itemContext = GetItemContext(item, currentIndex, isFirst, isLast, isSelected, IsEditing);
+                    var collapseClass = GetCollapsingClass();
+
+                    <div @key="key"
+                         role="listitem"
+                         aria-selected="@(IsEditing ? (isSelected ? "true" : "false") : null)"
+                         class="ioswipe-list__row-wrapper @(isCollapsing ? collapseClass : "") @(IsEditing ? "ioswipe-list__row-wrapper--editing" : "") @(ResolvedAnimateInsert ? "ioswipe-list__row-wrapper--enter" : "") @customRowClass">
+                        
+                        <div class="ioswipe-list__row-inner">
+                            @if (IsEditing)
+                            {
+                                <button type="button"
+                                        class="ioswipe-list__select-btn @(isSelected ? "ioswipe-list__select-btn--selected" : "")"
+                                        @onclick="() => ToggleSelection(item)"
+                                        aria-label="@(isSelected ? "Deselect item" : "Select item")">
+                                    @if (SelectionTemplate is not null)
+                                    {
+                                        @SelectionTemplate(item)
+                                    }
+                                    else
+                                    {
+                                        <span class="ioswipe-list__checkmark-circle">
+                                            @if (isSelected)
+                                            {
+                                                <svg class="ioswipe-list__checkmark-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                                    <polyline points="3.5 8.5 6.5 11.5 12.5 4.5" />
+                                                </svg>
+                                            }
+                                        </span>
+                                    }
+                                </button>
+                            }
+
+                            <div class="ioswipe-list__swipe-container">
+                                <SwipeView @ref="_rowRefs[item]"
+                                           Options="options"
+                                           OnStateChanged="c => OnRowStateChanged(item, c)">
+                                    <LeadingActions>
+                                        @if (LeadingActions is not null && !IsEditing)
+                                        {
+                                            @LeadingActions(itemContext)
+                                        }
+                                    </LeadingActions>
+
+                                    <ChildContent>
+                                        <div class="ioswipe-list__item-content"
+                                             @onclick="() => HandleItemClick(item)">
+                                            @ItemTemplate(item)
+                                        </div>
+                                    </ChildContent>
+
+                                    <TrailingActions>
+                                        @if (TrailingActions is not null && !IsEditing)
+                                        {
+                                            @TrailingActions(itemContext)
+                                        }
+                                    </TrailingActions>
+                                </SwipeView>
+                            </div>
+                        </div>
+
+                        @if (ResolvedShowDividers && !isLast)
+                        {
+                            <div class="ioswipe-list__divider" style="@DividerStyle">
+                                @if (DividerTemplate is not null)
+                                {
+                                    @DividerTemplate
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </SwipeViewGroup>
+    }
+
+    @if (FooterContent is not null)
+    {
+        <div class="ioswipe-list__footer">
+            @FooterContent
+        </div>
+    }
+</div>

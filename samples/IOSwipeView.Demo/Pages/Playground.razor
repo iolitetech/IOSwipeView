@@ -1,0 +1,246 @@
+@page "/playground"
+
+<PageTitle>Playground — IOSwipeView</PageTitle>
+
+<PageHeader Eyebrow="Interactive"
+            Title="Playground"
+            Subtitle="Tune the geometry, thresholds and spring, drag the row to feel it, then copy the exact Razor that reproduces it.">
+    <div class="flex flex-wrap gap-1.5">
+        @foreach (var preset in PlaygroundState.Presets)
+        {
+            <button type="button"
+                    class="@(_state.PresetId == preset.Id
+                        ? "px-3 py-1.5 text-footnote font-semibold rounded-full bg-sys-blue text-white"
+                        : "px-3 py-1.5 text-footnote rounded-full bg-fill-tertiary text-label-secondary hover:text-label transition-colors")"
+                    title="@preset.Blurb"
+                    @onclick="() => ApplyPreset(preset.Id)">
+                @preset.Label
+            </button>
+        }
+    </div>
+</PageHeader>
+
+<div class="grid lg:grid-cols-2 gap-5 items-start">
+    <div class="space-y-5 lg:sticky lg:top-20">
+        <Panel Title="Live preview" Subtitle="@PreviewSubtitle">
+            <Trailing>
+                <span class="text-caption1 font-mono px-2 py-1 rounded-full bg-fill-tertiary text-label-secondary">@_liveState</span>
+            </Trailing>
+            <ChildContent>
+                <div class="rounded-ios-lg overflow-hidden bg-grouped p-4">
+                    <SwipeView @ref="_swipe" Options="_state.Options" OnStateChanged="OnStateChanged">
+                        <LeadingActions>
+                            @for (var i = 0; i < _state.LeadingCount; i++)
+                            {
+                                var index = i;
+                                <SwipeAction Background="@PlaygroundState.LeadingColors[index]"
+                                             Foreground="white"
+                                             ChangeLabelVisibilityOnly="_state.ChangeLabelVisibilityOnly"
+                                             OnInvoked="() => LogLeading(index)">
+                                    @PlaygroundState.LeadingNames[index]
+                                </SwipeAction>
+                            }
+                        </LeadingActions>
+                        <ChildContent>
+                            <div class="flex items-center justify-between gap-3 bg-grouped-secondary px-4 py-5 select-none"
+                                 style="border-radius:@(_state.MaskCornerRadius)px">
+                                <div class="min-w-0">
+                                    <p class="text-body font-semibold text-label">Swipe this row</p>
+                                    <p class="text-subheadline text-label-secondary truncate">Left for @_state.TrailingCount, right for @_state.LeadingCount</p>
+                                </div>
+                                <span class="text-label-tertiary text-title3">⇄</span>
+                            </div>
+                        </ChildContent>
+                        <TrailingActions>
+                            @for (var i = 0; i < _state.TrailingCount; i++)
+                            {
+                                var index = i + (3 - _state.TrailingCount);
+                                var isEdge = i == _state.TrailingCount - 1;
+                                <SwipeAction Background="@PlaygroundState.TrailingColors[index]"
+                                             Foreground="white"
+                                             AllowSwipeToTrigger="isEdge && _state.AllowSwipeToTrigger"
+                                             ChangeLabelVisibilityOnly="_state.ChangeLabelVisibilityOnly"
+                                             OnInvoked="() => LogTrailing(index)">
+                                    @PlaygroundState.TrailingNames[index]
+                                </SwipeAction>
+                            }
+                        </TrailingActions>
+                    </SwipeView>
+                </div>
+
+                <div class="flex flex-wrap gap-1.5 mt-4">
+                    <button type="button" class="btn-ghost" @onclick="() => _swipe!.OpenAsync(SwipeSide.Leading)">Open leading</button>
+                    <button type="button" class="btn-ghost" @onclick="() => _swipe!.OpenAsync(SwipeSide.Trailing)">Open trailing</button>
+                    <button type="button" class="btn-ghost" @onclick="() => _swipe!.CloseAsync()">Close</button>
+                    <button type="button" class="btn-danger" @onclick="() => _swipe!.TriggerAsync(SwipeSide.Trailing)">Trigger</button>
+                </div>
+            </ChildContent>
+        </Panel>
+
+        <Panel Title="Event log" Subtitle="Settled transitions only, never per frame">
+            <Trailing>
+                <button type="button" class="text-footnote text-sys-blue" @onclick="_log.Clear">Clear</button>
+            </Trailing>
+            <ChildContent>
+                <ul class="bg-grouped-tertiary rounded-ios-lg border border-separator/60 p-3 font-mono text-caption1 space-y-1 h-40 overflow-y-auto">
+                    @if (_log.Count == 0)
+                    {
+                        <li class="text-label-tertiary">Drag the row to stream events…</li>
+                    }
+                    @foreach (var entry in _log)
+                    {
+                        <li class="text-label-secondary">@entry</li>
+                    }
+                </ul>
+            </ChildContent>
+        </Panel>
+    </div>
+
+    <div class="space-y-5">
+        <Panel Title="Layout">
+            <div class="space-y-4">
+                <Segmented T="SwipeActionStyle"
+                           Label="Reveal style"
+                           Options="_styleOptions"
+                           Value="_state.Style"
+                           ValueChanged="v => Set(() => _state.Style = v)" />
+
+                <div class="grid grid-cols-2 gap-4">
+                    <SliderField Label="Leading actions" Unit="" Min="0" Max="2" Value="_state.LeadingCount"
+                                 ValueChanged="v => Set(() => _state.LeadingCount = (int)v)" />
+                    <SliderField Label="Trailing actions" Unit="" Min="1" Max="3" Value="_state.TrailingCount"
+                                 ValueChanged="v => Set(() => _state.TrailingCount = (int)v)" />
+                </div>
+
+                <div class="grid grid-cols-3 gap-4">
+                    <SliderField Label="Width" Min="48" Max="160" Step="2" Value="_state.ActionWidth"
+                                 ValueChanged="v => Set(() => _state.ActionWidth = v)" />
+                    <SliderField Label="Spacing" Min="0" Max="24" Value="_state.Spacing"
+                                 ValueChanged="v => Set(() => _state.Spacing = v)" />
+                    <SliderField Label="Radius" Min="0" Max="40" Step="2" Value="_state.ActionCornerRadius"
+                                 ValueChanged="v => Set(() => _state.ActionCornerRadius = v)" />
+                </div>
+
+                <SliderField Label="Mask radius" Min="0" Max="40" Step="2" Value="_state.MaskCornerRadius"
+                             ValueChanged="v => Set(() => _state.MaskCornerRadius = v)" />
+            </div>
+        </Panel>
+
+        <Panel Title="Reveal" Subtitle="Setting both fade points equal disables the fade entirely">
+            <div class="grid grid-cols-2 gap-4">
+                <SliderField Label="Fade start" Min="0" Max="120" Step="5" Value="_state.FadeStart"
+                             ValueChanged="v => Set(() => _state.FadeStart = v)" />
+                <SliderField Label="Fade end" Min="0" Max="160" Step="5" Value="_state.FadeEnd"
+                             ValueChanged="v => Set(() => _state.FadeEnd = v)" />
+            </div>
+        </Panel>
+
+        <Panel Title="Thresholds">
+            <div class="space-y-4">
+                <SliderField Label="Ready to expand" Min="0" Max="160" Step="5" Value="_state.ReadyToExpandPadding"
+                             ValueChanged="v => Set(() => _state.ReadyToExpandPadding = v)" />
+                <SliderField Label="Ready to trigger" Min="0" Max="120" Step="5" Value="_state.ReadyToTriggerPadding"
+                             ValueChanged="v => Set(() => _state.ReadyToTriggerPadding = v)" />
+                <SliderField Label="Minimum point to trigger" Min="0" Max="400" Step="10" Value="_state.MinimumPointToTrigger"
+                             ValueChanged="v => Set(() => _state.MinimumPointToTrigger = v)" />
+                <SliderField Label="Rubber banding" Unit="" Min="0.3" Max="1" Step="0.05" Value="_state.RubberBanding"
+                             ValueChanged="v => Set(() => _state.RubberBanding = v)" />
+            </div>
+        </Panel>
+
+        <Panel Title="Spring" Subtitle="@SpringSubtitle">
+            <div class="space-y-4">
+                <div class="grid grid-cols-3 sm:grid-cols-6 gap-1">
+                    @foreach (var spring in PlaygroundState.Springs)
+                    {
+                        <button type="button"
+                                class="@(_state.SpringId == spring.Id
+                                    ? "py-1.5 text-caption1 font-semibold rounded-ios-sm bg-sys-blue text-white"
+                                    : "py-1.5 text-caption1 rounded-ios-sm bg-fill-tertiary text-label-secondary hover:text-label transition-colors")"
+                                @onclick="() => Set(() => _state.ApplySpring(spring.Id))">
+                            @spring.Label
+                        </button>
+                    }
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <SliderField Label="Stiffness" Unit="" Min="60" Max="600" Step="10" Value="_state.Stiffness"
+                                 ValueChanged="v => Set(() => { _state.Stiffness = v; _state.MarkCustomSpring(); })" />
+                    <SliderField Label="Damping" Unit="" Min="6" Max="80" Value="_state.Damping"
+                                 ValueChanged="v => Set(() => { _state.Damping = v; _state.MarkCustomSpring(); })" />
+                </div>
+            </div>
+        </Panel>
+
+        <Panel Title="Behaviour">
+            <div class="space-y-3">
+                <ToggleField Label="Swipe to trigger" Hint="Edge action commits on a long drag"
+                             Value="_state.AllowSwipeToTrigger" ValueChanged="v => Set(() => _state.AllowSwipeToTrigger = v)" />
+                <ToggleField Label="Single swipe across" Hint="Cross from one side to the other without releasing"
+                             Value="_state.AllowSingleSwipeAcross" ValueChanged="v => Set(() => _state.AllowSingleSwipeAcross = v)" />
+                <ToggleField Label="Fade label only" Hint="Ramp the label instead of the whole action"
+                             Value="_state.ChangeLabelVisibilityOnly" ValueChanged="v => Set(() => _state.ChangeLabelVisibilityOnly = v)" />
+                <ToggleField Label="Trigger haptics" Hint="Vibrate when the edge action arms"
+                             Value="_state.EnableTriggerHaptics" ValueChanged="v => Set(() => _state.EnableTriggerHaptics = v)" />
+            </div>
+        </Panel>
+
+        <Panel Title="Generated Razor" BodyClass="p-4 pt-1">
+            <CodeBlock Code="@_state.ToRazor()" />
+        </Panel>
+    </div>
+</div>
+
+@code {
+    private readonly PlaygroundState _state = new();
+    private readonly List<string> _log = [];
+    private SwipeView? _swipe;
+    private string _liveState = "Closed";
+
+    private static readonly IReadOnlyList<Segmented<SwipeActionStyle>.Option> _styleOptions =
+    [
+        new(SwipeActionStyle.Mask, "Mask"),
+        new(SwipeActionStyle.EqualWidths, "Equal"),
+        new(SwipeActionStyle.Cascade, "Cascade"),
+    ];
+
+    private string PreviewSubtitle => $"{_state.PresetId} · {_state.Style}";
+
+    private string SpringSubtitle => $"stiffness {_state.Stiffness:0} · damping {_state.Damping:0} · {_state.SpringId}";
+
+    protected override void OnInitialized() => _state.ApplyPreset("classic");
+
+    private void LogLeading(int index) => Log($"Leading · {PlaygroundState.LeadingNames[index]}");
+
+    private void LogTrailing(int index) => Log($"Trailing · {PlaygroundState.TrailingNames[index]}");
+
+    private void ApplyPreset(string id)
+    {
+        _state.ApplyPreset(id);
+        StateHasChanged();
+    }
+
+    private void Set(Action mutate)
+    {
+        mutate();
+        _state.MarkCustomPreset();
+        StateHasChanged();
+    }
+
+    private void OnStateChanged(SwipeStateChange change)
+    {
+        _liveState = change.Side is { } side ? $"{change.State} · {side}" : change.State.ToString();
+        Log($"State → {_liveState}");
+    }
+
+    private void Log(string message)
+    {
+        _log.Insert(0, $"{DateTime.Now:HH:mm:ss}  {message}");
+
+        if (_log.Count > 20)
+        {
+            _log.RemoveAt(_log.Count - 1);
+        }
+
+        StateHasChanged();
+    }
+}

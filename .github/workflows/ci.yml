@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build & test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: samples/IOSwipeView.Demo/package-lock.json
+
+      - name: Restore
+        run: dotnet restore IOSwipeView.slnx
+
+      - name: Build
+        run: dotnet build IOSwipeView.slnx --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test IOSwipeView.slnx --configuration Release --no-build --logger "trx;LogFileName=test-results.trx"
+
+      - name: Pack
+        run: dotnet pack src/IOSwipeView/IOSwipeView.csproj --configuration Release --no-build --output artifacts
+
+      - name: Upload packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuget-packages
+          path: artifacts/*
+          if-no-files-found: error
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: '**/test-results.trx'
+          if-no-files-found: ignore

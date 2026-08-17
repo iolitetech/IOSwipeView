@@ -1,0 +1,46 @@
+<div class="flex items-center gap-3 bg-grouped-secondary px-4 py-3 @Class">
+    @if (!string.IsNullOrWhiteSpace(Glyph))
+    {
+        <div class="grid place-items-center w-9 h-9 shrink-0 rounded-full text-white text-callout font-semibold"
+             style="background:@(GlyphColor ?? "var(--sys-gray)")">
+            @Glyph
+        </div>
+    }
+    <div class="min-w-0 flex-1">
+        <div class="flex items-baseline justify-between gap-2">
+            <span class="text-body font-semibold text-label truncate">@Title</span>
+            @if (!string.IsNullOrWhiteSpace(Meta))
+            {
+                <span class="text-footnote text-label-secondary shrink-0">@Meta</span>
+            }
+        </div>
+        @if (!string.IsNullOrWhiteSpace(Subtitle))
+        {
+            <p class="text-subheadline text-label-secondary truncate">@Subtitle</p>
+        }
+        @if (!string.IsNullOrWhiteSpace(Preview))
+        {
+            <p class="text-subheadline text-label-tertiary line-clamp-2">@Preview</p>
+        }
+        @if (ChildContent is not null)
+        {
+            <div>@ChildContent</div>
+        }
+    </div>
+    @if (Unread)
+    {
+        <div class="w-2.5 h-2.5 shrink-0 rounded-full bg-sys-blue"></div>
+    }
+</div>
+
+@code {
+    [Parameter] public string? Glyph { get; set; }
+    [Parameter] public string? GlyphColor { get; set; }
+    [Parameter] public string Title { get; set; } = "";
+    [Parameter] public string? Subtitle { get; set; }
+    [Parameter] public string? Preview { get; set; }
+    [Parameter] public string? Meta { get; set; }
+    [Parameter] public bool Unread { get; set; }
+    [Parameter] public string? Class { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

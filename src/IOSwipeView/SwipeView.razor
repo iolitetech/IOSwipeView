@@ -1,0 +1,47 @@
+<div @ref="_root"
+     class="@RootCssClass"
+     style="@RootCssStyle"
+     tabindex="0"
+     role="region"
+     aria-expanded="@(OpenSide is not null ? "true" : "false")"
+     @onkeydown="HandleKeyDownAsync"
+     @attributes="AdditionalAttributes">
+
+    @if (LeadingActions is not null)
+    {
+        <div class="ioswipe__actions ioswipe__actions--leading">
+            <div class="ioswipe__strip">
+                <CascadingValue Value="_leadingSlot" IsFixed="true">
+                    @LeadingActions(_leadingContext)
+                </CascadingValue>
+            </div>
+        </div>
+    }
+
+    @if (TrailingActions is not null)
+    {
+        <div class="ioswipe__actions ioswipe__actions--trailing">
+            <div class="ioswipe__strip">
+                <CascadingValue Value="_trailingSlot" IsFixed="true">
+                    @TrailingActions(_trailingContext)
+                </CascadingValue>
+            </div>
+        </div>
+    }
+
+    @*
+        The translated element has to be one this component owns: Blazor's CSS isolation only
+        stamps its scope attribute onto elements authored here, never onto a child component's
+        root, so styling <Gesture> directly would silently never match.
+    *@
+    <div class="ioswipe__content">
+        <Gesture @ref="_gesture"
+                 Classes="ioswipe__surface"
+                 Options="_gestureOptions"
+                 OnPanStart="HandlePanStartAsync"
+                 OnPanMove="HandlePanMoveAsync"
+                 OnPanEnd="HandlePanEndAsync">
+            @ChildContent
+        </Gesture>
+    </div>
+</div>

@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <RootNamespace>IOSwipeView</RootNamespace>
+    <AssemblyName>IOSwipeView</AssemblyName>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Package">
+    <IsPackable>true</IsPackable>
+    <PackageId>IOSwipeView</PackageId>
+    <Version>0.1.0-alpha.1</Version>
+    <Title>IOSwipeView</Title>
+    <Description>Customizable swipe actions for any Blazor component. Leading and trailing actions, drag-to-trigger, rubber banding, spring animations, and accordion groups — built on IOGesture.</Description>
+    <PackageTags>Blazor;SwipeActions;Swipe;Gesture;IOGesture;WASM;WebAssembly;BlazorServer;Components</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+    <PackageIcon>Iolite.png</PackageIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <SupportedPlatform Include="browser" />
+    <InternalsVisibleTo Include="IOSwipeView.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="IOGesture" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
+    <None Include="..\..\LICENSE.txt" Pack="true" PackagePath="\" />
+    <None Include="Iolite.png" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+</Project>

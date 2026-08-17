@@ -1,0 +1,614 @@
+@page "/swipelist"
+
+<PageTitle>SwipeList&lt;TItem&gt; Showcase — IOSwipeView</PageTitle>
+
+<PageHeader Eyebrow="Interactive Showcase"
+            Title="SwipeList&lt;TItem&gt; Studio"
+            Subtitle="Explore high-level list layouts, 9 deletion animation styles, iOS Edit Mode multi-selection, spring physics, and real-world UI scenarios." />
+
+<!-- Scenario Tabs -->
+<div class="flex flex-wrap items-center gap-2 mb-6">
+    <button type="button"
+            class="@(_activeScenario == "mail" ? "btn-primary text-footnote py-1.5 px-3" : "btn-ghost text-footnote py-1.5 px-3")"
+            @onclick='() => SwitchScenario("mail")'>
+        ✉️ VIP Mail
+    </button>
+    <button type="button"
+            class="@(_activeScenario == "messages" ? "btn-primary text-footnote py-1.5 px-3" : "btn-ghost text-footnote py-1.5 px-3")"
+            @onclick='() => SwitchScenario("messages")'>
+        💬 Messages &amp; Chats
+    </button>
+    <button type="button"
+            class="@(_activeScenario == "reminders" ? "btn-primary text-footnote py-1.5 px-3" : "btn-ghost text-footnote py-1.5 px-3")"
+            @onclick='() => SwitchScenario("reminders")'>
+        📋 Tasks &amp; Reminders
+    </button>
+    <button type="button"
+            class="@(_activeScenario == "notifications" ? "btn-primary text-footnote py-1.5 px-3" : "btn-ghost text-footnote py-1.5 px-3")"
+            @onclick='() => SwitchScenario("notifications")'>
+        🔔 Floating Notifications
+    </button>
+</div>
+
+<div class="grid lg:grid-cols-[minmax(0,1fr)_360px] gap-6 items-start">
+    <PhoneFrame Title="@ScenarioTitle" BackLabel="Back">
+        <Trailing>
+            <button type="button" class="text-callout font-medium text-sys-blue" @onclick="ToggleEdit">
+                @(_isEditing ? "Done" : "Edit")
+            </button>
+        </Trailing>
+        <ChildContent>
+            @if (_activeScenario == "mail")
+            {
+                <SwipeList @ref="_mailListRef"
+                           TItem="DemoItem"
+                           Items="@_items"
+                           ListOptions="_currentListOptions"
+                           IsEditing="@_isEditing"
+                           SelectedItems="@_selected"
+                           SelectedItemsChanged="OnSelectionChanged"
+                           OnItemDeleted="OnItemDeleted"
+                           OnItemsDeleted="OnBatchDeleted"
+                           OnItemClick="OnItemClicked">
+                    <HeaderContent>
+                        <div class="flex items-center justify-between text-caption1 font-semibold uppercase tracking-wider text-label-secondary px-1 py-1">
+                            <span>VIP Senders</span>
+                            <span>@_items.Count messages</span>
+                        </div>
+                    </HeaderContent>
+
+                    <LeadingActions Context="ctx">
+                        <SwipeAction Background="#34c759" Foreground="white" Placement="ActionPlacement.Top"
+                                     OnInvoked='() => LogAction(ctx.Item, "📞", "Called")'>
+                            <Icon>
+                                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                                </svg>
+                            </Icon>
+                            <ChildContent>Call</ChildContent>
+                        </SwipeAction>
+                    </LeadingActions>
+
+                    <ItemTemplate Context="item">
+                        <ListRow Glyph="@item.Glyph"
+                                 GlyphColor="@item.Color"
+                                 Title="@item.Title"
+                                 Subtitle="@item.Subtitle"
+                                 Meta="@item.Meta"
+                                 Unread="@item.Unread" />
+                    </ItemTemplate>
+
+                    <TrailingActions Context="ctx">
+                        <SwipeAction Background="#ff9500" Foreground="white" Placement="ActionPlacement.Top"
+                                     OnInvoked="() => ToggleStar(ctx.Item)">
+                            <Icon>
+                                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z" clip-rule="evenodd"/>
+                                </svg>
+                            </Icon>
+                            <ChildContent>Star</ChildContent>
+                        </SwipeAction>
+                        <SwipeAction Background="#ff3b30" Foreground="white" Placement="ActionPlacement.Top" TriggerStage="1"
+                                     OnInvoked="() => ctx.DeleteAsync()">
+                            <Icon>
+                                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                                </svg>
+                            </Icon>
+                            <ChildContent>Delete</ChildContent>
+                        </SwipeAction>
+                    </TrailingActions>
+
+                    <EmptyContent>
+                        <div class="px-4 py-16 text-center">
+                            <div class="inline-grid place-items-center w-12 h-12 rounded-full bg-fill-tertiary text-2xl mb-3">📭</div>
+                            <p class="text-headline text-label font-medium">All caught up</p>
+                            <p class="text-footnote text-label-secondary mt-1">No remaining VIP messages</p>
+                            <button type="button" class="btn-primary mt-4 text-footnote" @onclick="ResetScenario">Restore items</button>
+                        </div>
+                    </EmptyContent>
+                </SwipeList>
+            }
+            else if (_activeScenario == "messages")
+            {
+                <SwipeList @ref="_mailListRef"
+                           TItem="DemoItem"
+                           Items="@_items"
+                           ListOptions="_currentListOptions"
+                           IsEditing="@_isEditing"
+                           SelectedItems="@_selected"
+                           SelectedItemsChanged="OnSelectionChanged"
+                           OnItemDeleted="OnItemDeleted"
+                           OnItemsDeleted="OnBatchDeleted"
+                           OnItemClick="OnItemClicked">
+                    <LeadingActions Context="ctx">
+                        <SwipeAction Background="#007aff" Foreground="white" Placement="ActionPlacement.InlineStart"
+                                     OnInvoked='() => LogAction(ctx.Item, "📌", "Pinned")'>
+                            <Icon>📌</Icon>
+                            <ChildContent>Pin</ChildContent>
+                        </SwipeAction>
+                    </LeadingActions>
+
+                    <ItemTemplate Context="item">
+                        <div class="flex items-center gap-3 p-3 bg-grouped-secondary">
+                            <div class="w-11 h-11 rounded-full flex items-center justify-center font-semibold text-white text-callout shadow-sm"
+                                 style="background: @item.Color">
+                                @item.Glyph
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center justify-between">
+                                    <h4 class="font-semibold text-subheadline text-label truncate">@item.Title</h4>
+                                    <span class="text-caption2 text-label-tertiary">@item.Meta</span>
+                                </div>
+                                <p class="text-footnote text-label-secondary truncate mt-0.5">@item.Subtitle</p>
+                            </div>
+                        </div>
+                    </ItemTemplate>
+
+                    <TrailingActions Context="ctx">
+                        <SwipeAction Background="#8e8e93" Foreground="white" Placement="ActionPlacement.Top"
+                                     OnInvoked='() => LogAction(ctx.Item, "🔕", "Muted")'>
+                            <Icon>🔕</Icon>
+                            <ChildContent>Mute</ChildContent>
+                        </SwipeAction>
+                        <SwipeAction Background="#ff3b30" Foreground="white" Placement="ActionPlacement.Top" TriggerStage="1"
+                                     OnInvoked="() => ctx.DeleteAsync()">
+                            <Icon>🗑️</Icon>
+                            <ChildContent>Delete</ChildContent>
+                        </SwipeAction>
+                    </TrailingActions>
+
+                    <EmptyContent>
+                        <div class="px-4 py-16 text-center">
+                            <div class="text-3xl mb-2">💬</div>
+                            <p class="text-headline text-label font-medium">No active chats</p>
+                            <button type="button" class="btn-primary mt-4 text-footnote" @onclick="ResetScenario">Restore chats</button>
+                        </div>
+                    </EmptyContent>
+                </SwipeList>
+            }
+            else if (_activeScenario == "reminders")
+            {
+                <SwipeList @ref="_mailListRef"
+                           TItem="DemoItem"
+                           Items="@_items"
+                           ListOptions="_currentListOptions"
+                           IsEditing="@_isEditing"
+                           SelectedItems="@_selected"
+                           SelectedItemsChanged="OnSelectionChanged"
+                           OnItemDeleted="OnItemDeleted"
+                           OnItemsDeleted="OnBatchDeleted"
+                           OnItemClick="OnItemClicked">
+                    <LeadingActions Context="ctx">
+                        <SwipeAction Background="#34c759" Foreground="white" Placement="ActionPlacement.Top"
+                                     OnInvoked='() => LogAction(ctx.Item, "✅", "Completed")'>
+                            <Icon>✅</Icon>
+                            <ChildContent>Done</ChildContent>
+                        </SwipeAction>
+                    </LeadingActions>
+
+                    <ItemTemplate Context="item">
+                        <div class="flex items-center gap-3 p-3 bg-grouped-secondary">
+                            <span class="w-5 h-5 rounded-full border-2 border-sys-blue flex-shrink-0"></span>
+                            <div class="flex-1 min-w-0">
+                                <h4 class="text-subheadline text-label font-medium truncate">@item.Title</h4>
+                                <span class="text-caption2 text-sys-blue">@item.Meta</span>
+                            </div>
+                        </div>
+                    </ItemTemplate>
+
+                    <TrailingActions Context="ctx">
+                        <SwipeAction Background="#ff9500" Foreground="white" Placement="ActionPlacement.Top"
+                                     OnInvoked='() => LogAction(ctx.Item, "🚩", "Flagged")'>
+                            <Icon>🚩</Icon>
+                            <ChildContent>Flag</ChildContent>
+                        </SwipeAction>
+                        <SwipeAction Background="#ff3b30" Foreground="white" Placement="ActionPlacement.Top" TriggerStage="1"
+                                     OnInvoked="() => ctx.DeleteAsync()">
+                            <Icon>🗑️</Icon>
+                            <ChildContent>Delete</ChildContent>
+                        </SwipeAction>
+                    </TrailingActions>
+
+                    <EmptyContent>
+                        <div class="px-4 py-16 text-center">
+                            <div class="text-3xl mb-2">🎉</div>
+                            <p class="text-headline text-label font-medium">All tasks complete</p>
+                            <button type="button" class="btn-primary mt-4 text-footnote" @onclick="ResetScenario">Reset tasks</button>
+                        </div>
+                    </EmptyContent>
+                </SwipeList>
+            }
+            else
+            {
+                <div class="p-3 space-y-3">
+                    <SwipeList @ref="_mailListRef"
+                               TItem="DemoItem"
+                               Items="@_items"
+                               ListOptions="_currentListOptions"
+                               IsEditing="@_isEditing"
+                               SelectedItems="@_selected"
+                               SelectedItemsChanged="OnSelectionChanged"
+                               OnItemDeleted="OnItemDeleted"
+                               OnItemsDeleted="OnBatchDeleted"
+                               OnItemClick="OnItemClicked">
+                        <ItemTemplate Context="item">
+                            <div class="p-3.5 bg-grouped-secondary rounded-2xl border border-separator/40 shadow-xs flex items-center justify-between">
+                                <div>
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="text-sm">@item.Glyph</span>
+                                        <span class="text-subheadline font-semibold text-label">@item.Title</span>
+                                    </div>
+                                    <p class="text-footnote text-label-secondary mt-0.5">@item.Subtitle</p>
+                                </div>
+                                <span class="text-caption2 text-label-tertiary">@item.Meta</span>
+                            </div>
+                        </ItemTemplate>
+
+                        <TrailingActions Context="ctx">
+                            <SwipeAction Background="#ff3b30" Foreground="white" Placement="ActionPlacement.Top" TriggerStage="1"
+                                         OnInvoked="() => ctx.DeleteAsync()">
+                                <Icon>✕</Icon>
+                                <ChildContent>Dismiss</ChildContent>
+                            </SwipeAction>
+                        </TrailingActions>
+
+                        <EmptyContent>
+                            <div class="px-4 py-16 text-center">
+                                <div class="text-3xl mb-2">🔔</div>
+                                <p class="text-headline text-label font-medium">No new notifications</p>
+                                <button type="button" class="btn-primary mt-4 text-footnote" @onclick="ResetScenario">Restore notifications</button>
+                            </div>
+                        </EmptyContent>
+                    </SwipeList>
+                </div>
+            }
+
+            @if (_isEditing && _items.Count > 0)
+            {
+                <div class="p-3 bg-grouped-secondary border-t border-separator/60 flex items-center justify-between text-footnote select-none">
+                    <button type="button" class="text-sys-blue font-medium hover:underline" @onclick="ToggleSelectAll">
+                        @(_selected.Count == _items.Count ? "Deselect All" : "Select All")
+                    </button>
+                    <button type="button" class="text-sys-red font-medium disabled:opacity-40" disabled="@(_selected.Count == 0)" @onclick="DeleteSelected">
+                        Delete (@_selected.Count)
+                    </button>
+                </div>
+            }
+        </ChildContent>
+    </PhoneFrame>
+
+    <!-- Studio Tuning Controls -->
+    <div class="space-y-5">
+        <Panel Title="List Style Preset">
+            <div class="grid grid-cols-2 gap-1.5">
+                <button type="button" class="@(_preset == "classic" ? "btn-primary text-footnote py-1.5" : "btn-ghost text-footnote py-1.5")"
+                        @onclick='() => SetPreset("classic", SwipeListOptions.ClassicList)'>
+                    Classic List
+                </button>
+                <button type="button" class="@(_preset == "inset" ? "btn-primary text-footnote py-1.5" : "btn-ghost text-footnote py-1.5")"
+                        @onclick='() => SetPreset("inset", SwipeListOptions.InsetGrouped)'>
+                    Inset Grouped
+                </button>
+                <button type="button" class="@(_preset == "notification" ? "btn-primary text-footnote py-1.5" : "btn-ghost text-footnote py-1.5")"
+                        @onclick='() => SetPreset("notification", SwipeListOptions.Notification)'>
+                    Notification
+                </button>
+                <button type="button" class="@(_preset == "capsule" ? "btn-primary text-footnote py-1.5" : "btn-ghost text-footnote py-1.5")"
+                        @onclick='() => SetPreset("capsule", SwipeListOptions.Capsule)'>
+                    Capsule
+                </button>
+            </div>
+        </Panel>
+
+        <Panel Title="Delete Animation Styles (9)">
+            <div class="space-y-3">
+                <div class="grid grid-cols-3 gap-1">
+                    <button type="button" class="@(_animStyle == ListDeleteStyle.AppleSpring ? "btn-primary text-caption1 py-1" : "btn-ghost text-caption1 py-1")"
+                            @onclick="() => SetAnimStyle(ListDeleteStyle.AppleSpring)">
+                        Apple Spring
+                    </button>
+                    <button type="button" class="@(_animStyle == ListDeleteStyle.SlideLeft ? "btn-primary text-caption1 py-1" : "btn-ghost text-caption1 py-1")"
+                            @onclick="() => SetAnimStyle(ListDeleteStyle.SlideLeft)">
+                        Slide Left
+                    </button>
+                    <button type="button" class="@(_animStyle == ListDeleteStyle.SlideRight ? "btn-primary text-caption1 py-1" : "btn-ghost text-caption1 py-1")"
+                            @onclick="() => SetAnimStyle(ListDeleteStyle.SlideRight)">
+                        Slide Right
+                    </button>
+                    <button type="button" class="@(_animStyle == ListDeleteStyle.ShrinkSlideLeft ? "btn-primary text-caption1 py-1" : "btn-ghost text-caption1 py-1")"
+                            @onclick="() => SetAnimStyle(ListDeleteStyle.ShrinkSlideLeft)">
+                        Shrink Slide
+                    </button>
+                    <button type="button" class="@(_animStyle == ListDeleteStyle.ScaleDown ? "btn-primary text-caption1 py-1" : "btn-ghost text-caption1 py-1")"
+                            @onclick="() => SetAnimStyle(ListDeleteStyle.ScaleDown)">
+                        Scale Down
+                    </button>
+                    <button type="button" class="@(_animStyle == ListDeleteStyle.PopOut ? "btn-primary text-caption1 py-1" : "btn-ghost text-caption1 py-1")"
+                            @onclick="() => SetAnimStyle(ListDeleteStyle.PopOut)">
+                        Pop Out
+                    </button>
+                    <button type="button" class="@(_animStyle == ListDeleteStyle.CardFold ? "btn-primary text-caption1 py-1" : "btn-ghost text-caption1 py-1")"
+                            @onclick="() => SetAnimStyle(ListDeleteStyle.CardFold)">
+                        Card Fold
+                    </button>
+                    <button type="button" class="@(_animStyle == ListDeleteStyle.Fade ? "btn-primary text-caption1 py-1" : "btn-ghost text-caption1 py-1")"
+                            @onclick="() => SetAnimStyle(ListDeleteStyle.Fade)">
+                        Fade
+                    </button>
+                    <button type="button" class="@(_animStyle == ListDeleteStyle.None ? "btn-primary text-caption1 py-1" : "btn-ghost text-caption1 py-1")"
+                            @onclick="() => SetAnimStyle(ListDeleteStyle.None)">
+                        Instant
+                    </button>
+                </div>
+
+                <SliderField Label="Collapse Duration (ms)" Min="0" Max="600" Step="20" Value="_animDuration"
+                             ValueChanged="OnDurationChanged" />
+
+                <div class="pt-2 border-t border-separator/40 space-y-2">
+                    <ToggleField Label="Show Dividers" Hint="Hairline separators between rows"
+                                 Value="_currentListOptions.ShowDividers" ValueChanged="OnDividersChanged" />
+                    <SliderField Label="Divider Inset" Min="0" Max="64" Step="4" Value="_currentListOptions.DividerInset"
+                                 ValueChanged="OnDividerInsetChanged" />
+                    <ToggleField Label="Animate Insertions" Hint="Smooth glide when adding items"
+                                 Value="_currentListOptions.AnimateInsert" ValueChanged="OnAnimateInsertChanged" />
+                </div>
+
+                <div class="flex gap-2 pt-2">
+                    <button type="button" class="btn-ghost text-footnote flex-1" @onclick="AddItem">
+                        + Add Item
+                    </button>
+                    <button type="button" class="btn-ghost text-footnote" @onclick="ResetScenario">
+                        Reset
+                    </button>
+                </div>
+            </div>
+        </Panel>
+
+        <Panel Title="Activity Log" Subtitle="Live gesture & lifecycle telemetry">
+            <Trailing>
+                <button type="button" class="text-footnote text-sys-blue" @onclick="_log.Clear">Clear</button>
+            </Trailing>
+            <ChildContent>
+                <ul class="font-mono text-caption1 space-y-1 h-32 overflow-y-auto">
+                    @if (_log.Count == 0)
+                    {
+                        <li class="text-label-tertiary">Swipe or select an item…</li>
+                    }
+                    @foreach (var entry in _log)
+                    {
+                        <li class="text-label-secondary">@entry</li>
+                    }
+                </ul>
+            </ChildContent>
+        </Panel>
+
+        <Panel Title="Generated C# Razor Code" BodyClass="p-4 pt-1">
+            <CodeBlock Code="@GeneratedCode" MaxHeightClass="max-h-56" />
+        </Panel>
+    </div>
+</div>
+
+@code {
+    private sealed class DemoItem
+    {
+        public required int Id { get; init; }
+        public required string Title { get; init; }
+        public required string Subtitle { get; init; }
+        public required string Glyph { get; init; }
+        public required string Color { get; init; }
+        public required string Meta { get; init; }
+        public bool Unread { get; set; }
+    }
+
+    private string _activeScenario = "mail";
+    private SwipeList<DemoItem>? _mailListRef;
+    private List<DemoItem> _items = [];
+    private ISet<DemoItem> _selected = new HashSet<DemoItem>();
+    private bool _isEditing;
+    private string _preset = "classic";
+    private ListDeleteStyle _animStyle = ListDeleteStyle.AppleSpring;
+    private double _animDuration = 320;
+    private SwipeListOptions _currentListOptions = SwipeListOptions.ClassicList with { DividerInset = 54 };
+    private readonly List<string> _log = [];
+    private int _nextId = 100;
+
+    private string ScenarioTitle => _activeScenario switch
+    {
+        "messages" => "Messages",
+        "reminders" => "Reminders",
+        "notifications" => "Notifications",
+        _ => "VIP Mail"
+    };
+
+    protected override void OnInitialized() => SwitchScenario("mail");
+
+    private void SwitchScenario(string scenario)
+    {
+        _activeScenario = scenario;
+        _isEditing = false;
+        _selected.Clear();
+
+        if (scenario == "messages")
+        {
+            _currentListOptions = SwipeListOptions.ClassicList with { DividerInset = 64 };
+            _preset = "classic";
+            _items =
+            [
+                new() { Id = 1, Title = "Sarah Connor", Subtitle = "The future is not set. There is no fate...", Glyph = "SC", Color = "var(--sys-indigo)", Meta = "10:42 AM", Unread = true },
+                new() { Id = 2, Title = "Design Team", Subtitle = "Shared new Figma prototype for iOS 20", Glyph = "🎨", Color = "var(--sys-purple)", Meta = "09:15 AM", Unread = true },
+                new() { Id = 3, Title = "John Doe", Subtitle = "Let's catch up over coffee tomorrow", Glyph = "JD", Color = "var(--sys-teal)", Meta = "Yesterday", Unread = false },
+            ];
+        }
+        else if (scenario == "reminders")
+        {
+            _currentListOptions = SwipeListOptions.InsetGrouped with { DividerInset = 36 };
+            _preset = "inset";
+            _items =
+            [
+                new() { Id = 1, Title = "Submit app to App Store review", Subtitle = "", Glyph = "📋", Color = "var(--sys-blue)", Meta = "Today, 5:00 PM" },
+                new() { Id = 2, Title = "Verify unit test coverage & benchmarks", Subtitle = "", Glyph = "📋", Color = "var(--sys-blue)", Meta = "Tomorrow" },
+                new() { Id = 3, Title = "Renew Apple Developer Program", Subtitle = "", Glyph = "📋", Color = "var(--sys-blue)", Meta = "Aug 25" },
+            ];
+        }
+        else if (scenario == "notifications")
+        {
+            _currentListOptions = SwipeListOptions.Capsule with { DeleteAnimation = SwipeListAnimation.PopOut };
+            _preset = "capsule";
+            _animStyle = ListDeleteStyle.PopOut;
+            _items =
+            [
+                new() { Id = 1, Title = "Wallet", Subtitle = "Apple Card daily cashback +$4.50", Glyph = "💳", Color = "var(--sys-green)", Meta = "2m ago" },
+                new() { Id = 2, Title = "Fitness", Subtitle = "Move goal closed! 640 / 600 CAL", Glyph = "🔥", Color = "var(--sys-pink)", Meta = "15m ago" },
+                new() { Id = 3, Title = "Home", Subtitle = "Front door camera detected motion", Glyph = "🏠", Color = "var(--sys-orange)", Meta = "1h ago" },
+            ];
+        }
+        else
+        {
+            _currentListOptions = SwipeListOptions.ClassicList with { DividerInset = 54 };
+            _preset = "classic";
+            _items =
+            [
+                new() { Id = 1, Title = "Ada Lovelace", Subtitle = "Notes on the Analytical Engine algorithms", Glyph = "AL", Color = "var(--sys-pink)", Meta = "09:41", Unread = true },
+                new() { Id = 2, Title = "Grace Hopper", Subtitle = "Compiler verification and bug report", Glyph = "GH", Color = "var(--sys-teal)", Meta = "08:12", Unread = true },
+                new() { Id = 3, Title = "Alan Turing", Subtitle = "Turing test simulation paper draft", Glyph = "AT", Color = "var(--sys-orange)", Meta = "Yesterday", Unread = false },
+                new() { Id = 4, Title = "Katherine Johnson", Subtitle = "Orbital flight trajectory coordinates", Glyph = "KJ", Color = "var(--sys-purple)", Meta = "Tuesday", Unread = false },
+                new() { Id = 5, Title = "Claude Shannon", Subtitle = "Mathematical theory of communication", Glyph = "CS", Color = "var(--sys-blue)", Meta = "Monday", Unread = false },
+            ];
+        }
+
+        _log.Insert(0, $"{DateTime.Now:HH:mm:ss} — Switched to '{scenario}' scenario");
+    }
+
+    private void ResetScenario() => SwitchScenario(_activeScenario);
+
+    private void SetPreset(string name, SwipeListOptions options)
+    {
+        _preset = name;
+        _animStyle = options.DeleteAnimation.Style;
+        _animDuration = options.DeleteAnimation.DurationMs;
+        _currentListOptions = options;
+        _log.Insert(0, $"{DateTime.Now:HH:mm:ss} — Applied '{name}' preset");
+    }
+
+    private void SetAnimStyle(ListDeleteStyle style)
+    {
+        _animStyle = style;
+        _currentListOptions = _currentListOptions with
+        {
+            DeleteAnimation = _currentListOptions.DeleteAnimation with
+            {
+                Style = style,
+                DurationMs = (int)_animDuration
+            }
+        };
+        _log.Insert(0, $"{DateTime.Now:HH:mm:ss} — Delete style: '{style}'");
+    }
+
+    private void OnDurationChanged(double duration)
+    {
+        _animDuration = duration;
+        _currentListOptions = _currentListOptions with
+        {
+            DeleteAnimation = _currentListOptions.DeleteAnimation with { DurationMs = (int)duration }
+        };
+    }
+
+    private void OnDividersChanged(bool show) => _currentListOptions = _currentListOptions with { ShowDividers = show };
+    private void OnDividerInsetChanged(double inset) => _currentListOptions = _currentListOptions with { DividerInset = inset };
+    private void OnAnimateInsertChanged(bool animate) => _currentListOptions = _currentListOptions with { AnimateInsert = animate };
+
+    private void ToggleEdit()
+    {
+        _isEditing = !_isEditing;
+        if (!_isEditing) _selected.Clear();
+        _log.Insert(0, $"{DateTime.Now:HH:mm:ss} — Edit Mode: {(_isEditing ? "ON" : "OFF")}");
+    }
+
+    private void ToggleSelectAll()
+    {
+        if (_selected.Count == _items.Count) _selected.Clear();
+        else _selected = new HashSet<DemoItem>(_items);
+    }
+
+    private void OnSelectionChanged(ISet<DemoItem> newSelection) => _selected = newSelection;
+
+    private async Task DeleteSelected()
+    {
+        var count = _selected.Count;
+        var targets = _selected.ToList();
+        _isEditing = false;
+        _selected.Clear();
+
+        if (_mailListRef is not null)
+        {
+            await _mailListRef.RemoveItemsAnimatedAsync(targets);
+        }
+        else
+        {
+            _items.RemoveAll(c => targets.Contains(c));
+        }
+
+        _log.Insert(0, $"{DateTime.Now:HH:mm:ss} — Batch deleted {count} items");
+    }
+
+    private void OnItemClicked(DemoItem item) => _log.Insert(0, $"{DateTime.Now:HH:mm:ss} — Tapped '{item.Title}'");
+
+    private void LogAction(DemoItem item, string icon, string action) =>
+        _log.Insert(0, $"{DateTime.Now:HH:mm:ss} — {icon} {action}: {item.Title}");
+
+    private void ToggleStar(DemoItem item) =>
+        _log.Insert(0, $"{DateTime.Now:HH:mm:ss} — ⭐ Starred: {item.Title}");
+
+    private void OnItemDeleted(DemoItem item)
+    {
+        _items.Remove(item);
+        _log.Insert(0, $"{DateTime.Now:HH:mm:ss} — Deleted: {item.Title}");
+    }
+
+    private void OnBatchDeleted(IReadOnlyList<DemoItem> batch)
+    {
+        _items.RemoveAll(i => batch.Contains(i));
+        _log.Insert(0, $"{DateTime.Now:HH:mm:ss} — Batch deleted {batch.Count} items in single state update");
+    }
+
+    private void AddItem()
+    {
+        var newItem = new DemoItem
+        {
+            Id = ++_nextId,
+            Title = $"Item #{_nextId}",
+            Subtitle = "Newly inserted row with fluid animation",
+            Glyph = "✨",
+            Color = "var(--sys-blue)",
+            Meta = DateTime.Now.ToString("HH:mm"),
+            Unread = true,
+        };
+        _items.Insert(0, newItem);
+        _log.Insert(0, $"{DateTime.Now:HH:mm:ss} — Added {newItem.Title}");
+    }
+
+    private string GeneratedCode => $$"""
+        var listOptions = SwipeListOptions.{{_preset switch {
+            "inset" => "InsetGrouped",
+            "notification" => "Notification",
+            "capsule" => "Capsule",
+            _ => "ClassicList"
+        }}} with
+        {
+            DividerInset = {{_currentListOptions.DividerInset}},
+            ShowDividers = {{_currentListOptions.ShowDividers.ToString().ToLower()}},
+            DeleteAnimation = SwipeListAnimation.{{_animStyle}} with { DurationMs = {{(int)_animDuration}} },
+            AnimateInsert = {{_currentListOptions.AnimateInsert.ToString().ToLower()}}
+        };
+
+        <SwipeList Items="@Items"
+                   ListOptions="listOptions"
+                   IsEditing="@isEditing"
+                   SelectedItems="@selected"
+                   OnItemDeleted="item => Items.Remove(item)"
+                   OnItemsDeleted="batch => Items.RemoveAll(i => batch.Contains(i))">
+            ...
+        </SwipeList>
+        """;
+}

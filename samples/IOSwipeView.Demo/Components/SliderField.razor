@@ -1,0 +1,33 @@
+<div class="@Class">
+    <div class="flex items-baseline justify-between gap-2 mb-1.5">
+        <label class="text-footnote text-label-secondary" for="@_id">@Label</label>
+        <span class="text-footnote font-mono text-label tabular-nums">@Display</span>
+    </div>
+    <input id="@_id"
+           type="range"
+           class="w-full accent-sys-blue cursor-pointer"
+           min="@Min" max="@Max" step="@Step"
+           value="@Value"
+           @oninput="OnInput" />
+</div>
+
+@code {
+    private readonly string _id = $"sld-{Guid.NewGuid():N}";
+
+    [Parameter] public string Label { get; set; } = "";
+    [Parameter] public double Value { get; set; }
+    [Parameter] public EventCallback<double> ValueChanged { get; set; }
+    [Parameter] public double Min { get; set; }
+    [Parameter] public double Max { get; set; } = 100;
+    [Parameter] public double Step { get; set; } = 1;
+    [Parameter] public string Unit { get; set; } = "px";
+    [Parameter] public string? Class { get; set; }
+
+    private string Display => $"{Value:0.##}{Unit}";
+
+    private Task OnInput(ChangeEventArgs e) =>
+        double.TryParse(e.Value?.ToString(), System.Globalization.NumberStyles.Any,
+            System.Globalization.CultureInfo.InvariantCulture, out var v)
+            ? ValueChanged.InvokeAsync(v)
+            : Task.CompletedTask;
+}

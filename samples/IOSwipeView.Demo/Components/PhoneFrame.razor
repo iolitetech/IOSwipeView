@@ -1,0 +1,42 @@
+<div class="mx-auto w-full max-w-[390px] @Class">
+    <div class="relative rounded-ios-device bg-black p-[10px] shadow-2xl ring-1 ring-white/10">
+        <div class="relative overflow-hidden rounded-[44px] bg-grouped" style="min-height:@(MinHeight)px">
+            <div class="absolute top-0 inset-x-0 z-30 flex justify-center pointer-events-none">
+                <div class="mt-2 h-[26px] w-[100px] rounded-full bg-black"></div>
+            </div>
+
+            <div class="material sticky top-0 z-20 px-4 pt-11 pb-2 border-b border-separator/60">
+                <div class="flex items-center justify-between mb-0.5">
+                    @if (!string.IsNullOrWhiteSpace(BackLabel))
+                    {
+                        <div class="text-callout text-sys-blue">&lsaquo; @BackLabel</div>
+                    }
+                    else
+                    {
+                        <div></div>
+                    }
+                    @if (Trailing is not null)
+                    {
+                        <div>@Trailing</div>
+                    }
+                </div>
+                <h2 class="text-largetitle text-label">@Title</h2>
+            </div>
+
+            <div class="relative z-10">@ChildContent</div>
+
+            <div class="flex justify-center py-2">
+                <div class="h-[5px] w-[134px] rounded-full bg-label-tertiary"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public string Title { get; set; } = "";
+    [Parameter] public string? BackLabel { get; set; }
+    [Parameter] public int MinHeight { get; set; } = 620;
+    [Parameter] public string? Class { get; set; }
+    [Parameter] public RenderFragment? Trailing { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

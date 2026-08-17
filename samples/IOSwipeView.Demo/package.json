@@ -1,0 +1,14 @@
+{
+  "name": "ioswipeview-demo",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Tailwind CSS build for the IOSwipeView demo site.",
+  "scripts": {
+    "build:css": "tailwindcss -i ./Style/app.css -o ./wwwroot/css/app.css --minify",
+    "watch:css": "tailwindcss -i ./Style/app.css -o ./wwwroot/css/app.css --watch"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.3.3",
+    "tailwindcss": "^4.3.3"
+  }
+}

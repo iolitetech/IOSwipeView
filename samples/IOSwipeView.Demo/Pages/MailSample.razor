@@ -1,0 +1,271 @@
+@page "/samples/mail"
+
+<PageTitle>Mail — IOSwipeView</PageTitle>
+
+<PageHeader Eyebrow="Sample"
+            Title="Mail &amp; SwipeList"
+            Subtitle="Built with the generic SwipeList component: zero boilerplate, iOS Edit Mode multi-selection, and fluid row collapse deletion animations." />
+
+<div class="grid lg:grid-cols-[minmax(0,1fr)_320px] gap-6 items-start">
+    <PhoneFrame Title="Inbox" BackLabel="Mailboxes">
+        <Trailing>
+            <button type="button" class="text-callout font-medium text-sys-blue" @onclick="ToggleEdit">
+                @(_isEditing ? "Done" : "Edit")
+            </button>
+        </Trailing>
+        <ChildContent>
+            <SwipeList @ref="_listRef"
+                       TItem="Mail"
+                       Items="@_mail"
+                       Options="SwipeOptions.ClassicList"
+                       IsEditing="@_isEditing"
+                       SelectedItems="@_selected"
+                       SelectedItemsChanged="OnSelectionChanged"
+                       OnItemDeleted="OnItemDeleted"
+                       OnItemClick="OnItemClicked">
+                <LeadingActions Context="ctx">
+                    <SwipeAction Background="#007aff" Foreground="white" Placement="ActionPlacement.Top"
+                                 OnInvoked="() => ToggleRead(ctx.Item)">
+                        <Icon>
+                            @if (ctx.Item.Unread)
+                            {
+                                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect width="20" height="16" x="2" y="4" rx="2"/>
+                                    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+                                </svg>
+                            }
+                            else
+                            {
+                                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                                    <circle cx="12" cy="12" r="6"/>
+                                </svg>
+                            }
+                        </Icon>
+                        <ChildContent>
+                            @(ctx.Item.Unread ? "Read" : "Unread")
+                        </ChildContent>
+                    </SwipeAction>
+                </LeadingActions>
+
+                <ItemTemplate Context="mail">
+                    <ListRow Title="@mail.From" Subtitle="@mail.Subject" Preview="@mail.Preview"
+                             Meta="@mail.Time" Unread="mail.Unread" />
+                </ItemTemplate>
+
+                <TrailingActions Context="ctx">
+                    <SwipeAction Background="#ff9500" Foreground="white" Placement="ActionPlacement.Top"
+                                 OnInvoked="() => Flag(ctx.Item)">
+                        <Icon>
+                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                                <path fill-rule="evenodd" d="M3 2.25a.75.75 0 0 1 .75.75v.54l1.838-.46a9.75 9.75 0 0 1 4.725.328l.45.15a8.25 8.25 0 0 0 4.004.279l1.87-.468A.75.75 0 0 1 17.4 4.5v8.25a.75.75 0 0 1-.562.727l-1.838.46a9.75 9.75 0 0 1-4.725-.328l-.45-.15a8.25 8.25 0 0 0-4.004-.279l-1.87.468A.75.75 0 0 1 3 13.5V3A.75.75 0 0 1 3 2.25Z" clip-rule="evenodd"/>
+                            </svg>
+                        </Icon>
+                        <ChildContent>Flag</ChildContent>
+                    </SwipeAction>
+                    <SwipeAction Background="#34c759" Foreground="white" Placement="ActionPlacement.Top" TriggerStage="1"
+                                 OnInvoked="() => Archive(ctx)">
+                        <Icon>
+                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect width="20" height="5" x="2" y="3" rx="1"/>
+                                <path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"/>
+                                <path d="M10 12h4"/>
+                            </svg>
+                        </Icon>
+                        <ChildContent>Archive</ChildContent>
+                    </SwipeAction>
+                    <SwipeAction Background="#ff3b30" Foreground="white" Placement="ActionPlacement.Top" TriggerStage="2"
+                                 OnInvoked="() => Trash(ctx)">
+                        <Icon>
+                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M3 6h18"/>
+                                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+                                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                                <line x1="10" x2="10" y1="11" y2="17"/>
+                                <line x1="14" x2="14" y1="11" y2="17"/>
+                            </svg>
+                        </Icon>
+                        <ChildContent>Trash</ChildContent>
+                    </SwipeAction>
+                </TrailingActions>
+
+                <EmptyContent>
+                    <div class="px-4 py-16 text-center">
+                        <p class="text-body text-label-secondary">Inbox zero</p>
+                        <button type="button" class="btn-ghost mt-3" @onclick="Reset">Restore messages</button>
+                    </div>
+                </EmptyContent>
+            </SwipeList>
+
+            @if (_isEditing && _mail.Count > 0)
+            {
+                <div class="p-3 bg-grouped-secondary border-t border-separator/60 flex items-center justify-between text-footnote select-none">
+                    <button type="button" class="text-sys-blue font-medium hover:underline" @onclick="ToggleSelectAll">
+                        @(_selected.Count == _mail.Count ? "Deselect All" : "Select All")
+                    </button>
+                    <button type="button" class="text-sys-blue disabled:opacity-40" disabled="@(_selected.Count == 0)" @onclick="MarkSelectedRead">
+                        Mark Read
+                    </button>
+                    <button type="button" class="text-sys-red font-medium disabled:opacity-40" disabled="@(_selected.Count == 0)" @onclick="DeleteSelected">
+                        Delete (@_selected.Count)
+                    </button>
+                </div>
+            }
+        </ChildContent>
+    </PhoneFrame>
+
+    <div class="space-y-4">
+        <Panel Title="What this shows">
+            <ul class="space-y-2.5 text-subheadline text-label-secondary">
+                <li><span class="text-label font-medium">SwipeList&lt;TItem&gt;.</span> Clean declarative generic list with built-in accordion coordination.</li>
+                <li><span class="text-label font-medium">iOS Edit Mode.</span> Tap <strong>Edit</strong> in the navbar to slide in selection checkboxes for batch actions.</li>
+                <li><span class="text-label font-medium">Fluid Row Collapse.</span> Both swiping to trigger and tapping actions smoothly collapse the row height before removal.</li>
+                <li><span class="text-label font-medium">Multi-Stage Triggers.</span> Pull medium left ($200\text{px}$) to arm <strong>Archive</strong>. Pull deep ($280\text{px}$) to arm <strong>Trash</strong>.</li>
+            </ul>
+        </Panel>
+
+        <Panel Title="Activity">
+            <Trailing>
+                <button type="button" class="text-footnote text-sys-blue" @onclick="Reset">Reset</button>
+            </Trailing>
+            <ChildContent>
+                <ul class="font-mono text-caption1 space-y-1 h-40 overflow-y-auto">
+                    @if (_log.Count == 0)
+                    {
+                        <li class="text-label-tertiary">Swipe or tap a message…</li>
+                    }
+                    @foreach (var entry in _log)
+                    {
+                        <li class="text-label-secondary">@entry</li>
+                    }
+                </ul>
+            </ChildContent>
+        </Panel>
+    </div>
+</div>
+
+@code {
+    private sealed class Mail
+    {
+        public required string From { get; init; }
+        public required string Subject { get; init; }
+        public required string Preview { get; init; }
+        public required string Time { get; init; }
+        public bool Unread { get; set; }
+    }
+
+    private SwipeList<Mail>? _listRef;
+    private List<Mail> _mail = [];
+    private ISet<Mail> _selected = new HashSet<Mail>();
+    private bool _isEditing;
+    private readonly List<string> _log = [];
+
+    protected override void OnInitialized() => Reset();
+
+    private void Reset()
+    {
+        _mail = Seed();
+        _selected.Clear();
+        _isEditing = false;
+        _log.Clear();
+    }
+
+    private void ToggleEdit()
+    {
+        _isEditing = !_isEditing;
+        if (!_isEditing)
+        {
+            _selected.Clear();
+        }
+        _log.Insert(0, $"{DateTime.Now:HH:mm:ss} — Edit Mode {(_isEditing ? "Enabled" : "Disabled")}");
+    }
+
+    private void ToggleSelectAll()
+    {
+        if (_selected.Count == _mail.Count)
+        {
+            _selected.Clear();
+        }
+        else
+        {
+            _selected = new HashSet<Mail>(_mail);
+        }
+    }
+
+    private void OnSelectionChanged(ISet<Mail> newSelection)
+    {
+        _selected = newSelection;
+    }
+
+    private void MarkSelectedRead()
+    {
+        foreach (var item in _selected)
+        {
+            item.Unread = false;
+        }
+        _log.Insert(0, $"{DateTime.Now:HH:mm:ss} — Marked {_selected.Count} items as read");
+        _selected.Clear();
+        _isEditing = false;
+    }
+
+    private async Task DeleteSelected()
+    {
+        var count = _selected.Count;
+        var targets = _selected.ToList();
+        _isEditing = false;
+        _selected.Clear();
+
+        if (_listRef is not null)
+        {
+            await _listRef.RemoveItemsAnimatedAsync(targets);
+        }
+        else
+        {
+            _mail.RemoveAll(m => targets.Contains(m));
+        }
+
+        _log.Insert(0, $"{DateTime.Now:HH:mm:ss} — Deleted {count} selected messages");
+    }
+
+    private void OnItemClicked(Mail mail)
+    {
+        _log.Insert(0, $"{DateTime.Now:HH:mm:ss} — Tapped '{mail.Subject}'");
+    }
+
+    private static List<Mail> Seed() =>
+    [
+        new() { From = "GitHub", Subject = "[dotnet/aspnetcore] PR merged", Preview = "All tests passed on net10.0 runtime.", Time = "09:41", Unread = true },
+        new() { From = "Ada Lovelace", Subject = "Notes on the Analytical Engine", Preview = "The engine weaves algebraic patterns as the Jacquard loom weaves flowers.", Time = "08:12", Unread = true },
+        new() { From = "TestFlight", Subject = "IOSwipeView 1.0 is ready", Preview = "Build 42 is now available to test. This build expires in 89 days.", Time = "Yesterday", Unread = false },
+        new() { From = "Grace Hopper", Subject = "Re: the moth", Preview = "First actual case of bug being found. Taped it into the logbook.", Time = "Yesterday", Unread = false },
+        new() { From = "Apple Developer", Subject = "Human Interface Guidelines", Preview = "Updated guidance on gestures, haptics and swipe actions.", Time = "Tuesday", Unread = false },
+    ];
+
+    private void ToggleRead(Mail mail)
+    {
+        mail.Unread = !mail.Unread;
+        _log.Insert(0, $"{DateTime.Now:HH:mm:ss} — Marked as {(mail.Unread ? "unread" : "read")}: {mail.From}");
+    }
+
+    private void Flag(Mail mail)
+    {
+        _log.Insert(0, $"{DateTime.Now:HH:mm:ss} — Flagged: {mail.From}");
+    }
+
+    private async Task Archive(SwipeItemContext<Mail> ctx)
+    {
+        _log.Insert(0, $"{DateTime.Now:HH:mm:ss} — Archived (Stage 1): {ctx.Item.From}");
+        await ctx.DeleteAsync();
+    }
+
+    private async Task Trash(SwipeItemContext<Mail> ctx)
+    {
+        _log.Insert(0, $"{DateTime.Now:HH:mm:ss} — Trashed (Stage 2): {ctx.Item.From}");
+        await ctx.DeleteAsync();
+    }
+
+    private void OnItemDeleted(Mail mail)
+    {
+        _mail.Remove(mail);
+        _log.Insert(0, $"{DateTime.Now:HH:mm:ss} — Animated delete completed: {mail.From}");
+    }
+}

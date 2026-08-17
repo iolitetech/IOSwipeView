@@ -1,0 +1,416 @@
+@page "/styles"
+
+<PageTitle>Styles — IOSwipeView</PageTitle>
+
+<PageHeader Eyebrow="Reference"
+            Title="Styles"
+            Subtitle="The same three actions under every reveal style and every stock preset. Drag each row to compare." />
+
+<section class="mb-10">
+    <h2 class="text-title3 text-label mb-1">Reveal styles</h2>
+    <p class="text-subheadline text-label-secondary mb-4">
+        How the actions lay themselves out as the row slides away.
+    </p>
+
+    <div class="grid md:grid-cols-3 gap-4">
+        @foreach (var style in RevealStyles)
+        {
+            <div class="bg-grouped-secondary rounded-ios-lg border border-separator/60 overflow-hidden">
+                <div class="px-4 pt-3.5 pb-2">
+                    <h3 class="text-headline text-label">@style.Title</h3>
+                    <p class="text-footnote text-label-secondary mt-0.5">@style.Body</p>
+                </div>
+                <div class="bg-grouped p-3">
+                    <SwipeView Options="@style.Options">
+                        <ChildContent>
+                            <div class="bg-grouped-secondary px-4 py-5 text-center select-none rounded-ios">
+                                <span class="text-callout text-label">@style.Title</span>
+                            </div>
+                        </ChildContent>
+                        <TrailingActions>
+                            <SwipeAction Background="#5ac8fa" Foreground="white">One</SwipeAction>
+                            <SwipeAction Background="#5856d6" Foreground="white">Two</SwipeAction>
+                            <SwipeAction Background="#ff3b30" Foreground="white" AllowSwipeToTrigger>Three</SwipeAction>
+                        </TrailingActions>
+                    </SwipeView>
+                </div>
+                <div class="px-4 py-2.5 border-t border-separator/60">
+                    <code class="text-caption1 font-mono text-label-secondary">@style.Code</code>
+                </div>
+            </div>
+        }
+    </div>
+</section>
+
+<section class="mb-10">
+    <h2 class="text-title3 text-label mb-1">Presets</h2>
+    <p class="text-subheadline text-label-secondary mb-4">
+        Stock <code class="font-mono text-footnote">SwipeOptions</code> matching common iOS surfaces.
+    </p>
+
+    <div class="grid md:grid-cols-2 gap-4">
+        @foreach (var preset in Presets)
+        {
+            <div class="bg-grouped-secondary rounded-ios-lg border border-separator/60 overflow-hidden">
+                <div class="px-4 pt-3.5 pb-2 flex items-baseline justify-between gap-2">
+                    <h3 class="text-headline text-label">@preset.Title</h3>
+                    <code class="text-caption1 font-mono text-label-tertiary">@preset.Code</code>
+                </div>
+                <div class="bg-grouped p-3">
+                    <SwipeView Options="@preset.Options">
+                        <LeadingActions>
+                            <SwipeAction Background="#34c759" Foreground="white">Done</SwipeAction>
+                        </LeadingActions>
+                        <ChildContent>
+                            <div class="bg-grouped-secondary px-4 py-4 select-none" style="border-radius:@(preset.Options.ActionsMaskCornerRadius)px">
+                                <p class="text-body text-label">@preset.Title</p>
+                                <p class="text-subheadline text-label-secondary">@preset.Body</p>
+                            </div>
+                        </ChildContent>
+                        <TrailingActions>
+                            <SwipeAction Background="#ff9500" Foreground="white">Flag</SwipeAction>
+                            <SwipeAction Background="#ff3b30" Foreground="white" AllowSwipeToTrigger>Delete</SwipeAction>
+                        </TrailingActions>
+                    </SwipeView>
+                </div>
+            </div>
+        }
+    </div>
+</section>
+
+<section class="mb-10">
+    <h2 class="text-title3 text-label mb-1">Icon Placements (Top, Inline & Icon-Only)</h2>
+    <p class="text-subheadline text-label-secondary mb-4">
+        Native iOS icon placements with elastic spring micro-pops.
+    </p>
+
+    <div class="grid md:grid-cols-3 gap-4">
+        <!-- 1. Vertical Stack (Top) -->
+        <div class="bg-grouped-secondary rounded-ios-lg border border-separator/60 overflow-hidden">
+            <div class="px-4 pt-3.5 pb-2">
+                <h3 class="text-headline text-label">Vertical Stack</h3>
+                <p class="text-footnote text-label-secondary mt-0.5">Placement="ActionPlacement.Top"</p>
+            </div>
+            <div class="bg-grouped p-3">
+                <SwipeView Options="SwipeOptions.ClassicList">
+                    <ChildContent>
+                        <div class="bg-grouped-secondary px-4 py-5 text-center select-none rounded-ios">
+                            <span class="text-callout text-label">Swipe Left (Top Stack)</span>
+                        </div>
+                    </ChildContent>
+                    <TrailingActions>
+                        <SwipeAction Background="#ff9500" Foreground="white" Placement="ActionPlacement.Top">
+                            <Icon>
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M3 2.25a.75.75 0 0 1 .75.75v.54l1.838-.46a9.75 9.75 0 0 1 4.725.328l.45.15a8.25 8.25 0 0 0 4.004.279l1.87-.468A.75.75 0 0 1 17.4 4.5v8.25a.75.75 0 0 1-.562.727l-1.838.46a9.75 9.75 0 0 1-4.725-.328l-.45-.15a8.25 8.25 0 0 0-4.004-.279l-1.87.468A.75.75 0 0 1 3 13.5V3A.75.75 0 0 1 3 2.25Z" clip-rule="evenodd"/>
+                                </svg>
+                            </Icon>
+                            <ChildContent>Flag</ChildContent>
+                        </SwipeAction>
+                        <SwipeAction Background="#ff3b30" Foreground="white" Placement="ActionPlacement.Top" AllowSwipeToTrigger>
+                            <Icon>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M3 6h18"/>
+                                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+                                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                                    <line x1="10" x2="10" y1="11" y2="17"/>
+                                    <line x1="14" x2="14" y1="11" y2="17"/>
+                                </svg>
+                            </Icon>
+                            <ChildContent>Trash</ChildContent>
+                        </SwipeAction>
+                    </TrailingActions>
+                </SwipeView>
+            </div>
+        </div>
+
+        <!-- 2. Horizontal Inline -->
+        <div class="bg-grouped-secondary rounded-ios-lg border border-separator/60 overflow-hidden">
+            <div class="px-4 pt-3.5 pb-2">
+                <h3 class="text-headline text-label">Horizontal Inline</h3>
+                <p class="text-footnote text-label-secondary mt-0.5">Placement="ActionPlacement.InlineStart"</p>
+            </div>
+            <div class="bg-grouped p-3">
+                <SwipeView Options="SwipeOptions.Notification">
+                    <ChildContent>
+                        <div class="bg-grouped-secondary px-4 py-5 text-center select-none rounded-ios">
+                            <span class="text-callout text-label">Swipe Left (Inline)</span>
+                        </div>
+                    </ChildContent>
+                    <TrailingActions>
+                        <SwipeAction Background="#007aff" Foreground="white" Placement="ActionPlacement.InlineStart">
+                            <Icon>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect width="20" height="16" x="2" y="4" rx="2"/>
+                                    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+                                </svg>
+                            </Icon>
+                            <ChildContent>Open</ChildContent>
+                        </SwipeAction>
+                        <SwipeAction Background="#ff3b30" Foreground="white" Placement="ActionPlacement.InlineStart" AllowSwipeToTrigger>
+                            <Icon>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M3 6h18"/>
+                                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+                                </svg>
+                            </Icon>
+                            <ChildContent>Clear</ChildContent>
+                        </SwipeAction>
+                    </TrailingActions>
+                </SwipeView>
+            </div>
+        </div>
+
+        <!-- 3. Icon Only -->
+        <div class="bg-grouped-secondary rounded-ios-lg border border-separator/60 overflow-hidden">
+            <div class="px-4 pt-3.5 pb-2">
+                <h3 class="text-headline text-label">Icon Only</h3>
+                <p class="text-footnote text-label-secondary mt-0.5">Placement="ActionPlacement.IconOnly"</p>
+            </div>
+            <div class="bg-grouped p-3">
+                <SwipeView Options="SwipeOptions.Capsule">
+                    <ChildContent>
+                        <div class="bg-grouped-secondary px-4 py-5 text-center select-none rounded-ios">
+                            <span class="text-callout text-label">Swipe Left (Icon Only)</span>
+                        </div>
+                    </ChildContent>
+                    <TrailingActions>
+                        <SwipeAction Background="#ff9500" Foreground="white" Placement="ActionPlacement.IconOnly" AriaLabel="Flag">
+                            <Icon>
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M3 2.25a.75.75 0 0 1 .75.75v.54l1.838-.46a9.75 9.75 0 0 1 4.725.328l.45.15a8.25 8.25 0 0 0 4.004.279l1.87-.468A.75.75 0 0 1 17.4 4.5v8.25a.75.75 0 0 1-.562.727l-1.838.46a9.75 9.75 0 0 1-4.725-.328l-.45-.15a8.25 8.25 0 0 0-4.004-.279l-1.87.468A.75.75 0 0 1 3 13.5V3A.75.75 0 0 1 3 2.25Z" clip-rule="evenodd"/>
+                                </svg>
+                            </Icon>
+                        </SwipeAction>
+                        <SwipeAction Background="#ff3b30" Foreground="white" Placement="ActionPlacement.IconOnly" AriaLabel="Delete" AllowSwipeToTrigger>
+                            <Icon>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M3 6h18"/>
+                                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+                                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                                </svg>
+                            </Icon>
+                        </SwipeAction>
+                    </TrailingActions>
+                </SwipeView>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="mb-10">
+    <h2 class="text-title3 text-label mb-1">Multi-Stage Progressive Triggers (2, 3 & 4 Triggers)</h2>
+    <p class="text-subheadline text-label-secondary mb-4">
+        Multiple actions on the same side configure progressive pull thresholds. Pull progressively deeper to arm higher-tier destructive or priority actions.
+    </p>
+
+    <div class="space-y-4">
+        <!-- 2-Stage Trigger Demo -->
+        <div class="bg-grouped-secondary rounded-ios-lg border border-separator/60 overflow-hidden">
+            <div class="px-4 pt-3.5 pb-2 flex items-baseline justify-between gap-2">
+                <h3 class="text-headline text-label">2-Stage Triggers</h3>
+                <span class="text-caption1 font-medium text-sys-blue">@_multiStageStatus2</span>
+            </div>
+            <div class="bg-grouped p-3">
+                <SwipeView Options="SwipeOptions.ClassicList">
+                    <LeadingActions>
+                        <SwipeAction Background="#34c759" Foreground="white" AllowSwipeToTrigger
+                                     OnInvoked='() => SetStatus2("Done (Leading Trigger)")'>
+                            Done
+                        </SwipeAction>
+                    </LeadingActions>
+                    <ChildContent>
+                        <div class="bg-grouped-secondary px-4 py-4 text-center select-none rounded-ios">
+                            <p class="text-callout text-label font-medium">Swipe Left for 2-Stage Actions</p>
+                            <p class="text-footnote text-label-secondary mt-0.5">Stage 1 (~200px) &rarr; Archive &middot; Stage 2 (~280px) &rarr; Delete</p>
+                        </div>
+                    </ChildContent>
+                    <TrailingActions>
+                        <SwipeAction Background="#ff9500" Foreground="white"
+                                     OnInvoked='() => SetStatus2("Flagged")'>Flag</SwipeAction>
+                        <SwipeAction Background="#007aff" Foreground="white" TriggerStage="1"
+                                     OnInvoked='() => SetStatus2("Archived (Stage 1)")'>Archive</SwipeAction>
+                        <SwipeAction Background="#ff3b30" Foreground="white" TriggerStage="2"
+                                     OnInvoked='() => SetStatus2("Deleted (Stage 2 Deep)")'>Delete</SwipeAction>
+                    </TrailingActions>
+                </SwipeView>
+            </div>
+            <div class="px-4 py-2 border-t border-separator/60 flex items-center justify-between text-caption1 font-mono text-label-secondary">
+                <span>Stage 1: Archive (~200px)</span>
+                <span>Stage 2: Delete (~280px)</span>
+            </div>
+        </div>
+
+        <!-- 3-Stage Trigger Demo -->
+        <div class="bg-grouped-secondary rounded-ios-lg border border-separator/60 overflow-hidden">
+            <div class="px-4 pt-3.5 pb-2 flex items-baseline justify-between gap-2">
+                <h3 class="text-headline text-label">3-Stage Triggers</h3>
+                <span class="text-caption1 font-medium text-sys-orange">@_multiStageStatus3</span>
+            </div>
+            <div class="bg-grouped p-3">
+                <SwipeView Options="SwipeOptions.ClassicList">
+                    <ChildContent>
+                        <div class="bg-grouped-secondary px-4 py-4 text-center select-none rounded-ios">
+                            <p class="text-callout text-label font-medium">Swipe Left for 3-Stage Actions</p>
+                            <p class="text-footnote text-label-secondary mt-0.5">Stage 1: Flag &rarr; Stage 2: Archive &rarr; Stage 3: Trash</p>
+                        </div>
+                    </ChildContent>
+                    <TrailingActions>
+                        <SwipeAction Background="#ff9500" Foreground="white" TriggerStage="1"
+                                     OnInvoked='() => SetStatus3("Flagged (Stage 1)")'>Flag</SwipeAction>
+                        <SwipeAction Background="#34c759" Foreground="white" TriggerStage="2"
+                                     OnInvoked='() => SetStatus3("Archived (Stage 2)")'>Archive</SwipeAction>
+                        <SwipeAction Background="#ff3b30" Foreground="white" TriggerStage="3"
+                                     OnInvoked='() => SetStatus3("Trashed (Stage 3 Deep)")'>Trash</SwipeAction>
+                    </TrailingActions>
+                </SwipeView>
+            </div>
+            <div class="px-4 py-2 border-t border-separator/60 flex items-center justify-between text-caption1 font-mono text-label-secondary">
+                <span>Stage 1: Flag (~200px)</span>
+                <span>Stage 2: Archive (~280px)</span>
+                <span>Stage 3: Trash (~360px)</span>
+            </div>
+        </div>
+
+        <!-- 4-Stage Trigger Demo -->
+        <div class="bg-grouped-secondary rounded-ios-lg border border-separator/60 overflow-hidden">
+            <div class="px-4 pt-3.5 pb-2 flex items-baseline justify-between gap-2">
+                <h3 class="text-headline text-label">4-Stage Triggers</h3>
+                <span class="text-caption1 font-medium text-sys-purple">@_multiStageStatus4</span>
+            </div>
+            <div class="bg-grouped p-3">
+                <SwipeView Options="SwipeOptions.ClassicList">
+                    <ChildContent>
+                        <div class="bg-grouped-secondary px-4 py-4 text-center select-none rounded-ios">
+                            <p class="text-callout text-label font-medium">Swipe Left for 4-Stage Progressive Actions</p>
+                            <p class="text-footnote text-label-secondary mt-0.5">Stage 1: Pin &rarr; Stage 2: Flag &rarr; Stage 3: Archive &rarr; Stage 4: Delete</p>
+                        </div>
+                    </ChildContent>
+                    <TrailingActions>
+                        <SwipeAction Background="#af52de" Foreground="white" TriggerStage="1"
+                                     OnInvoked='() => SetStatus4("Pinned (Stage 1)")'>Pin</SwipeAction>
+                        <SwipeAction Background="#ff9500" Foreground="white" TriggerStage="2"
+                                     OnInvoked='() => SetStatus4("Flagged (Stage 2)")'>Flag</SwipeAction>
+                        <SwipeAction Background="#34c759" Foreground="white" TriggerStage="3"
+                                     OnInvoked='() => SetStatus4("Archived (Stage 3)")'>Archive</SwipeAction>
+                        <SwipeAction Background="#ff3b30" Foreground="white" TriggerStage="4"
+                                     OnInvoked='() => SetStatus4("Deleted (Stage 4 Max)")'>Delete</SwipeAction>
+                    </TrailingActions>
+                </SwipeView>
+            </div>
+            <div class="px-4 py-2 border-t border-separator/60 flex items-center justify-between text-caption1 font-mono text-label-secondary">
+                <span>Stage 1: Pin (~200px)</span>
+                <span>Stage 2: Flag (~280px)</span>
+                <span>Stage 3: Archive (~360px)</span>
+                <span>Stage 4: Delete (~440px)</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2 class="text-title3 text-label mb-1">Springs</h2>
+    <p class="text-subheadline text-label-secondary mb-4">
+        Every row is identical apart from its settle spring. Fling each one and let go.
+    </p>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        @foreach (var spring in Springs)
+        {
+            <div class="bg-grouped-secondary rounded-ios-lg border border-separator/60 overflow-hidden">
+                <div class="px-4 pt-3.5 pb-2 flex items-baseline justify-between">
+                    <h3 class="text-headline text-label">@spring.Title</h3>
+                    <code class="text-caption1 font-mono text-label-tertiary">@spring.Numbers</code>
+                </div>
+                <div class="bg-grouped p-3">
+                    <SwipeView Options="@spring.Options">
+                        <ChildContent>
+                            <div class="bg-grouped-secondary px-4 py-5 text-center select-none rounded-ios">
+                                <span class="text-callout text-label">Fling me</span>
+                            </div>
+                        </ChildContent>
+                        <TrailingActions>
+                            <SwipeAction Background="#5856d6" Foreground="white">Open</SwipeAction>
+                        </TrailingActions>
+                    </SwipeView>
+                </div>
+            </div>
+        }
+    </div>
+</section>
+
+@code {
+    private string _multiStageStatus2 = "Pull left (Medium / Deep)";
+    private string _multiStageStatus3 = "Pull left (3 stages)";
+    private string _multiStageStatus4 = "Pull left (4 stages)";
+
+    private void SetStatus2(string text)
+    {
+        _multiStageStatus2 = text;
+        StateHasChanged();
+    }
+
+    private void SetStatus3(string text)
+    {
+        _multiStageStatus3 = text;
+        StateHasChanged();
+    }
+
+    private void SetStatus4(string text)
+    {
+        _multiStageStatus4 = text;
+        StateHasChanged();
+    }
+
+    private sealed record StyleCard(string Title, string Body, string Code, SwipeOptions Options);
+
+    private static SwipeOptions Flat(SwipeActionStyle style) => SwipeOptions.Default with
+    {
+        Style = style,
+        ActionWidth = 80,
+        Spacing = 0,
+        ActionCornerRadius = 0,
+        ActionsMaskCornerRadius = 10,
+        ActionsVisibleStartPoint = 0,
+        ActionsVisibleEndPoint = 0,
+    };
+
+    private static readonly StyleCard[] RevealStyles =
+    [
+        new("Mask", "Actions keep their natural width and are uncovered as the row slides.",
+            "Style = SwipeActionStyle.Mask", Flat(SwipeActionStyle.Mask)),
+        new("Equal widths", "Actions share the revealed space, growing together as you drag.",
+            "Style = SwipeActionStyle.EqualWidths", Flat(SwipeActionStyle.EqualWidths)),
+        new("Cascade", "Actions overlap and fan out from the edge, outermost on top.",
+            "Style = SwipeActionStyle.Cascade", Flat(SwipeActionStyle.Cascade)),
+    ];
+
+    private sealed record PresetCard(string Title, string Body, string Code, SwipeOptions Options);
+
+    private static readonly PresetCard[] Presets =
+    [
+        new("Classic list", "Flush square actions, the Mail look", "SwipeOptions.ClassicList", SwipeOptions.ClassicList),
+        new("Inset grouped", "Rounded section, flush interior", "SwipeOptions.InsetGrouped", SwipeOptions.InsetGrouped),
+        new("Notification", "Rounded pills with a little spacing", "SwipeOptions.Notification", SwipeOptions.Notification),
+        new("Capsule", "Floating pill bubbles", "SwipeOptions.Capsule", SwipeOptions.Capsule),
+    ];
+
+    private sealed record SpringCard(string Title, string Numbers, SwipeOptions Options);
+
+    private static SwipeOptions WithSpring(SwipeSpring spring) => SwipeOptions.ClassicList with
+    {
+        CloseAnimation = spring,
+        ExpandAnimation = spring,
+        TriggerAnimation = spring,
+    };
+
+    private static readonly SpringCard[] Springs =
+    [
+        new("Snappy", "420 / 40", WithSpring(SwipeSpring.Snappy)),
+        new("Default", "300 / 32", WithSpring(SwipeSpring.Default)),
+        new("Smooth", "240 / 28", WithSpring(SwipeSpring.Smooth)),
+        new("Bouncy", "220 / 18", WithSpring(SwipeSpring.Bouncy)),
+        new("Gentle", "160 / 22", WithSpring(new SwipeSpring(160, 22))),
+        new("Wobbly", "180 / 12", WithSpring(new SwipeSpring(180, 12))),
+    ];
+}

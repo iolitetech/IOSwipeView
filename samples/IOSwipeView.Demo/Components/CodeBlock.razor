@@ -1,0 +1,36 @@
+@inject IJSRuntime JS
+
+<div class="relative group @Class">
+    <button type="button"
+            class="absolute top-2 right-2 px-2.5 py-1 text-caption1 font-medium rounded-ios-sm bg-fill-tertiary text-label-secondary hover:text-label transition-colors"
+            @onclick="CopyAsync">
+        @_label
+    </button>
+    <pre class="bg-grouped-tertiary text-label rounded-ios-lg border border-separator/60 p-4 pr-20 overflow-x-auto text-caption1 font-mono leading-relaxed @MaxHeightClass"><code>@Code</code></pre>
+</div>
+
+@code {
+    private string _label = "Copy";
+
+    [Parameter] public string Code { get; set; } = "";
+    [Parameter] public string? Class { get; set; }
+    [Parameter] public string MaxHeightClass { get; set; } = "max-h-96";
+
+    private async Task CopyAsync()
+    {
+        try
+        {
+            await JS.InvokeVoidAsync("navigator.clipboard.writeText", Code);
+            _label = "Copied";
+        }
+        catch (JSException)
+        {
+            _label = "Press ⌘C";
+        }
+
+        StateHasChanged();
+        await Task.Delay(1600);
+        _label = "Copy";
+        StateHasChanged();
+    }
+}

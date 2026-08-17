@@ -1,0 +1,35 @@
+<Project>
+
+  <PropertyGroup Label="Language">
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Quality">
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <AnalysisLevel>latest-recommended</AnalysisLevel>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <Deterministic>true</Deterministic>
+    <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+
+  <!-- Only the library ships to NuGet; samples and tests opt out. -->
+  <PropertyGroup Label="Packaging defaults">
+    <IsPackable>false</IsPackable>
+    <Authors>IOLite</Authors>
+    <Company>IOLite</Company>
+    <Product>IOSwipeView</Product>
+    <Copyright>Copyright (c) IOLite</Copyright>
+    <NeutralLanguage>en-001</NeutralLanguage>
+    <PackageProjectUrl>https://github.com/iolitetech/IOSwipeView</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/iolitetech/IOSwipeView</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+
+</Project>

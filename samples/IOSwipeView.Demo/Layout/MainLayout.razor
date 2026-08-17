@@ -1,0 +1,122 @@
+@inherits LayoutComponentBase
+@inject NavigationManager Navigation
+
+<div class="min-h-dvh flex flex-col">
+    <header class="bg-grouped sticky top-0 z-50 border-b border-separator/70">
+        <div class="mx-auto max-w-6xl px-4 sm:px-6">
+            <div class="flex items-center gap-4 h-14">
+                <a href="" class="flex items-center gap-2 shrink-0 no-underline">
+                    <span class="grid place-items-center w-7 h-7 rounded-[8px] bg-sys-blue text-white text-caption1 font-bold">IO</span>
+                    <span class="text-headline text-label font-bold">IOSwipeView</span>
+                </a>
+
+                <!-- DESKTOP FLUSH SEGMENTED NAVIGATION -->
+                <nav class="hidden md:flex items-center ml-2">
+                    <div class="segmented-nav">
+                        <NavLink class="nav-tab" ActiveClass="nav-tab-active" href="" Match="NavLinkMatch.All">Overview</NavLink>
+                        <NavLink class="nav-tab" ActiveClass="nav-tab-active" href="playground" Match="NavLinkMatch.Prefix">Playground</NavLink>
+                        <NavLink class="nav-tab" ActiveClass="nav-tab-active" href="styles" Match="NavLinkMatch.Prefix">Styles</NavLink>
+                        <NavLink class="nav-tab" ActiveClass="nav-tab-active" href="swipelist" Match="NavLinkMatch.Prefix">SwipeList</NavLink>
+
+                        <!-- SAMPLES DROPDOWN -->
+                        <div class="relative">
+                            <button type="button" class="nav-tab @(IsSampleActive ? "nav-tab-active" : "")" @onclick="ToggleSamplesMenu">
+                                <span>Samples</span>
+                                <svg class="w-3 h-3 ml-1 transition-transform @(_samplesOpen ? "rotate-180" : "")" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+
+                            @if (_samplesOpen)
+                            {
+                                <div class="fixed inset-0 z-40" @onclick="CloseSamplesMenu"></div>
+                                <div class="absolute top-full left-0 mt-1.5 w-44 bg-grouped-secondary rounded-ios-lg shadow-xl border border-separator/60 p-1.5 z-50 flex flex-col space-y-0.5"
+                                     @onclick="CloseSamplesMenu">
+                                    <NavLink class="flex items-center gap-2.5 px-3 py-2 text-footnote text-label hover:bg-fill-tertiary rounded-ios transition-colors no-underline"
+                                             href="samples/mail">
+                                        <span>✉️</span>
+                                        <span class="font-medium">Mail</span>
+                                    </NavLink>
+                                    <NavLink class="flex items-center gap-2.5 px-3 py-2 text-footnote text-label hover:bg-fill-tertiary rounded-ios transition-colors no-underline"
+                                             href="samples/messages">
+                                        <span>💬</span>
+                                        <span class="font-medium">Messages</span>
+                                    </NavLink>
+                                    <NavLink class="flex items-center gap-2.5 px-3 py-2 text-footnote text-label hover:bg-fill-tertiary rounded-ios transition-colors no-underline"
+                                             href="samples/reminders">
+                                        <span>📋</span>
+                                        <span class="font-medium">Reminders</span>
+                                    </NavLink>
+                                    <NavLink class="flex items-center gap-2.5 px-3 py-2 text-footnote text-label hover:bg-fill-tertiary rounded-ios transition-colors no-underline"
+                                             href="samples/rtl">
+                                        <span>🌐</span>
+                                        <span class="font-medium">RTL (کوردی)</span>
+                                    </NavLink>
+                                </div>
+                            }
+                        </div>
+
+                        <NavLink class="nav-tab" ActiveClass="nav-tab-active" href="docs" Match="NavLinkMatch.Prefix">Docs</NavLink>
+                    </div>
+                </nav>
+
+                <div class="flex-1"></div>
+
+                <div class="flex items-center gap-2 shrink-0">
+                    <ThemeToggle />
+                    <a href="https://github.com/iolitetech/IOSwipeView" target="_blank" rel="noopener"
+                       class="hidden sm:grid place-items-center w-9 h-9 rounded-full bg-fill-tertiary text-label hover:bg-fill-secondary transition-colors"
+                       aria-label="GitHub repository">
+                        <svg viewBox="0 0 16 16" width="17" height="17" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.4 7.4 0 0 1 2-.27c.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+                    </a>
+                    <button type="button" class="md:hidden grid place-items-center w-9 h-9 rounded-full bg-fill-tertiary text-label"
+                            aria-label="Menu" @onclick="ToggleMenu">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            @if (_menuOpen)
+            {
+                <nav class="md:hidden pb-3 flex flex-col gap-1 border-t border-separator/50 pt-2" @onclick="CloseMenu">
+                    <NavLink class="nav-tab text-left" ActiveClass="nav-tab-active" href="" Match="NavLinkMatch.All">Overview</NavLink>
+                    <NavLink class="nav-tab text-left" ActiveClass="nav-tab-active" href="playground" Match="NavLinkMatch.Prefix">Playground</NavLink>
+                    <NavLink class="nav-tab text-left" ActiveClass="nav-tab-active" href="styles" Match="NavLinkMatch.Prefix">Styles</NavLink>
+                    <NavLink class="nav-tab text-left" ActiveClass="nav-tab-active" href="swipelist" Match="NavLinkMatch.Prefix">📑 SwipeList</NavLink>
+                    <NavLink class="nav-tab text-left" ActiveClass="nav-tab-active" href="samples/mail" Match="NavLinkMatch.Prefix">✉️ Mail</NavLink>
+                    <NavLink class="nav-tab text-left" ActiveClass="nav-tab-active" href="samples/messages" Match="NavLinkMatch.Prefix">💬 Messages</NavLink>
+                    <NavLink class="nav-tab text-left" ActiveClass="nav-tab-active" href="samples/reminders" Match="NavLinkMatch.Prefix">📋 Reminders</NavLink>
+                    <NavLink class="nav-tab text-left" ActiveClass="nav-tab-active" href="samples/rtl" Match="NavLinkMatch.Prefix">🌐 RTL (کوردی)</NavLink>
+                    <NavLink class="nav-tab text-left" ActiveClass="nav-tab-active" href="docs" Match="NavLinkMatch.Prefix">Docs</NavLink>
+                </nav>
+            }
+        </div>
+    </header>
+
+    <main class="flex-1 w-full mx-auto max-w-6xl px-4 sm:px-6 py-8">
+        @Body
+    </main>
+
+    <footer class="border-t border-separator/70 mt-8">
+        <div class="mx-auto max-w-6xl px-4 sm:px-6 py-6 flex flex-col sm:flex-row items-center justify-between gap-2 text-footnote text-label-secondary">
+            <span>
+                IOSwipeView for Blazor — inspired by
+                <a href="https://github.com/aheze/SwipeActions" target="_blank" rel="noopener" class="text-sys-blue">aheze's SwipeActions</a>
+            </span>
+            <span>MIT licensed</span>
+        </div>
+    </footer>
+</div>
+
+@code {
+    private bool _menuOpen;
+    private bool _samplesOpen;
+
+    private bool IsSampleActive => Navigation.Uri.Contains("/samples/");
+
+    private void ToggleMenu() => _menuOpen = !_menuOpen;
+    private void CloseMenu() => _menuOpen = false;
+
+    private void ToggleSamplesMenu() => _samplesOpen = !_samplesOpen;
+    private void CloseSamplesMenu() => _samplesOpen = false;
+}

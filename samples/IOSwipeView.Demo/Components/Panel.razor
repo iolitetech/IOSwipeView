@@ -1,0 +1,31 @@
+<div class="bg-grouped-secondary rounded-ios-lg border border-separator/60 @Class">
+    @if (!string.IsNullOrWhiteSpace(Title) || Trailing is not null)
+    {
+        <div class="flex items-center justify-between gap-3 px-4 pt-3.5 pb-2">
+            <div class="min-w-0">
+                @if (!string.IsNullOrWhiteSpace(Title))
+                {
+                    <h3 class="text-headline text-label truncate">@Title</h3>
+                }
+                @if (!string.IsNullOrWhiteSpace(Subtitle))
+                {
+                    <p class="text-footnote text-label-secondary mt-0.5">@Subtitle</p>
+                }
+            </div>
+            @if (Trailing is not null)
+            {
+                <div class="shrink-0">@Trailing</div>
+            }
+        </div>
+    }
+    <div class="@BodyClass">@ChildContent</div>
+</div>
+
+@code {
+    [Parameter] public string? Title { get; set; }
+    [Parameter] public string? Subtitle { get; set; }
+    [Parameter] public string? Class { get; set; }
+    [Parameter] public string BodyClass { get; set; } = "p-4 pt-1";
+    [Parameter] public RenderFragment? Trailing { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

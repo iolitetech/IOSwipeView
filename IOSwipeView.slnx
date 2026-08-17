@@ -1,0 +1,19 @@
+<Solution>
+  <Folder Name="/solution items/">
+    <File Path=".editorconfig" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+    <File Path="global.json" />
+    <File Path="NuGet.config" />
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/IOSwipeView/IOSwipeView.csproj" />
+  </Folder>
+  <Folder Name="/samples/">
+    <Project Path="samples/IOSwipeView.Demo/IOSwipeView.Demo.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/IOSwipeView.Tests/IOSwipeView.Tests.csproj" />
+  </Folder>
+</Solution>

@@ -1,0 +1,200 @@
+@page "/"
+
+<PageTitle>IOSwipeView — iOS swipe actions for Blazor</PageTitle>
+
+<section class="text-center py-6 sm:py-12">
+    <p class="text-footnote font-semibold uppercase tracking-wide text-sys-blue">Blazor · .NET 10</p>
+    <h1 class="text-4xl sm:text-6xl font-bold tracking-tight text-label mt-2">Swipe actions,<br class="hidden sm:block" /> done properly.</h1>
+    <p class="text-body text-label-secondary mt-4 max-w-xl mx-auto">
+        The interaction model of iOS Mail — rubber banding, velocity projection, drag-to-trigger,
+        spring settling — on any Blazor component. Not just list rows.
+    </p>
+    <div class="flex flex-wrap items-center justify-center gap-2 mt-6">
+        <a href="playground" class="btn-primary">Open the playground</a>
+        <a href="docs" class="btn-ghost">Read the docs</a>
+    </div>
+</section>
+
+<section class="max-w-md mx-auto mb-12">
+    <p class="text-center text-footnote text-label-secondary mb-2">Drag the row below — either direction</p>
+    <div class="rounded-ios-lg overflow-hidden border border-separator/60">
+        <SwipeView Options="Hero" OnStateChanged="OnHeroChanged">
+            <LeadingActions>
+                <SwipeAction Background="#34c759" Foreground="white" OnInvoked="MarkDone">Done</SwipeAction>
+            </LeadingActions>
+            <ChildContent>
+                <div class="flex items-center gap-3 bg-grouped-secondary px-4 py-4 select-none">
+                    <div class="grid place-items-center w-10 h-10 rounded-full bg-sys-indigo text-white font-semibold">IO</div>
+                    <div class="min-w-0 flex-1">
+                        <p class="text-body font-semibold text-label">@_heroTitle</p>
+                        <p class="text-subheadline text-label-secondary truncate">@_heroSubtitle</p>
+                    </div>
+                    <span class="text-label-tertiary">⇄</span>
+                </div>
+            </ChildContent>
+            <TrailingActions>
+                <SwipeAction Background="#ff9500" Foreground="white" OnInvoked="Flag">Flag</SwipeAction>
+                <SwipeAction Background="#ff3b30" Foreground="white" AllowSwipeToTrigger OnInvoked="Delete">Delete</SwipeAction>
+            </TrailingActions>
+        </SwipeView>
+    </div>
+</section>
+
+<section class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-12">
+    @foreach (var feature in Features)
+    {
+        <div class="bg-grouped-secondary rounded-ios-lg border border-separator/60 p-5">
+            <div class="grid place-items-center w-9 h-9 rounded-[10px] text-white mb-3" style="background:@feature.Color">
+                <span class="text-callout">@feature.Glyph</span>
+            </div>
+            <h3 class="text-headline text-label">@feature.Title</h3>
+            <p class="text-subheadline text-label-secondary mt-1">@feature.Body</p>
+        </div>
+    }
+</section>
+
+<section class="grid lg:grid-cols-2 gap-5 items-start mb-12">
+    <div>
+        <h2 class="text-title2 text-label mb-1">Three lines to adopt</h2>
+        <p class="text-subheadline text-label-secondary mb-3">
+            Wrap any markup. Actions are ordinary components, so anything you can render can be an action.
+        </p>
+        <CodeBlock Code="@Snippet" MaxHeightClass="max-h-none" />
+    </div>
+
+    <div>
+        <h2 class="text-title2 text-label mb-1">Accordion groups</h2>
+        <p class="text-subheadline text-label-secondary mb-3">
+            Wrap rows in <code class="font-mono text-footnote">SwipeViewGroup</code> and opening one closes the rest.
+        </p>
+        <div class="rounded-ios-lg overflow-hidden border border-separator/60 divide-y divide-separator/60">
+            <SwipeViewGroup>
+                @foreach (var person in People)
+                {
+                    <SwipeView Options="Classic">
+                        <ChildContent>
+                            <ListRow Glyph="@person.Initials" GlyphColor="@person.Color" Title="@person.Name"
+                                     Subtitle="@person.Role" Meta="@person.Time" />
+                        </ChildContent>
+                        <TrailingActions>
+                            <SwipeAction Background="#8e8e93" Foreground="white">Mute</SwipeAction>
+                            <SwipeAction Background="#ff3b30" Foreground="white" AllowSwipeToTrigger>Delete</SwipeAction>
+                        </TrailingActions>
+                    </SwipeView>
+                }
+            </SwipeViewGroup>
+        </div>
+    </div>
+</section>
+
+<section class="bg-grouped-secondary rounded-ios-lg border border-separator/60 p-6 sm:p-8 text-center">
+    <h2 class="text-title2 text-label">Built on a tested core</h2>
+    <p class="text-subheadline text-label-secondary mt-1.5 max-w-xl mx-auto">
+        The geometry, thresholds and release logic live in pure C# with no DOM dependency, so the feel
+        is pinned by unit tests rather than judged by dragging.
+    </p>
+    <div class="flex flex-wrap justify-center gap-6 mt-5">
+        @foreach (var stat in Stats)
+        {
+            <div>
+                <p class="text-title1 font-semibold text-label">@stat.Value</p>
+                <p class="text-footnote text-label-secondary">@stat.Label</p>
+            </div>
+        }
+    </div>
+</section>
+
+@code {
+    private static readonly SwipeOptions Hero = SwipeOptions.Default with
+    {
+        Style = SwipeActionStyle.Mask,
+        ActionWidth = 84,
+        Spacing = 0,
+        ActionCornerRadius = 0,
+        ActionsMaskCornerRadius = 0,
+        ActionsVisibleStartPoint = 0,
+        ActionsVisibleEndPoint = 0,
+    };
+
+    private static readonly SwipeOptions Classic = Hero;
+
+    private string _heroTitle = "IOSwipeView";
+    private string _heroSubtitle = "Drag me left or right";
+
+    private void MarkDone()
+    {
+        _heroTitle = "Marked done";
+        _heroSubtitle = "Leading action invoked";
+    }
+
+    private void Flag()
+    {
+        _heroTitle = "Flagged";
+        _heroSubtitle = "Trailing action invoked";
+    }
+
+    private void Delete()
+    {
+        _heroTitle = "Deleted";
+        _heroSubtitle = "Edge action triggered by drag";
+    }
+
+    private void OnHeroChanged(SwipeStateChange change)
+    {
+        if (change.IsClosed)
+        {
+            _heroTitle = "IOSwipeView";
+            _heroSubtitle = "Drag me left or right";
+        }
+    }
+
+    private sealed record Feature(string Glyph, string Color, string Title, string Body);
+
+    private static readonly Feature[] Features =
+    [
+        new("⇄", "var(--sys-blue)", "Any component",
+            "Not restricted to lists. Wrap a card, a header, a whole layout section."),
+        new("⤢", "var(--sys-indigo)", "Rubber banding",
+            "Drag past the limit and the row resists with a damped curve instead of stopping dead."),
+        new("⚡", "var(--sys-orange)", "Velocity projection",
+            "A quick flick opens the row without dragging the whole way, resolved against a predicted rest position."),
+        new("◐", "var(--sys-green)", "Spring settling",
+            "A real spring integrator runs in the browser at refresh rate, with no interop per frame."),
+        new("⌫", "var(--sys-red)", "Drag to trigger",
+            "Keep pulling and the edge action takes the row, with haptics on arm."),
+        new("◑", "var(--sys-purple)", "Light and dark",
+            "Semantic colours throughout, so it follows the system appearance for free."),
+    ];
+
+    private sealed record Person(string Initials, string Color, string Name, string Role, string Time);
+
+    private static readonly Person[] People =
+    [
+        new("AL", "var(--sys-pink)", "Ada Lovelace", "Notes on the Analytical Engine", "09:41"),
+        new("GH", "var(--sys-teal)", "Grace Hopper", "Found the bug, literally", "08:12"),
+        new("AT", "var(--sys-orange)", "Alan Turing", "On computable numbers", "Yesterday"),
+    ];
+
+    private sealed record Stat(string Value, string Label);
+
+    private static readonly Stat[] Stats =
+    [
+        new("34", "unit tests"),
+        new("0", "renders while dragging"),
+        new("1", "runtime dependency"),
+    ];
+
+    private const string Snippet = """
+        <SwipeView>
+            <ChildContent>
+                <MailRow Item="mail" />
+            </ChildContent>
+
+            <TrailingActions>
+                <SwipeAction Background="#ff9500" OnInvoked="Flag">Flag</SwipeAction>
+                <SwipeAction Background="#ff3b30" AllowSwipeToTrigger
+                             OnInvoked="Delete">Delete</SwipeAction>
+            </TrailingActions>
+        </SwipeView>
+        """;
+}

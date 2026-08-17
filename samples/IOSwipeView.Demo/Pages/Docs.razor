@@ -1,0 +1,535 @@
+@page "/docs"
+
+<PageTitle>Documentation — IOSwipeView</PageTitle>
+
+<PageHeader Eyebrow="Reference"
+            Title="Documentation"
+            Subtitle="A comprehensive guide to every component, parameter, animation style, and preset in IOSwipeView." />
+
+<div class="grid lg:grid-cols-[220px_minmax(0,1fr)] gap-8 items-start">
+    <nav class="sticky top-20 hidden lg:block text-footnote space-y-1">
+        <p class="text-caption1 uppercase tracking-wider text-label-tertiary font-semibold px-2 py-1">On this page</p>
+        @foreach (var section in Sections)
+        {
+            <a href="docs#@section.Id"
+               class="block px-2 py-1 rounded-ios text-label-secondary hover:text-label hover:bg-fill-tertiary transition-colors">
+                @section.Title
+            </a>
+        }
+    </nav>
+
+    <div class="space-y-10 min-w-0">
+        <section id="install">
+            <h2 class="text-title2 text-label mb-2">Installation</h2>
+            <p class="text-subheadline text-label-secondary mb-3">
+                IOSwipeView is delivered as a NuGet package targeting .NET 10 (compatible with WebAssembly and Server).
+            </p>
+            <div class="bg-grouped-secondary rounded-ios-lg border border-separator/60 p-4 font-mono text-footnote space-y-2">
+                <p class="text-label-tertiary"># dotnet CLI</p>
+                <p class="text-sys-blue select-all">dotnet add package IOSwipeView</p>
+            </div>
+        </section>
+
+        <section id="components">
+            <h2 class="text-title2 text-label mb-2">Component hierarchy</h2>
+            <p class="text-subheadline text-label-secondary mb-3">Four focused components designed for clean composition:</p>
+            <div class="grid sm:grid-cols-2 gap-3">
+                @foreach (var component in Components)
+                {
+                    <div class="bg-grouped-secondary rounded-ios-lg border border-separator/60 p-4">
+                        <code class="text-callout font-mono text-sys-blue">@component.Name</code>
+                        <p class="text-subheadline text-label-secondary mt-1">@component.Body</p>
+                    </div>
+                }
+            </div>
+        </section>
+
+        <section id="usage">
+            <h2 class="text-title2 text-label mb-2">Basic usage</h2>
+            <p class="text-subheadline text-label-secondary mb-3">
+                Wrap each row in a <code class="font-mono text-footnote">SwipeView</code> and nest multiple rows
+                inside a <code class="font-mono text-footnote">SwipeViewGroup</code> so opening one row automatically closes others.
+            </p>
+            <CodeBlock Code="@UsageSnippet" MaxHeightClass="max-h-none" />
+        </section>
+
+        <section id="swipelist">
+            <h2 class="text-title2 text-label mb-2">SwipeList&lt;TItem&gt; Component</h2>
+            <p class="text-subheadline text-label-secondary mb-3">
+                A high-level generic list component providing zero-boilerplate data binding, automatic accordion coordination, iOS Edit Mode multi-selection, fluid CSS grid height-collapse deletion animations, indented dividers, and full slot templating.
+            </p>
+            <div class="overflow-x-auto rounded-ios-lg border border-separator/60 mb-4">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-grouped-tertiary">
+                        <tr>
+                            <th class="px-4 py-2.5 text-footnote font-semibold text-label-secondary">Parameter / Method</th>
+                            <th class="px-4 py-2.5 text-footnote font-semibold text-label-secondary">Type</th>
+                            <th class="px-4 py-2.5 text-footnote font-semibold text-label-secondary">Description</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-separator/60 bg-grouped-secondary">
+                        <tr>
+                            <td class="px-4 py-2.5 align-top"><code class="text-caption1 font-mono text-label whitespace-nowrap">ListOptions</code></td>
+                            <td class="px-4 py-2.5 align-top"><code class="text-caption1 font-mono text-label-tertiary whitespace-nowrap">SwipeListOptions</code></td>
+                            <td class="px-4 py-2.5 align-top text-subheadline text-label-secondary">The complete configuration bundle (<code class="font-mono text-footnote">Default</code>, <code class="font-mono text-footnote">ClassicList</code>, <code class="font-mono text-footnote">InsetGrouped</code>, <code class="font-mono text-footnote">Notification</code>, <code class="font-mono text-footnote">Capsule</code>).</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-2.5 align-top"><code class="text-caption1 font-mono text-label whitespace-nowrap">DeleteAnimation</code></td>
+                            <td class="px-4 py-2.5 align-top"><code class="text-caption1 font-mono text-label-tertiary whitespace-nowrap">SwipeListAnimation</code></td>
+                            <td class="px-4 py-2.5 align-top text-subheadline text-label-secondary">Custom deletion transition (<code class="font-mono text-footnote">AppleSpring</code>, <code class="font-mono text-footnote">SlideLeft</code>, <code class="font-mono text-footnote">SlideRight</code>, <code class="font-mono text-footnote">ShrinkSlideLeft</code>, <code class="font-mono text-footnote">ScaleDown</code>, <code class="font-mono text-footnote">PopOut</code>, <code class="font-mono text-footnote">CardFold</code>, <code class="font-mono text-footnote">Fade</code>, <code class="font-mono text-footnote">None</code>).</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-2.5 align-top"><code class="text-caption1 font-mono text-label whitespace-nowrap">Items</code></td>
+                            <td class="px-4 py-2.5 align-top"><code class="text-caption1 font-mono text-label-tertiary whitespace-nowrap">IEnumerable&lt;TItem&gt;</code></td>
+                            <td class="px-4 py-2.5 align-top text-subheadline text-label-secondary">The data collection to render.</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-2.5 align-top"><code class="text-caption1 font-mono text-label whitespace-nowrap">ItemTemplate</code></td>
+                            <td class="px-4 py-2.5 align-top"><code class="text-caption1 font-mono text-label-tertiary whitespace-nowrap">RenderFragment&lt;TItem&gt;</code></td>
+                            <td class="px-4 py-2.5 align-top text-subheadline text-label-secondary">Template for each row's main content body.</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-2.5 align-top"><code class="text-caption1 font-mono text-label whitespace-nowrap">LeadingActions</code> / <code class="text-caption1 font-mono text-label whitespace-nowrap">TrailingActions</code></td>
+                            <td class="px-4 py-2.5 align-top"><code class="text-caption1 font-mono text-label-tertiary whitespace-nowrap">RenderFragment&lt;SwipeItemContext&lt;TItem&gt;&gt;</code></td>
+                            <td class="px-4 py-2.5 align-top text-subheadline text-label-secondary">Contextual action drawers. Receives <code class="font-mono text-footnote">ctx.Item</code>, <code class="font-mono text-footnote">ctx.Index</code>, <code class="font-mono text-footnote">ctx.IsSelected</code>, <code class="font-mono text-footnote">ctx.DeleteAsync()</code>.</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-2.5 align-top"><code class="text-caption1 font-mono text-label whitespace-nowrap">IsEditing</code></td>
+                            <td class="px-4 py-2.5 align-top"><code class="text-caption1 font-mono text-label-tertiary whitespace-nowrap">bool</code></td>
+                            <td class="px-4 py-2.5 align-top text-subheadline text-label-secondary">Enables iOS Edit Mode, sliding in selection checkmarks, locking row swiping, and switching row taps to selection toggling.</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-2.5 align-top"><code class="text-caption1 font-mono text-label whitespace-nowrap">SelectedItems</code></td>
+                            <td class="px-4 py-2.5 align-top"><code class="text-caption1 font-mono text-label-tertiary whitespace-nowrap">ISet&lt;TItem&gt;</code></td>
+                            <td class="px-4 py-2.5 align-top text-subheadline text-label-secondary">Two-way bindable set of selected items in Edit Mode (<code class="font-mono text-footnote">@@bind-SelectedItems</code>).</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-2.5 align-top"><code class="text-caption1 font-mono text-label whitespace-nowrap">ShowDividers</code> &amp; <code class="text-caption1 font-mono text-label whitespace-nowrap">DividerInset</code></td>
+                            <td class="px-4 py-2.5 align-top"><code class="text-caption1 font-mono text-label-tertiary whitespace-nowrap">bool, double</code></td>
+                            <td class="px-4 py-2.5 align-top text-subheadline text-label-secondary">Renders native iOS hairline separators with customizable leading pixel inset.</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-2.5 align-top"><code class="text-caption1 font-mono text-label whitespace-nowrap">OnItemDeleted</code></td>
+                            <td class="px-4 py-2.5 align-top"><code class="text-caption1 font-mono text-label-tertiary whitespace-nowrap">EventCallback&lt;TItem&gt;</code></td>
+                            <td class="px-4 py-2.5 align-top text-subheadline text-label-secondary">Invoked after an individual row's height collapse animation finishes.</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-2.5 align-top"><code class="text-caption1 font-mono text-label whitespace-nowrap">OnItemsDeleted</code></td>
+                            <td class="px-4 py-2.5 align-top"><code class="text-caption1 font-mono text-label-tertiary whitespace-nowrap">EventCallback&lt;IReadOnlyList&lt;TItem&gt;&gt;</code></td>
+                            <td class="px-4 py-2.5 align-top text-subheadline text-label-secondary">Invoked when multiple selected rows are batch deleted with a single atomic state refresh.</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-2.5 align-top"><code class="text-caption1 font-mono text-label whitespace-nowrap">RemoveItemsAnimatedAsync</code></td>
+                            <td class="px-4 py-2.5 align-top"><code class="text-caption1 font-mono text-label-tertiary whitespace-nowrap">Task (Method)</code></td>
+                            <td class="px-4 py-2.5 align-top text-subheadline text-label-secondary">Programmatically animates multiple selected rows collapsing in parallel before deletion.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <CodeBlock Code="@SwipeListSnippet" MaxHeightClass="max-h-none" />
+        </section>
+
+        <section id="animations">
+            <h2 class="text-title2 text-label mb-2">Animations &amp; Physics Engine</h2>
+            <p class="text-subheadline text-label-secondary mb-3">
+                IOSwipeView features physical spring simulations for horizontal drawer swiping and CSS Grid-powered lifecycle transitions for list item deletions and insertions.
+            </p>
+
+            <h3 class="text-headline text-label font-semibold mt-4 mb-2">1. SwipeSpring (Horizontal Drawer Physics)</h3>
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-2.5 mb-4">
+                <div class="bg-grouped-secondary rounded-ios border border-separator/60 p-3">
+                    <code class="text-footnote font-mono text-sys-blue">SwipeSpring.Default</code>
+                    <p class="text-caption1 text-label-secondary mt-0.5">Stiffness 300, Damping 32 (~220ms snappy settle)</p>
+                </div>
+                <div class="bg-grouped-secondary rounded-ios border border-separator/60 p-3">
+                    <code class="text-footnote font-mono text-sys-blue">SwipeSpring.Snappy</code>
+                    <p class="text-caption1 text-label-secondary mt-0.5">Stiffness 420, Damping 40 (~180ms zero overshoot)</p>
+                </div>
+                <div class="bg-grouped-secondary rounded-ios border border-separator/60 p-3">
+                    <code class="text-footnote font-mono text-sys-blue">SwipeSpring.Smooth</code>
+                    <p class="text-caption1 text-label-secondary mt-0.5">Stiffness 240, Damping 28 (~260ms soft settle)</p>
+                </div>
+                <div class="bg-grouped-secondary rounded-ios border border-separator/60 p-3">
+                    <code class="text-footnote font-mono text-sys-blue">SwipeSpring.Bouncy</code>
+                    <p class="text-caption1 text-label-secondary mt-0.5">Stiffness 220, Damping 18 (Playful oscillation)</p>
+                </div>
+                <div class="bg-grouped-secondary rounded-ios border border-separator/60 p-3">
+                    <code class="text-footnote font-mono text-sys-blue">SwipeSpring.Stiff</code>
+                    <p class="text-caption1 text-label-secondary mt-0.5">Stiffness 500, Damping 38 (High tension, crisp)</p>
+                </div>
+            </div>
+
+            <h3 class="text-headline text-label font-semibold mt-4 mb-2">2. SwipeListAnimation (List Deletion Styles)</h3>
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-2.5 mb-4">
+                <div class="bg-grouped-secondary rounded-ios border border-separator/60 p-3">
+                    <code class="text-footnote font-mono text-sys-green">AppleSpring</code>
+                    <p class="text-caption1 text-label-secondary mt-0.5">320ms native Apple Mail spring height collapse</p>
+                </div>
+                <div class="bg-grouped-secondary rounded-ios border border-separator/60 p-3">
+                    <code class="text-footnote font-mono text-sys-green">SlideLeft</code>
+                    <p class="text-caption1 text-label-secondary mt-0.5">280ms slide off-screen left and collapse</p>
+                </div>
+                <div class="bg-grouped-secondary rounded-ios border border-separator/60 p-3">
+                    <code class="text-footnote font-mono text-sys-green">SlideRight</code>
+                    <p class="text-caption1 text-label-secondary mt-0.5">280ms slide off-screen right and collapse</p>
+                </div>
+                <div class="bg-grouped-secondary rounded-ios border border-separator/60 p-3">
+                    <code class="text-footnote font-mono text-sys-green">ShrinkSlideLeft</code>
+                    <p class="text-caption1 text-label-secondary mt-0.5">280ms scales to 85% while flinging left</p>
+                </div>
+                <div class="bg-grouped-secondary rounded-ios border border-separator/60 p-3">
+                    <code class="text-footnote font-mono text-sys-green">ScaleDown</code>
+                    <p class="text-caption1 text-label-secondary mt-0.5">260ms inward scale and collapse</p>
+                </div>
+                <div class="bg-grouped-secondary rounded-ios border border-separator/60 p-3">
+                    <code class="text-footnote font-mono text-sys-green">PopOut</code>
+                    <p class="text-caption1 text-label-secondary mt-0.5">280ms elastic spring micro-pop and collapse</p>
+                </div>
+                <div class="bg-grouped-secondary rounded-ios border border-separator/60 p-3">
+                    <code class="text-footnote font-mono text-sys-green">CardFold</code>
+                    <p class="text-caption1 text-label-secondary mt-0.5">300ms 3D perspective fold and collapse</p>
+                </div>
+                <div class="bg-grouped-secondary rounded-ios border border-separator/60 p-3">
+                    <code class="text-footnote font-mono text-sys-green">Fade</code>
+                    <p class="text-caption1 text-label-secondary mt-0.5">220ms smooth dissolve and collapse</p>
+                </div>
+                <div class="bg-grouped-secondary rounded-ios border border-separator/60 p-3">
+                    <code class="text-footnote font-mono text-sys-green">None</code>
+                    <p class="text-caption1 text-label-secondary mt-0.5">0ms instant deletion without delay</p>
+                </div>
+            </div>
+            <CodeBlock Code="@AnimationSnippet" MaxHeightClass="max-h-none" />
+        </section>
+
+        <section id="multi-stage">
+            <h2 class="text-title2 text-label mb-2">Multi-Stage Progressive Triggers</h2>
+            <p class="text-subheadline text-label-secondary mb-3">
+                Configure multiple progressive trigger stages on the same side with <code class="font-mono text-footnote">TriggerStage="1"</code>, <code class="font-mono text-footnote">TriggerStage="2"</code>. Pull progressively deeper to arm higher-tier actions with progressive haptic feedback and icon spring micro-pops.
+            </p>
+            <CodeBlock Code="@MultiStageSnippet" MaxHeightClass="max-h-none" />
+        </section>
+
+        <section id="icons">
+            <h2 class="text-title2 text-label mb-2">Icons &amp; ActionPlacement</h2>
+            <p class="text-subheadline text-label-secondary mb-3">
+                <code class="font-mono text-footnote">SwipeAction</code> supports dedicated icons via the <code class="font-mono text-footnote">&lt;Icon&gt;</code> parameter and layout placement via <code class="font-mono text-footnote">Placement</code>. Works seamlessly with SVGs, font icons, emojis, or images.
+            </p>
+            <div class="overflow-x-auto rounded-ios-lg border border-separator/60 mb-4">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-grouped-tertiary">
+                        <tr>
+                            <th class="px-4 py-2.5 text-footnote font-semibold text-label-secondary">Placement</th>
+                            <th class="px-4 py-2.5 text-footnote font-semibold text-label-secondary">Layout &amp; Behavior</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-separator/60 bg-grouped-secondary">
+                        <tr>
+                            <td class="px-4 py-2.5 align-top"><code class="text-caption1 font-mono text-sys-blue whitespace-nowrap">ActionPlacement.Top</code></td>
+                            <td class="px-4 py-2.5 align-top text-subheadline text-label-secondary">Vertical stack (Classic Apple Mail). Icon centered above the label with elastic spring pop.</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-2.5 align-top"><code class="text-caption1 font-mono text-sys-blue whitespace-nowrap">ActionPlacement.InlineStart</code></td>
+                            <td class="px-4 py-2.5 align-top text-subheadline text-label-secondary">Horizontal inline. Icon placed before label (left in LTR, automatically flips to right in RTL).</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-2.5 align-top"><code class="text-caption1 font-mono text-sys-blue whitespace-nowrap">ActionPlacement.InlineEnd</code></td>
+                            <td class="px-4 py-2.5 align-top text-subheadline text-label-secondary">Horizontal inline reverse. Icon placed after the label text.</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-2.5 align-top"><code class="text-caption1 font-mono text-sys-blue whitespace-nowrap">ActionPlacement.IconOnly</code></td>
+                            <td class="px-4 py-2.5 align-top text-subheadline text-label-secondary">Renders centered icon button with accessible screen-reader <code class="font-mono text-footnote">AriaLabel</code>.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <CodeBlock Code="@IconSnippet" MaxHeightClass="max-h-none" />
+        </section>
+
+        <section id="options">
+            <h2 class="text-title2 text-label mb-2">SwipeOptions</h2>
+            <p class="text-subheadline text-label-secondary mb-3">
+                An immutable record. Build one with <code class="font-mono text-footnote">with</code> and reuse it —
+                every distance is in CSS pixels.
+            </p>
+            <div class="overflow-x-auto rounded-ios-lg border border-separator/60">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-grouped-tertiary">
+                        <tr>
+                            <th class="px-4 py-2.5 text-footnote font-semibold text-label-secondary">Property</th>
+                            <th class="px-4 py-2.5 text-footnote font-semibold text-label-secondary">Default</th>
+                            <th class="px-4 py-2.5 text-footnote font-semibold text-label-secondary">Meaning</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-separator/60 bg-grouped-secondary">
+                        @foreach (var option in Options)
+                        {
+                            <tr>
+                                <td class="px-4 py-2.5 align-top"><code class="text-caption1 font-mono text-label whitespace-nowrap">@option.Name</code></td>
+                                <td class="px-4 py-2.5 align-top"><code class="text-caption1 font-mono text-label-tertiary whitespace-nowrap">@option.Default</code></td>
+                                <td class="px-4 py-2.5 align-top text-subheadline text-label-secondary">@option.Body</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="presets">
+            <h2 class="text-title2 text-label mb-2">Presets</h2>
+            <p class="text-subheadline text-label-secondary mb-3">Stock option sets matching common iOS surfaces.</p>
+            <div class="grid sm:grid-cols-2 gap-3">
+                @foreach (var preset in Presets)
+                {
+                    <div class="bg-grouped-secondary rounded-ios-lg border border-separator/60 p-4">
+                        <code class="text-callout font-mono text-sys-blue">@preset.Name</code>
+                        <p class="text-subheadline text-label-secondary mt-1">@preset.Body</p>
+                    </div>
+                }
+            </div>
+        </section>
+
+        <section id="control">
+            <h2 class="text-title2 text-label mb-2">Programmatic control</h2>
+            <p class="text-subheadline text-label-secondary mb-3">
+                Capture the row with <code class="font-mono text-footnote">@("@ref")</code>, or take the
+                <code class="font-mono text-footnote">SwipeItemContext</code> or <code class="font-mono text-footnote">SwipeContext</code> handed to action content.
+            </p>
+            <CodeBlock Code="@ControlSnippet" MaxHeightClass="max-h-none" />
+        </section>
+
+        <section id="accessibility">
+            <h2 class="text-title2 text-label mb-2">Accessibility (WCAG AA &amp; Reduced Motion)</h2>
+            <p class="text-subheadline text-label-secondary mb-3">
+                <code class="font-mono text-footnote">SwipeView</code> and <code class="font-mono text-footnote">SwipeList</code> are fully operable via standard keyboard interactions, screen readers, and respect <code class="font-mono text-footnote">prefers-reduced-motion</code>:
+            </p>
+            <div class="bg-grouped-secondary rounded-ios-lg border border-separator/60 p-4 space-y-2 text-subheadline text-label-secondary">
+                <p><kbd class="px-1.5 py-0.5 rounded bg-fill-tertiary text-label font-mono text-xs">Tab</kbd> / <kbd class="px-1.5 py-0.5 rounded bg-fill-tertiary text-label font-mono text-xs">Shift+Tab</kbd> — Focus between interactive swipe rows.</p>
+                <p><kbd class="px-1.5 py-0.5 rounded bg-fill-tertiary text-label font-mono text-xs">ArrowLeft</kbd> / <kbd class="px-1.5 py-0.5 rounded bg-fill-tertiary text-label font-mono text-xs">ArrowRight</kbd> — Open trailing or leading action drawers (RTL aware).</p>
+                <p><kbd class="px-1.5 py-0.5 rounded bg-fill-tertiary text-label font-mono text-xs">Escape</kbd> — Close currently open actions.</p>
+                <p><kbd class="px-1.5 py-0.5 rounded bg-fill-tertiary text-label font-mono text-xs">Delete</kbd> / <kbd class="px-1.5 py-0.5 rounded bg-fill-tertiary text-label font-mono text-xs">Backspace</kbd> — Invoke the primary destructive action.</p>
+            </div>
+        </section>
+
+        <section id="events">
+            <h2 class="text-title2 text-label mb-2">Events</h2>
+            <p class="text-subheadline text-label-secondary">
+                <code class="font-mono text-footnote">OnStateChanged</code> fires only on settled transitions —
+                Closed, Expanded or Triggered — never per frame while dragging, so it is safe to do real work in the
+                handler. The payload is a <code class="font-mono text-footnote">SwipeStateChange</code> carrying the new
+                state and the side left showing.
+            </p>
+        </section>
+    </div>
+</div>
+
+@code {
+    private sealed record Section(string Id, string Title);
+
+    private static readonly Section[] Sections =
+    [
+        new("install", "Install"),
+        new("components", "Components"),
+        new("usage", "Usage"),
+        new("swipelist", "SwipeList<TItem>"),
+        new("animations", "Animations & Physics"),
+        new("multi-stage", "Multi-Stage Triggers"),
+        new("icons", "Icons & Placement"),
+        new("options", "SwipeOptions"),
+        new("presets", "Presets"),
+        new("control", "Control"),
+        new("accessibility", "Accessibility"),
+        new("events", "Events"),
+    ];
+
+    private sealed record Entry(string Name, string Body);
+
+    private static readonly Entry[] Components =
+    [
+        new("SwipeList<TItem>", "High-level generic list wrapper with built-in accordion coordination, iOS Edit Mode multi-selection, fluid row deletion animation, indented dividers, and empty states."),
+        new("SwipeView", "Wraps any content and adds leading and trailing actions. Takes Options, OnStateChanged, and exposes OpenAsync, CloseAsync and TriggerAsync. Supports keyboard navigation."),
+        new("SwipeAction", "One action. Background, Foreground, Placement, Icon, TriggerStage, AllowSwipeToTrigger, OnInvoked. Renders a real button, so it is focusable and keyboard-operable."),
+        new("SwipeViewGroup", "Makes the rows inside it behave like an accordion — opening one closes the rest."),
+    ];
+
+    private sealed record OptionRow(string Name, string Default, string Body);
+
+    private static readonly OptionRow[] Options =
+    [
+        new("Style", "Mask", "How actions lay out as they are revealed: Mask, EqualWidths or Cascade."),
+        new("ActionWidth", "100", "Natural width of a single action."),
+        new("Spacing", "8", "Gap between actions, and between actions and the row."),
+        new("ActionCornerRadius", "32", "Corner radius of each individual action."),
+        new("ActionsMaskCornerRadius", "20", "Corner radius of the mask revealing the actions as a group."),
+        new("ActionsVisibleStartPoint", "50", "Drag distance at which actions begin fading in."),
+        new("ActionsVisibleEndPoint", "100", "Drag distance at which actions are fully opaque. Equal to the start point disables the fade."),
+        new("ReadyToExpandPadding", "50", "How far past rest a release must project to settle open rather than closed."),
+        new("ReadyToTriggerPadding", "20", "How far past fully-expanded the drag must go to arm the first stage action."),
+        new("DeepTriggerPadding", "80", "Additional drag distance needed to arm each progressive trigger stage (Stage 2, 3, etc.)."),
+        new("MinimumPointToTrigger", "200", "Floor on the drag distance needed to trigger, so a narrow side cannot fire instantly."),
+        new("ExpandAnimation", "SwipeSpring.Default", "Spring physics configuration when expanding open."),
+        new("CloseAnimation", "SwipeSpring.Default", "Spring physics configuration when snapping closed."),
+        new("TriggerAnimation", "SwipeSpring.Default", "Spring physics configuration when triggered."),
+    ];
+
+    private static readonly Entry[] Presets =
+    [
+        new("SwipeOptions.Default / Capsule", "Modern floating capsule pills (32px radius, 8px spacing)."),
+        new("SwipeOptions.ClassicList", "Classic flush native iOS TableView / Mail.app style (0 spacing, square actions)."),
+        new("SwipeOptions.Notification", "iOS Lock Screen notification card style (16px radius, 6px spacing)."),
+        new("SwipeOptions.InsetGrouped", "iOS Inset Grouped card section style (12px mask radius, flush inner actions)."),
+    ];
+
+    private const string UsageSnippet = """
+        @using IOSwipeView
+
+        <SwipeViewGroup>
+            @foreach (var mail in Mails)
+            {
+                <SwipeView Options="Options" OnStateChanged="OnChanged">
+                    <LeadingActions>
+                        <SwipeAction Background="#34c759" Foreground="white"
+                                     OnInvoked="() => MarkRead(mail)">Read</SwipeAction>
+                    </LeadingActions>
+
+                    <ChildContent>
+                        <MailRow Item="mail" />
+                    </ChildContent>
+
+                    <TrailingActions>
+                        <SwipeAction Background="#ff9500" Foreground="white"
+                                     OnInvoked="() => Flag(mail)">Flag</SwipeAction>
+                        <SwipeAction Background="#ff3b30" Foreground="white" AllowSwipeToTrigger
+                                     OnInvoked="() => Delete(mail)">Delete</SwipeAction>
+                    </TrailingActions>
+                </SwipeView>
+            }
+        </SwipeViewGroup>
+
+        @code {
+            private static readonly SwipeOptions Options = SwipeOptions.ClassicList;
+
+            private void OnChanged(SwipeStateChange change) { }
+        }
+        """;
+
+    private const string SwipeListSnippet = """
+        var listOptions = SwipeListOptions.ClassicList with
+        {
+            DividerInset = 54,
+            DeleteAnimation = SwipeListAnimation.SlideLeft with { DurationMs = 280 }
+        };
+
+        <SwipeList Items="@Mails"
+                   ListOptions="listOptions"
+                   IsEditing="@isEditing"
+                   SelectedItems="@selectedMails"
+                   SelectedItemsChanged="OnSelectionChanged"
+                   OnItemDeleted="OnMailDeleted"
+                   OnItemsDeleted="OnBatchMailsDeleted">
+            
+            <LeadingActions Context="ctx">
+                <SwipeAction Background="#007aff" Foreground="white"
+                             OnInvoked="() => ToggleRead(ctx.Item)">Read</SwipeAction>
+            </LeadingActions>
+
+            <ItemTemplate Context="mail">
+                <MailRow Item="mail" />
+            </ItemTemplate>
+
+            <TrailingActions Context="ctx">
+                <SwipeAction Background="#ff9500" Foreground="white"
+                             OnInvoked="() => Flag(ctx.Item)">Flag</SwipeAction>
+                <!-- Invoking DeleteAsync() smoothly collapses the row height before deletion -->
+                <SwipeAction Background="#ff3b30" Foreground="white" TriggerStage="1"
+                             OnInvoked="() => ctx.DeleteAsync()">Trash</SwipeAction>
+            </TrailingActions>
+
+            <EmptyContent>
+                <div class="p-8 text-center text-label-secondary">No messages</div>
+            </EmptyContent>
+        </SwipeList>
+        """;
+
+    private const string AnimationSnippet = """
+        // 1. Custom spring physics for drawer expansion:
+        var bouncyDrawer = SwipeOptions.ClassicList with
+        {
+            ExpandAnimation = SwipeSpring.Bouncy,
+            CloseAnimation = SwipeSpring.Snappy
+        };
+
+        // 2. Custom list deletion animation style:
+        var customList = SwipeListOptions.InsetGrouped with
+        {
+            DeleteAnimation = SwipeListAnimation.PopOut with { DurationMs = 280 },
+            AnimateInsert = true
+        };
+
+        // 3. Derive list animation directly from physics spring:
+        var springCollapse = SwipeListAnimation.FromSpring(
+            ListDeleteStyle.PopOut, 
+            SwipeSpring.Bouncy
+        );
+        """;
+
+    private const string MultiStageSnippet = """
+        <TrailingActions>
+            <SwipeAction Background="#ff9500" Foreground="white"
+                         OnInvoked="() => Flag(item)">
+                Flag
+            </SwipeAction>
+            
+            <!-- Stage 1 arms at ~200px pull -->
+            <SwipeAction Background="#34c759" Foreground="white" TriggerStage="1"
+                         OnInvoked="() => Archive(item)">
+                Archive
+            </SwipeAction>
+            
+            <!-- Stage 2 arms at ~280px deep pull -->
+            <SwipeAction Background="#ff3b30" Foreground="white" TriggerStage="2"
+                         OnInvoked="() => Delete(item)">
+                Delete
+            </SwipeAction>
+        </TrailingActions>
+        """;
+
+    private const string IconSnippet = """
+        <!-- 1. Vertical Stack (Classic iOS Mail) -->
+        <SwipeAction Background="#ff3b30" Foreground="white" Placement="ActionPlacement.Top">
+            <Icon>
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                </svg>
+            </Icon>
+            <ChildContent>Trash</ChildContent>
+        </SwipeAction>
+
+        <!-- 2. Horizontal Inline (LTR & RTL symmetrical) -->
+        <SwipeAction Background="#007aff" Foreground="white" Placement="ActionPlacement.InlineStart">
+            <Icon><i class="bi bi-pin-fill"></i></Icon>
+            <ChildContent>Pin</ChildContent>
+        </SwipeAction>
+
+        <!-- 3. Minimalist Icon Only (Accessible with AriaLabel) -->
+        <SwipeAction Background="#ff9500" Foreground="white" Placement="ActionPlacement.IconOnly" AriaLabel="Flag">
+            <Icon>🚩</Icon>
+        </SwipeAction>
+        """;
+
+    private const string ControlSnippet = """
+        <button @onclick="() => _row!.OpenAsync(SwipeSide.Trailing)">Open</button>
+        <button @onclick="() => _row!.CloseAsync()">Close</button>
+
+        <SwipeView @ref="_row">
+            <ChildContent>...</ChildContent>
+
+            <TrailingActions Context="swipe">
+                <SwipeAction OnInvoked="swipe.CloseAsync">Dismiss</SwipeAction>
+            </TrailingActions>
+        </SwipeView>
+
+        @code {
+            private SwipeView? _row;
+        }
+        """;
+}

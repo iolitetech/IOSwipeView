@@ -1,0 +1,257 @@
+/*
+ * Visuals derive from custom properties written by SwipeView.razor.js.
+ * Dragging updates CSS variables per frame without Blazor render diffs.
+ * Logical properties (inset-inline-*, margin-inline-*) are used throughout for RTL support.
+ */
+
+.ioswipe {
+    --ioswipe-offset: 0px;
+    --ioswipe-leading-width: 0px;
+    --ioswipe-trailing-width: 0px;
+    --ioswipe-leading-natural-width: 0px;
+    --ioswipe-trailing-natural-width: 0px;
+    --ioswipe-leading-opacity: 0;
+    --ioswipe-trailing-opacity: 0;
+
+    position: relative;
+    overflow: hidden;
+    touch-action: pan-y;
+}
+
+.ioswipe__content {
+    position: relative;
+    z-index: 2;
+    transform: translate3d(var(--ioswipe-offset), 0, 0);
+    will-change: transform;
+}
+
+/* The element IOGesture listens on */
+.ioswipe ::deep .ioswipe__surface {
+    touch-action: pan-y;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.ioswipe__actions {
+    position: absolute;
+    inset-block: 0;
+    z-index: 1;
+    display: flex;
+    overflow: hidden;
+    border-radius: var(--ioswipe-mask-radius, 20px);
+    pointer-events: none;
+    visibility: hidden;
+    box-sizing: border-box;
+}
+
+.ioswipe__actions--leading {
+    inset-inline-start: 0;
+    width: var(--ioswipe-leading-width);
+    opacity: var(--ioswipe-leading-opacity);
+    justify-content: flex-start;
+}
+
+.ioswipe__actions--trailing {
+    inset-inline-end: 0;
+    width: var(--ioswipe-trailing-width);
+    opacity: var(--ioswipe-trailing-opacity);
+    justify-content: flex-end;
+}
+
+.ioswipe--dragging .ioswipe__actions,
+.ioswipe--armed-leading .ioswipe__actions--leading,
+.ioswipe--armed-trailing .ioswipe__actions--trailing {
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.ioswipe__strip {
+    display: flex;
+    gap: var(--ioswipe-spacing, 8px);
+    height: 100%;
+    align-items: stretch;
+    box-sizing: border-box;
+}
+
+/* =========================================================================
+   STYLE 1: MASK
+   Actions hold natural width and are uncovered as the row slides.
+   Stretches proportionally if pulled beyond natural width.
+   ========================================================================= */
+
+.ioswipe--mask .ioswipe__actions--leading .ioswipe__strip {
+    width: max(100%, var(--ioswipe-leading-natural-width));
+    min-width: 100%;
+    justify-content: flex-start;
+    flex-shrink: 0;
+}
+
+.ioswipe--mask .ioswipe__actions--trailing .ioswipe__strip {
+    width: max(100%, var(--ioswipe-trailing-natural-width));
+    min-width: 100%;
+    justify-content: flex-end;
+    flex-shrink: 0;
+}
+
+.ioswipe--mask ::deep .ioswipe__action-slot {
+    flex: 1 0 var(--ioswipe-action-width);
+    width: var(--ioswipe-action-width);
+    min-width: 0;
+    max-width: 100%;
+    height: 100%;
+    display: flex;
+}
+
+.ioswipe--mask ::deep .ioswipe__action {
+    width: 100%;
+    height: 100%;
+}
+
+/* =========================================================================
+   STYLE 2: EQUAL WIDTHS
+   Actions share the revealed space, expanding equally from 0 to full size.
+   ========================================================================= */
+
+.ioswipe--equal-widths .ioswipe__strip {
+    width: 100%;
+}
+
+.ioswipe--equal-widths ::deep .ioswipe__action-slot {
+    flex: 1 1 0;
+    min-width: 0;
+    max-width: 100%;
+    height: 100%;
+    display: flex;
+    overflow: hidden;
+}
+
+.ioswipe--equal-widths ::deep .ioswipe__action {
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+}
+
+/* =========================================================================
+   STYLE 3: CASCADE
+   Actions fan out from the edge with layered, overlapping cards.
+   Each slot is flex: 1 across the visible width.
+   ========================================================================= */
+
+.ioswipe--cascade .ioswipe__strip {
+    width: 100%;
+}
+
+.ioswipe--cascade ::deep .ioswipe__action-slot {
+    flex: 1 1 0;
+    min-width: 0;
+    max-width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: visible;
+}
+
+.ioswipe--cascade ::deep .ioswipe__action {
+    position: absolute;
+    inset-block: 0;
+    width: max(100%, var(--ioswipe-action-width));
+}
+
+/* Leading: 1st action is on top, anchored to end of its slot */
+.ioswipe--cascade .ioswipe__actions--leading ::deep .ioswipe__action-slot .ioswipe__action,
+.ioswipe--cascade .ioswipe__actions--leading ::deep .ioswipe__action {
+    inset-inline-end: 0;
+}
+
+/* Trailing: last action is on top, anchored to start of its slot */
+.ioswipe--cascade .ioswipe__actions--trailing ::deep .ioswipe__action-slot .ioswipe__action,
+.ioswipe--cascade .ioswipe__actions--trailing ::deep .ioswipe__action {
+    inset-inline-start: 0;
+}
+
+/* =========================================================================
+   ARMED STATE (Drag to trigger)
+   The edge action takes the entire strip while other actions fold away.
+   ========================================================================= */
+
+.ioswipe--armed-leading .ioswipe__actions--leading .ioswipe__strip,
+.ioswipe--armed-trailing .ioswipe__actions--trailing .ioswipe__strip {
+    width: 100% !important;
+    min-width: 100% !important;
+    gap: 0 !important;
+}
+
+/* Leading armed: 1st action expands, rest collapse */
+.ioswipe--armed-leading .ioswipe__actions--leading ::deep .ioswipe__action-slot {
+    flex: 0 0 0px !important;
+    width: 0px !important;
+    min-width: 0px !important;
+    max-width: 0px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    opacity: 0 !important;
+    overflow: hidden !important;
+    pointer-events: none;
+}
+
+/* Dynamic multi-stage armed slot expansions (works for any number of actions dynamically) */
+.ioswipe ::deep .ioswipe__action-slot.ioswipe__action-slot--armed {
+    flex: 1 0 100% !important;
+    width: 100% !important;
+    min-width: 0px !important;
+    max-width: 100% !important;
+    opacity: 1 !important;
+    overflow: visible !important;
+    pointer-events: auto;
+}
+
+.ioswipe ::deep .ioswipe__action-slot.ioswipe__action-slot--armed .ioswipe__action {
+    width: 100% !important;
+    inset-inline-start: 0 !important;
+    inset-inline-end: 0 !important;
+}
+
+.ioswipe ::deep .ioswipe__action-slot.ioswipe__action-slot--collapsed {
+    flex: 0 0 0px !important;
+    width: 0px !important;
+    min-width: 0px !important;
+    max-width: 0px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    opacity: 0 !important;
+    overflow: hidden !important;
+    pointer-events: none;
+}
+
+/* Spring-aware Transitions: derived directly from configured SwipeSpring */
+.ioswipe ::deep .ioswipe__action-slot {
+    transition: flex var(--ioswipe-spring-duration, 280ms) var(--ioswipe-spring-curve, cubic-bezier(0.16, 1, 0.3, 1)),
+                width var(--ioswipe-spring-duration, 280ms) var(--ioswipe-spring-curve, cubic-bezier(0.16, 1, 0.3, 1)),
+                max-width var(--ioswipe-spring-duration, 280ms) var(--ioswipe-spring-curve, cubic-bezier(0.16, 1, 0.3, 1)),
+                opacity calc(var(--ioswipe-spring-duration, 280ms) * 0.8) var(--ioswipe-spring-curve, cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+.ioswipe ::deep .ioswipe__action {
+    transition: width var(--ioswipe-spring-duration, 280ms) var(--ioswipe-spring-curve, cubic-bezier(0.16, 1, 0.3, 1)),
+                background-color 220ms cubic-bezier(0.16, 1, 0.3, 1),
+                border-radius var(--ioswipe-spring-duration, 280ms) var(--ioswipe-spring-curve, cubic-bezier(0.16, 1, 0.3, 1)),
+                filter 0.15s ease;
+}
+
+.ioswipe .ioswipe__strip {
+    transition: gap var(--ioswipe-spring-duration, 280ms) var(--ioswipe-spring-curve, cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+/* Accessible keyboard focus ring */
+.ioswipe:focus-visible {
+    outline: 2px solid var(--sys-blue, #007aff);
+    outline-offset: -2px;
+    border-radius: var(--ioswipe-mask-radius, 12px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ioswipe ::deep .ioswipe__action-slot,
+    .ioswipe ::deep .ioswipe__action,
+    .ioswipe .ioswipe__strip {
+        transition: none !important;
+    }
+}

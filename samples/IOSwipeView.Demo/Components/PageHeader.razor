@@ -1,0 +1,23 @@
+<header class="mb-6 @Class">
+    @if (!string.IsNullOrWhiteSpace(Eyebrow))
+    {
+        <p class="text-footnote font-semibold uppercase tracking-wide text-sys-blue">@Eyebrow</p>
+    }
+    <h1 class="text-largetitle text-label mt-0.5">@Title</h1>
+    @if (!string.IsNullOrWhiteSpace(Subtitle))
+    {
+        <p class="text-callout text-label-secondary mt-1.5 max-w-2xl">@Subtitle</p>
+    }
+    @if (ChildContent is not null)
+    {
+        <div class="mt-4">@ChildContent</div>
+    }
+</header>
+
+@code {
+    [Parameter] public string? Eyebrow { get; set; }
+    [Parameter] public string Title { get; set; } = "";
+    [Parameter] public string? Subtitle { get; set; }
+    [Parameter] public string? Class { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

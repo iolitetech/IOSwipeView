@@ -1,0 +1,235 @@
+/* =========================================================================
+   IOSwipeView - SwipeList<TItem> Styling & Lifecycle Animations
+   ========================================================================= */
+
+.ioswipe-list {
+    position: relative;
+    width: 100%;
+}
+
+.ioswipe-list__header {
+    padding: 0.5rem 1rem 0.25rem 1rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ioswipe-label-secondary, #8e8e93);
+}
+
+.ioswipe-list__footer {
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+    color: var(--ioswipe-label-secondary, #8e8e93);
+    text-align: center;
+}
+
+.ioswipe-list__empty {
+    padding: 2.5rem 1rem;
+    text-align: center;
+    color: var(--ioswipe-label-secondary, #8e8e93);
+    animation: ioswipe-empty-fade 320ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes ioswipe-empty-fade {
+    from {
+        opacity: 0;
+        transform: translateY(8px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.ioswipe-list__items {
+    position: relative;
+    width: 100%;
+}
+
+/* =========================================================================
+   Row Lifecycle: Pixel-Perfect Grid Height Collapse (1fr -> 0fr)
+   ========================================================================= */
+
+.ioswipe-list__row-wrapper {
+    display: grid;
+    grid-template-rows: 1fr;
+    position: relative;
+    width: 100%;
+    opacity: 1;
+    transform: none;
+    transform-origin: top center;
+    transition: grid-template-rows var(--ioswipe-collapse-duration, 320ms) var(--ioswipe-collapse-curve, cubic-bezier(0.16, 1, 0.3, 1)),
+                opacity var(--ioswipe-collapse-duration, 320ms) ease,
+                transform var(--ioswipe-collapse-duration, 320ms) var(--ioswipe-collapse-curve, cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+.ioswipe-list__row-wrapper--enter {
+    animation: ioswipe-item-enter 280ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes ioswipe-item-enter {
+    from {
+        opacity: 0;
+        transform: translateY(-8px) scale(0.99);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.ioswipe-list__row-wrapper--collapsing {
+    grid-template-rows: 0fr !important;
+    opacity: 0 !important;
+    pointer-events: none;
+}
+
+.ioswipe-list__row-wrapper--collapsing-spring {
+    transform: scaleY(0) !important;
+}
+
+.ioswipe-list__row-wrapper--collapsing-slide-left {
+    transform: translateX(-100%) scaleY(0) !important;
+}
+
+.ioswipe-list__row-wrapper--collapsing-slide-right {
+    transform: translateX(100%) scaleY(0) !important;
+}
+
+.ioswipe-list__row-wrapper--collapsing-shrink-slide-left {
+    transform: translateX(-100%) scale(0.85) scaleY(0) !important;
+}
+
+.ioswipe-list__row-wrapper--collapsing-shrink-slide-right {
+    transform: translateX(100%) scale(0.85) scaleY(0) !important;
+}
+
+.ioswipe-list__row-wrapper--collapsing-scale {
+    transform: scale(0.75) scaleY(0) !important;
+}
+
+.ioswipe-list__row-wrapper--collapsing-pop-out {
+    transform: scale(0.6) scaleY(0) !important;
+}
+
+.ioswipe-list__row-wrapper--collapsing-card-fold {
+    transform: perspective(600px) rotateX(-35deg) scale(0.9) scaleY(0) !important;
+    transform-origin: top center;
+}
+
+.ioswipe-list__row-wrapper--collapsing-fade {
+    transform: none !important;
+}
+
+.ioswipe-list__row-wrapper--collapsing .ioswipe-list__divider {
+    opacity: 0 !important;
+    transform: scaleX(0);
+}
+
+.ioswipe-list__row-inner {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-height: 0;
+    overflow: hidden;
+}
+
+/* =========================================================================
+   iOS Edit Mode Selection Checkbox (Sliding, Spring & Circular Pulse)
+   ========================================================================= */
+
+.ioswipe-list__select-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 100%;
+    flex-shrink: 0;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    margin: 0;
+    animation: ioswipe-select-slide-in 240ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes ioswipe-select-slide-in {
+    from {
+        width: 0;
+        opacity: 0;
+        transform: rotate(-15deg) scale(0.6);
+    }
+    to {
+        width: 2.75rem;
+        opacity: 1;
+        transform: rotate(0deg) scale(1);
+    }
+}
+
+.ioswipe-list__checkmark-circle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.35rem;
+    height: 1.35rem;
+    border-radius: 9999px;
+    border: 1.5px solid rgba(120, 120, 128, 0.4);
+    background-color: transparent;
+    transition: background-color 180ms ease, border-color 180ms ease, transform 180ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.ioswipe-list__select-btn--selected .ioswipe-list__checkmark-circle {
+    background-color: var(--ioswipe-select-color, #007aff);
+    border-color: var(--ioswipe-select-color, #007aff);
+    color: #ffffff;
+    animation: ioswipe-select-pulse 240ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes ioswipe-select-pulse {
+    0% { transform: scale(0.85); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+.ioswipe-list__checkmark-icon {
+    width: 0.85rem;
+    height: 0.85rem;
+}
+
+.ioswipe-list__swipe-container {
+    flex: 1;
+    min-width: 0;
+}
+
+.ioswipe-list__item-content {
+    width: 100%;
+    cursor: pointer;
+}
+
+/* =========================================================================
+   Indented Separator / Divider
+   ========================================================================= */
+
+.ioswipe-list__divider {
+    height: 1px;
+    background-color: var(--ioswipe-separator-color, rgba(60, 60, 67, 0.15));
+    margin-inline-start: var(--ioswipe-divider-inset, 0px);
+    transition: opacity 180ms ease, transform 180ms ease;
+    transform-origin: center;
+}
+
+/* =========================================================================
+   Accessibility: Reduced Motion
+   ========================================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+    .ioswipe-list__row-wrapper,
+    .ioswipe-list__row-wrapper--enter,
+    .ioswipe-list__select-btn,
+    .ioswipe-list__checkmark-circle,
+    .ioswipe-list__empty,
+    .ioswipe-list__divider {
+        animation: none !important;
+        transition: none !important;
+    }
+}

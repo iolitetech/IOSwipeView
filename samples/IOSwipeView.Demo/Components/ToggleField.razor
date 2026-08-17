@@ -1,0 +1,24 @@
+<label class="flex items-center justify-between gap-3 cursor-pointer select-none @Class">
+    <span class="min-w-0">
+        <span class="block text-callout text-label">@Label</span>
+        @if (!string.IsNullOrWhiteSpace(Hint))
+        {
+            <span class="block text-footnote text-label-secondary">@Hint</span>
+        }
+    </span>
+    <span class="relative shrink-0">
+        <input type="checkbox" class="peer sr-only" checked="@Value" @onchange="OnChange" />
+        <span class="block w-[51px] h-[31px] rounded-full bg-fill transition-colors duration-200 peer-checked:bg-sys-green"></span>
+        <span class="absolute top-[2px] left-[2px] w-[27px] h-[27px] rounded-full bg-white shadow-md transition-transform duration-200 peer-checked:translate-x-[20px]"></span>
+    </span>
+</label>
+
+@code {
+    [Parameter] public string Label { get; set; } = "";
+    [Parameter] public string? Hint { get; set; }
+    [Parameter] public bool Value { get; set; }
+    [Parameter] public EventCallback<bool> ValueChanged { get; set; }
+    [Parameter] public string? Class { get; set; }
+
+    private Task OnChange(ChangeEventArgs e) => ValueChanged.InvokeAsync(e.Value is true);
+}

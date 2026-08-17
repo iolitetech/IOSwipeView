@@ -1,0 +1,70 @@
+name: Deploy demo to GitHub Pages
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+# Allow the workflow to publish to Pages.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deployment at a time; let an in-flight run finish rather than cancelling it.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Publish Blazor WebAssembly
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: samples/IOSwipeView.Demo/package-lock.json
+
+      - name: Publish
+        run: dotnet publish samples/IOSwipeView.Demo/IOSwipeView.Demo.csproj -c Release -o release --nologo
+
+      # The site is served from https://<owner>.github.io/IOSwipeView/, not the domain root.
+      - name: Rewrite base href
+        run: sed -i 's|<base href="/" />|<base href="/IOSwipeView/" />|g' release/wwwroot/index.html
+
+      # Without this, Pages' Jekyll pass strips the _framework directory.
+      - name: Disable Jekyll
+        run: touch release/wwwroot/.nojekyll
+
+      # Serves index.html on direct sub-routes (e.g. /swipelist, /docs) on GitHub Pages
+      - name: Copy index.html to 404.html for SPA routing
+        run: cp release/wwwroot/index.html release/wwwroot/404.html
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: release/wwwroot
+
+  deploy:
+    name: Deploy
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

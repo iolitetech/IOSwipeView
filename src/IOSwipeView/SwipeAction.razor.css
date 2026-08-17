@@ -1,0 +1,175 @@
+/*
+ * Actions are plain buttons wrapped in an action-slot for flexible layout modes.
+ * Focusable and operable via keyboard or gestures.
+ */
+
+.ioswipe__action-slot {
+    height: 100%;
+    box-sizing: border-box;
+}
+
+.ioswipe__action {
+    --ioswipe-action-background: rgb(0 0 0 / 8%);
+    --ioswipe-action-foreground: inherit;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 100%;
+    height: 100%;
+    padding: 0 var(--ioswipe-action-padding, 1.25rem);
+    border: 0;
+    border-radius: var(--ioswipe-action-radius, 32px);
+
+    background: var(--ioswipe-action-background);
+    color: var(--ioswipe-action-foreground);
+    font: inherit;
+    font-weight: 500;
+    font-size: 0.95rem;
+    line-height: 1.2;
+    text-align: center;
+
+    cursor: pointer;
+    overflow: hidden;
+    box-sizing: border-box;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+@media (hover: hover) {
+    .ioswipe__action:hover {
+        filter: brightness(1.08);
+    }
+}
+
+.ioswipe__action:active {
+    filter: brightness(0.85);
+}
+
+.ioswipe__action:focus-visible {
+    outline: 2px solid currentcolor;
+    outline-offset: -3px;
+}
+
+/* =========================================================================
+   PLACEMENT LAYOUTS (Top, InlineStart, InlineEnd, IconOnly)
+   ========================================================================= */
+
+.ioswipe__action--top {
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    font-size: 0.82rem;
+    font-weight: 500;
+}
+
+.ioswipe__action--inline-start {
+    flex-direction: row;
+    gap: 6px;
+}
+
+.ioswipe__action--inline-end {
+    flex-direction: row;
+    gap: 6px;
+}
+
+.ioswipe__action--icon-only {
+    padding: 0;
+    justify-content: center;
+}
+
+/* Icon container with elastic spring dynamics */
+.ioswipe__action-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 1.25rem;
+    line-height: 1;
+    pointer-events: none;
+    transition: transform var(--ioswipe-spring-duration, 280ms) var(--ioswipe-spring-curve, cubic-bezier(0.175, 0.885, 0.32, 1.275)),
+                opacity 0.2s ease;
+    will-change: transform;
+}
+
+.ioswipe__action-icon ::deep svg,
+.ioswipe__action-icon svg {
+    display: block;
+    width: 1.35rem;
+    height: 1.35rem;
+}
+
+.ioswipe__action-icon ::deep img,
+.ioswipe__action-icon img {
+    display: block;
+    width: 1.35rem;
+    height: 1.35rem;
+    object-fit: contain;
+}
+
+.ioswipe__action--icon-only .ioswipe__action-icon ::deep svg,
+.ioswipe__action--icon-only .ioswipe__action-icon svg {
+    width: 1.55rem;
+    height: 1.55rem;
+}
+
+.ioswipe__action--icon-only .ioswipe__action-icon {
+    font-size: 1.45rem;
+}
+
+/* Keeps a label centered and prevents wrapping during equal widths, cascade or trigger expansion */
+.ioswipe__action-label {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+    pointer-events: none;
+    transition: transform var(--ioswipe-spring-duration, 280ms) var(--ioswipe-spring-curve, cubic-bezier(0.175, 0.885, 0.32, 1.275)),
+                opacity 0.2s ease;
+    will-change: transform;
+}
+
+.ioswipe__action-label--fixed {
+    white-space: nowrap;
+}
+
+/* When armed, icon executes elastic spring micro-pop */
+.ioswipe__action-slot--armed .ioswipe__action-icon,
+.ioswipe__action-slot--armed .ioswipe__action-label {
+    animation: ioswipe-spring-pop var(--ioswipe-spring-duration, 300ms) var(--ioswipe-spring-curve, cubic-bezier(0.175, 0.885, 0.32, 1.275)) forwards;
+    font-weight: 700;
+}
+
+@keyframes ioswipe-spring-pop {
+    0% {
+        transform: scale(1.0);
+    }
+    45% {
+        transform: scale(1.28);
+    }
+    100% {
+        transform: scale(1.15);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ioswipe__action-slot--armed .ioswipe__action-icon,
+    .ioswipe__action-slot--armed .ioswipe__action-label {
+        animation: none !important;
+        transform: scale(1.1) !important;
+    }
+}
+
+.ioswipe__action--label-fade-only .ioswipe__action-label,
+.ioswipe__action--label-fade-only .ioswipe__action-icon {
+    opacity: var(--ioswipe-current-opacity, 1);
+}
+
+@media (prefers-color-scheme: dark) {
+    .ioswipe__action {
+        --ioswipe-action-background: rgb(255 255 255 / 12%);
+    }
+}

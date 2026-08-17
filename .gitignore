@@ -1,0 +1,28 @@
+## Build output
+bin/
+obj/
+[Dd]ebug/
+[Rr]elease/
+artifacts/
+/packages/
+*.nupkg
+*.snupkg
+
+## IDE
+.vs/
+.idea/
+riderModule.iml
+/_ReSharper.Caches/
+*.user
+*.suo
+
+## Reference material — cloned locally, not vendored
+ref/
+
+## Node
+node_modules/
+
+## OS
+Thumbs.db
+.DS_Store
+

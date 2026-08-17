@@ -1,0 +1,146 @@
+@page "/samples/messages"
+
+<PageTitle>Messages — IOSwipeView</PageTitle>
+
+<PageHeader Eyebrow="Sample"
+            Title="Messages &amp; notifications"
+            Subtitle="Two surfaces with very different geometry: a flush conversation list, and floating notification pills over a wallpaper." />
+
+<div class="grid lg:grid-cols-2 gap-6 items-start">
+    <PhoneFrame Title="Messages" BackLabel="Edit">
+        <div class="divide-y divide-separator/60">
+            <SwipeViewGroup>
+                @foreach (var chat in _chats)
+                {
+                    <SwipeView Options="SwipeOptions.ClassicList">
+                        <LeadingActions>
+                            <SwipeAction Background="#007aff" Foreground="white" OnInvoked="() => Pin(chat)">
+                                @(chat.Pinned ? "Unpin" : "Pin")
+                            </SwipeAction>
+                        </LeadingActions>
+                        <ChildContent>
+                            <ListRow Glyph="@chat.Initials" GlyphColor="@chat.Color" Title="@chat.Name"
+                                     Preview="@chat.Message" Meta="@chat.Time" Unread="chat.Unread" />
+                        </ChildContent>
+                        <TrailingActions>
+                            <SwipeAction Background="#5856d6" Foreground="white" OnInvoked="() => Mute(chat)">
+                                @(chat.Muted ? "Unmute" : "Mute")
+                            </SwipeAction>
+                            <SwipeAction Background="#ff3b30" Foreground="white" AllowSwipeToTrigger
+                                         OnInvoked="() => Delete(chat)">Delete</SwipeAction>
+                        </TrailingActions>
+                    </SwipeView>
+                }
+            </SwipeViewGroup>
+        </div>
+    </PhoneFrame>
+
+    <div class="space-y-4">
+        <div class="rounded-ios-device p-[10px] bg-black shadow-2xl ring-1 ring-white/10">
+            <div class="rounded-[44px] overflow-hidden p-4 pt-14 pb-10"
+                 style="min-height:520px;background:linear-gradient(160deg,#1c1c3a 0%,#3b2b5c 45%,#7b3f61 100%)">
+                <div class="text-center text-white mb-8">
+                    <p class="text-6xl font-light tracking-tight">9:41</p>
+                    <p class="text-callout opacity-80">Tuesday, 16 August</p>
+                </div>
+
+                <div class="space-y-2.5">
+                    @foreach (var note in _notifications)
+                    {
+                        <SwipeView Options="SwipeOptions.Notification">
+                            <ChildContent>
+                                <div class="rounded-ios-lg p-3 select-none"
+                                     style="background:rgb(255 255 255 / 0.16);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)">
+                                    <div class="flex items-center gap-2 text-white/70 text-caption1 mb-0.5">
+                                        <span class="grid place-items-center w-4 h-4 rounded-[4px] text-[9px]" style="background:@note.Color">@note.Badge</span>
+                                        <span>@note.App</span>
+                                        <span class="ml-auto">@note.Time</span>
+                                    </div>
+                                    <p class="text-white text-subheadline font-semibold">@note.Title</p>
+                                    <p class="text-white/80 text-subheadline">@note.Body</p>
+                                </div>
+                            </ChildContent>
+                            <TrailingActions>
+                                <SwipeAction Background="rgb(255 255 255 / 0.22)" Foreground="white">Options</SwipeAction>
+                                <SwipeAction Background="#ff3b30" Foreground="white" AllowSwipeToTrigger
+                                             OnInvoked="() => Clear(note)">Clear</SwipeAction>
+                            </TrailingActions>
+                        </SwipeView>
+                    }
+
+                    @if (_notifications.Count == 0)
+                    {
+                        <div class="text-center py-10">
+                            <p class="text-white/70 text-subheadline">No notifications</p>
+                            <button type="button" class="btn-ghost mt-3" @onclick="ResetNotifications">Restore</button>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <Panel Title="Why two presets">
+            <p class="text-subheadline text-label-secondary">
+                The conversation list uses <code class="font-mono text-footnote">ClassicList</code> — flush, square, edge to edge.
+                The lock screen uses <code class="font-mono text-footnote">Notification</code> — 16px pills with 6px spacing so the
+                actions read as separate floating objects over the wallpaper. Same component, same physics.
+            </p>
+        </Panel>
+    </div>
+</div>
+
+@code {
+    private sealed class Chat
+    {
+        public required string Initials { get; init; }
+        public required string Color { get; init; }
+        public required string Name { get; init; }
+        public required string Message { get; init; }
+        public required string Time { get; init; }
+        public bool Unread { get; set; }
+        public bool Pinned { get; set; }
+        public bool Muted { get; set; }
+    }
+
+    private sealed class Notification
+    {
+        public required string App { get; init; }
+        public required string Badge { get; init; }
+        public required string Color { get; init; }
+        public required string Title { get; init; }
+        public required string Body { get; init; }
+        public required string Time { get; init; }
+    }
+
+    private List<Chat> _chats = [];
+    private List<Notification> _notifications = [];
+
+    protected override void OnInitialized()
+    {
+        _chats =
+        [
+            new() { Initials = "AL", Color = "var(--sys-pink)", Name = "Ada Lovelace", Message = "The engine can do whatever we know how to order it to perform.", Time = "09:41", Unread = true },
+            new() { Initials = "GH", Color = "var(--sys-teal)", Name = "Grace Hopper", Message = "It is easier to ask forgiveness than permission.", Time = "08:03", Unread = true },
+            new() { Initials = "AT", Color = "var(--sys-orange)", Name = "Alan Turing", Message = "We can only see a short distance ahead.", Time = "Yesterday" },
+            new() { Initials = "MH", Color = "var(--sys-indigo)", Name = "Margaret Hamilton", Message = "The software eventually saved the mission.", Time = "Monday" },
+        ];
+
+        ResetNotifications();
+    }
+
+    private void ResetNotifications() =>
+        _notifications =
+        [
+            new() { App = "MAIL", Badge = "✉", Color = "#007aff", Title = "Ada Lovelace", Body = "Notes on the Analytical Engine", Time = "now" },
+            new() { App = "CALENDAR", Badge = "17", Color = "#ff3b30", Title = "Design review", Body = "In 15 minutes · Conference room 2", Time = "9:26" },
+            new() { App = "MESSAGES", Badge = "💬", Color = "#34c759", Title = "Grace Hopper", Body = "Found the bug. It was an actual moth.", Time = "8:03" },
+        ];
+
+    private void Pin(Chat chat) => chat.Pinned = !chat.Pinned;
+
+    private void Mute(Chat chat) => chat.Muted = !chat.Muted;
+
+    private void Delete(Chat chat) => _chats.Remove(chat);
+
+    private void Clear(Notification note) => _notifications.Remove(note);
+}

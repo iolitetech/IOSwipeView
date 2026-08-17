@@ -1,0 +1,387 @@
+@import "tailwindcss";
+
+@source "../Pages";
+@source "../Layout";
+@source "../Components";
+@source "../wwwroot/index.html";
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+:root {
+    color-scheme: light;
+
+    --sys-blue: #007aff;
+    --sys-green: #34c759;
+    --sys-indigo: #5856d6;
+    --sys-orange: #ff9500;
+    --sys-pink: #ff2d55;
+    --sys-purple: #af52de;
+    --sys-red: #ff3b30;
+    --sys-teal: #30b0c7;
+    --sys-yellow: #ffcc00;
+    --sys-mint: #00c7be;
+    --sys-cyan: #32ade6;
+    --sys-brown: #a2845e;
+
+    --sys-gray: #8e8e93;
+    --sys-gray-2: #aeaeb2;
+    --sys-gray-3: #c7c7cc;
+    --sys-gray-4: #d1d1d6;
+    --sys-gray-5: #e5e5ea;
+    --sys-gray-6: #f2f2f7;
+
+    --sys-bg: #ffffff;
+    --sys-bg-secondary: #f2f2f7;
+    --sys-bg-tertiary: #ffffff;
+    --sys-grouped: #f2f2f7;
+    --sys-grouped-secondary: #ffffff;
+    --sys-grouped-tertiary: #f2f2f7;
+
+    --sys-label: rgb(0 0 0);
+    --sys-label-secondary: rgb(60 60 67 / 0.6);
+    --sys-label-tertiary: rgb(60 60 67 / 0.3);
+    --sys-label-quaternary: rgb(60 60 67 / 0.18);
+
+    --sys-separator: rgb(60 60 67 / 0.29);
+    --sys-separator-opaque: #c6c6c8;
+    --sys-fill: rgb(120 120 128 / 0.2);
+    --sys-fill-secondary: rgb(120 120 128 / 0.16);
+    --sys-fill-tertiary: rgb(118 118 128 / 0.12);
+    --sys-fill-quaternary: rgb(116 116 128 / 0.08);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        color-scheme: dark;
+
+        --sys-blue: #0a84ff;
+        --sys-green: #30d158;
+        --sys-indigo: #5e5ce6;
+        --sys-orange: #ff9f0a;
+        --sys-pink: #ff375f;
+        --sys-purple: #bf5af2;
+        --sys-red: #ff453a;
+        --sys-teal: #40c8e0;
+        --sys-yellow: #ffd60a;
+        --sys-mint: #63e6e2;
+        --sys-cyan: #64d2ff;
+        --sys-brown: #ac8e68;
+
+        --sys-gray: #8e8e93;
+        --sys-gray-2: #636366;
+        --sys-gray-3: #48484a;
+        --sys-gray-4: #3a3a3c;
+        --sys-gray-5: #2c2c2e;
+        --sys-gray-6: #1c1c1e;
+
+        --sys-bg: #000000;
+        --sys-bg-secondary: #1c1c1e;
+        --sys-bg-tertiary: #2c2c2e;
+        --sys-grouped: #000000;
+        --sys-grouped-secondary: #1c1c1e;
+        --sys-grouped-tertiary: #2c2c2e;
+
+        --sys-label: rgb(255 255 255);
+        --sys-label-secondary: rgb(235 235 245 / 0.6);
+        --sys-label-tertiary: rgb(235 235 245 / 0.3);
+        --sys-label-quaternary: rgb(235 235 245 / 0.16);
+
+        --sys-separator: rgb(84 84 88 / 0.65);
+        --sys-separator-opaque: #38383a;
+        --sys-fill: rgb(120 120 128 / 0.36);
+        --sys-fill-secondary: rgb(120 120 128 / 0.32);
+        --sys-fill-tertiary: rgb(118 118 128 / 0.24);
+        --sys-fill-quaternary: rgb(118 118 128 / 0.18);
+    }
+}
+
+:root[data-theme="dark"] {
+    color-scheme: dark;
+
+    --sys-blue: #0a84ff;
+    --sys-green: #30d158;
+    --sys-indigo: #5e5ce6;
+    --sys-orange: #ff9f0a;
+    --sys-pink: #ff375f;
+    --sys-purple: #bf5af2;
+    --sys-red: #ff453a;
+    --sys-teal: #40c8e0;
+    --sys-yellow: #ffd60a;
+    --sys-mint: #63e6e2;
+    --sys-cyan: #64d2ff;
+    --sys-brown: #ac8e68;
+
+    --sys-gray: #8e8e93;
+    --sys-gray-2: #636366;
+    --sys-gray-3: #48484a;
+    --sys-gray-4: #3a3a3c;
+    --sys-gray-5: #2c2c2e;
+    --sys-gray-6: #1c1c1e;
+
+    --sys-bg: #000000;
+    --sys-bg-secondary: #1c1c1e;
+    --sys-bg-tertiary: #2c2c2e;
+    --sys-grouped: #000000;
+    --sys-grouped-secondary: #1c1c1e;
+    --sys-grouped-tertiary: #2c2c2e;
+
+    --sys-label: rgb(255 255 255);
+    --sys-label-secondary: rgb(235 235 245 / 0.6);
+    --sys-label-tertiary: rgb(235 235 245 / 0.3);
+    --sys-label-quaternary: rgb(235 235 245 / 0.16);
+
+    --sys-separator: rgb(84 84 88 / 0.65);
+    --sys-separator-opaque: #38383a;
+    --sys-fill: rgb(120 120 128 / 0.36);
+    --sys-fill-secondary: rgb(120 120 128 / 0.32);
+    --sys-fill-tertiary: rgb(118 118 128 / 0.24);
+    --sys-fill-quaternary: rgb(118 118 128 / 0.18);
+}
+
+@theme {
+    --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display",
+        "Helvetica Neue", "Segoe UI Variable", "Segoe UI", Roboto, system-ui, sans-serif;
+    --font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Monaco, "Cascadia Mono",
+        "Roboto Mono", monospace;
+
+    --text-caption2: 0.6875rem;
+    --text-caption2--line-height: 0.8125rem;
+    --text-caption1: 0.75rem;
+    --text-caption1--line-height: 1rem;
+    --text-footnote: 0.8125rem;
+    --text-footnote--line-height: 1.125rem;
+    --text-subheadline: 0.9375rem;
+    --text-subheadline--line-height: 1.25rem;
+    --text-callout: 1rem;
+    --text-callout--line-height: 1.3125rem;
+    --text-body: 1.0625rem;
+    --text-body--line-height: 1.375rem;
+    --text-headline: 1.0625rem;
+    --text-headline--line-height: 1.375rem;
+    --text-headline--font-weight: 600;
+    --text-title3: 1.25rem;
+    --text-title3--line-height: 1.5625rem;
+    --text-title2: 1.375rem;
+    --text-title2--line-height: 1.75rem;
+    --text-title1: 1.75rem;
+    --text-title1--line-height: 2.125rem;
+    --text-largetitle: 2.125rem;
+    --text-largetitle--line-height: 2.5625rem;
+    --text-largetitle--font-weight: 700;
+    --text-largetitle--letter-spacing: 0.011em;
+
+    --radius-ios-sm: 6px;
+    --radius-ios: 10px;
+    --radius-ios-lg: 14px;
+    --radius-ios-xl: 20px;
+    --radius-ios-card: 12px;
+    --radius-ios-sheet: 38px;
+    --radius-ios-device: 54px;
+
+    --ease-ios: cubic-bezier(0.25, 0.1, 0.25, 1);
+    --ease-ios-out: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+@theme inline {
+    --color-sys-blue: var(--sys-blue);
+    --color-sys-green: var(--sys-green);
+    --color-sys-indigo: var(--sys-indigo);
+    --color-sys-orange: var(--sys-orange);
+    --color-sys-pink: var(--sys-pink);
+    --color-sys-purple: var(--sys-purple);
+    --color-sys-red: var(--sys-red);
+    --color-sys-teal: var(--sys-teal);
+    --color-sys-yellow: var(--sys-yellow);
+    --color-sys-mint: var(--sys-mint);
+    --color-sys-cyan: var(--sys-cyan);
+    --color-sys-brown: var(--sys-brown);
+
+    --color-gray-ios: var(--sys-gray);
+    --color-gray-ios-2: var(--sys-gray-2);
+    --color-gray-ios-3: var(--sys-gray-3);
+    --color-gray-ios-4: var(--sys-gray-4);
+    --color-gray-ios-5: var(--sys-gray-5);
+    --color-gray-ios-6: var(--sys-gray-6);
+
+    --color-bg: var(--sys-bg);
+    --color-bg-secondary: var(--sys-bg-secondary);
+    --color-bg-tertiary: var(--sys-bg-tertiary);
+    --color-grouped: var(--sys-grouped);
+    --color-grouped-secondary: var(--sys-grouped-secondary);
+    --color-grouped-tertiary: var(--sys-grouped-tertiary);
+
+    --color-label: var(--sys-label);
+    --color-label-secondary: var(--sys-label-secondary);
+    --color-label-tertiary: var(--sys-label-tertiary);
+    --color-label-quaternary: var(--sys-label-quaternary);
+
+    --color-separator: var(--sys-separator);
+    --color-separator-opaque: var(--sys-separator-opaque);
+    --color-fill: var(--sys-fill);
+    --color-fill-secondary: var(--sys-fill-secondary);
+    --color-fill-tertiary: var(--sys-fill-tertiary);
+    --color-fill-quaternary: var(--sys-fill-quaternary);
+}
+
+@layer base {
+    html {
+        -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+        background-color: var(--sys-grouped);
+        color: var(--sys-label);
+        font-family: var(--font-sans);
+        font-size: var(--text-body);
+        line-height: var(--text-body--line-height);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        min-height: 100dvh;
+    }
+
+    :focus-visible {
+        outline: 2px solid var(--sys-blue);
+        outline-offset: 2px;
+        border-radius: 4px;
+    }
+
+    ::selection {
+        background-color: color-mix(in srgb, var(--sys-blue) 28%, transparent);
+    }
+
+    ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: var(--sys-fill);
+        border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: var(--sys-fill-secondary);
+    }
+}
+
+.loading-progress {
+    position: relative;
+    display: block;
+    width: 5rem;
+    height: 5rem;
+    margin: 30vh auto 1rem auto;
+}
+
+.loading-progress circle {
+    fill: none;
+    stroke: var(--sys-fill-tertiary);
+    stroke-width: 0.4rem;
+    transform-origin: 50% 50%;
+    transform: rotate(-90deg);
+}
+
+.loading-progress circle:last-child {
+    stroke: var(--sys-blue);
+    stroke-dasharray: calc(3.141 * var(--blazor-load-percentage, 0%) * 0.8), 500%;
+    transition: stroke-dasharray 0.05s ease-in-out;
+}
+
+.loading-progress-text {
+    position: absolute;
+    inset: calc(30vh + 2rem) 0 auto 0;
+    text-align: center;
+    font-weight: 600;
+    color: var(--sys-label-secondary);
+}
+
+.loading-progress-text::after {
+    content: var(--blazor-load-percentage-text, "Loading");
+}
+
+#blazor-error-ui {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    padding: 0.9rem 1.25rem;
+    background: var(--sys-yellow);
+    color: #000;
+    box-shadow: 0 -1px 12px rgb(0 0 0 / 0.2);
+}
+
+#blazor-error-ui .dismiss {
+    cursor: pointer;
+    position: absolute;
+    right: 1rem;
+    top: 0.75rem;
+}
+
+.blazor-error-boundary {
+    padding: 1rem 1.25rem;
+    border-radius: var(--radius-ios);
+    background: var(--sys-red);
+    color: #fff;
+}
+
+.blazor-error-boundary::after {
+    content: "An error has occurred.";
+}
+
+.btn-ghost,
+.btn-danger,
+.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.4rem 0.85rem;
+    border: 0;
+    border-radius: 999px;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.btn-ghost {
+    background: var(--sys-fill-tertiary);
+    color: var(--sys-label);
+}
+
+.btn-ghost:hover {
+    background: var(--sys-fill-secondary);
+}
+
+.btn-primary {
+    background: var(--sys-blue);
+    color: #fff;
+}
+
+.btn-danger {
+    background: var(--sys-red);
+    color: #fff;
+}
+
+.btn-primary:hover,
+.btn-danger:hover {
+    filter: brightness(1.08);
+}
+
+@utility material {
+    background-color: color-mix(in srgb, var(--sys-bg) 72%, transparent);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+}
+
+@utility corner-continuous {
+    border-radius: var(--radius-ios-lg);
+}
+
+@utility touch-callout-none {
+    -webkit-touch-callout: none;
+}

@@ -1,0 +1,36 @@
+<div class="ioswipe__action-slot">
+    <button type="button"
+            class="@CssClass"
+            style="@CssStyle"
+            aria-label="@AriaLabel"
+            @attributes="AdditionalAttributes"
+            @onclick="InvokeAsync">
+        @if (Icon is not null)
+        {
+            if (Placement == ActionPlacement.IconOnly)
+            {
+                <span class="ioswipe__action-icon">@Icon</span>
+            }
+            else if (Placement == ActionPlacement.InlineEnd)
+            {
+                @if (ChildContent is not null)
+                {
+                    <span class="ioswipe__action-label @(LabelFixedSize ? "ioswipe__action-label--fixed" : "")">@ChildContent</span>
+                }
+                <span class="ioswipe__action-icon">@Icon</span>
+            }
+            else
+            {
+                <span class="ioswipe__action-icon">@Icon</span>
+                @if (ChildContent is not null)
+                {
+                    <span class="ioswipe__action-label @(LabelFixedSize ? "ioswipe__action-label--fixed" : "")">@ChildContent</span>
+                }
+            }
+        }
+        else
+        {
+            <span class="ioswipe__action-label @(LabelFixedSize ? "ioswipe__action-label--fixed" : "")">@ChildContent</span>
+        }
+    </button>
+</div>
