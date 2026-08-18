@@ -158,6 +158,14 @@ public partial class SwipeView : ComponentBase, IAsyncDisposable
         }
     }
 
+    private string AriaStatusText => State switch
+    {
+        SwipeState.Expanded => $"{OpenSide} actions revealed",
+        SwipeState.Triggering => "Action ready to trigger",
+        SwipeState.Triggered => "Action triggered",
+        _ => string.Empty
+    };
+
     /// <summary>
     /// Handles keyboard interaction for WCAG AA accessible row navigation.
     /// </summary>
@@ -332,20 +340,32 @@ public partial class SwipeView : ComponentBase, IAsyncDisposable
             return;
         }
 
-        var isDeep = false;
+        var pattern = Options.HapticPattern;
         if (armed is { } s && armedIndex is { } idx)
         {
             var triggers = Geometry.Metrics.TriggerIndices(s);
-            if (triggers.Count >= 2 && idx == triggers[^1])
+            var stageIndex = -1;
+            for (var i = 0; i < triggers.Count; i++)
             {
-                isDeep = true;
+                if (triggers[i] == idx)
+                {
+                    stageIndex = i;
+                    break;
+                }
+            }
+
+            if (stageIndex >= 0 && stageIndex < Options.StageHapticPatterns.Length)
+            {
+                pattern = Options.StageHapticPatterns[stageIndex];
+            }
+            else if (stageIndex >= 1)
+            {
+                pattern = Options.DeepHapticPattern;
             }
         }
 
         _armedSide = armed;
         _armedIndex = armedIndex;
-
-        var pattern = isDeep ? Options.DeepHapticPattern : Options.HapticPattern;
 
         await _module!.InvokeVoidAsync(
             "setArmed",
@@ -384,8 +404,11 @@ public partial class SwipeView : ComponentBase, IAsyncDisposable
         {
             try
             {
-                var armedSide = _armedSide?.ToString().ToLowerInvariant();
-                await _module.InvokeVoidAsync("setArmed", _handle, armedSide, false, null, _armedIndex);
+                if (outcome.State != SwipeState.Closed)
+                {
+                    var armedSide = _armedSide?.ToString().ToLowerInvariant();
+                    await _module.InvokeVoidAsync("setArmed", _handle, armedSide, false, null, _armedIndex);
+                }
 
                 await _module.InvokeVoidAsync(
                     "settle",

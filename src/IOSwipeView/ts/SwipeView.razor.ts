@@ -181,6 +181,15 @@ export function setArmed(
             const isSiblingCollapsed = side === activeSide && i !== armedIndex;
             slot.classList.toggle('ioswipe__action-slot--armed', isArmedSlot);
             slot.classList.toggle('ioswipe__action-slot--collapsed', isSiblingCollapsed);
+
+            if (instance.root.classList.contains('ioswipe--cascade')) {
+                if (isArmedSlot) {
+                    slot.style.zIndex = '20';
+                } else {
+                    const baseZ = activeSide === 'leading' ? slots.length - i : i + 1;
+                    slot.style.zIndex = `${baseZ}`;
+                }
+            }
         });
     }
 
@@ -219,6 +228,9 @@ export function settle(
     if (reducedMotionQuery?.matches) {
         instance.frame = 0;
         render(instance, to);
+        if (to === 0) {
+            setArmed(handle, null, false);
+        }
         return;
     }
 
@@ -247,6 +259,9 @@ export function settle(
         if (Math.abs(x) < 0.5 && Math.abs(v) < 5) {
             instance.frame = 0;
             render(instance, to);
+            if (to === 0) {
+                setArmed(handle, null, false);
+            }
             return;
         }
 

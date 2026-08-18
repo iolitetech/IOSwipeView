@@ -117,6 +117,17 @@ public sealed record SwipeOptions
     public int[] DeepHapticPattern { get; init; } = [15, 30, 15];
 
     /// <summary>
+    /// Progressive vibration patterns in milliseconds for multi-stage trigger tiers.
+    /// Stage 1 defaults to <c>[12]</c>, Stage 2 to <c>[18, 30, 18]</c>, Stage 3+ to <c>[25, 40, 25, 40, 25]</c>.
+    /// </summary>
+    public int[][] StageHapticPatterns { get; init; } =
+    [
+        [12],
+        [18, 30, 18],
+        [25, 40, 25, 40, 25],
+    ];
+
+    /// <summary>
     /// The exponent applied to over-drag past a limit, between 0 and 1. Defaults to <c>0.7</c>.
     /// </summary>
     /// <remarks>
