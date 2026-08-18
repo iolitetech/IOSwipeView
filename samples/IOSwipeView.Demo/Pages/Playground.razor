@@ -162,6 +162,24 @@
                         </button>
                     }
                 </div>
+
+                <!-- Live Spring ODE Trajectory Visualizer -->
+                <div class="bg-fill-tertiary/40 border border-separator/40 rounded-ios p-3">
+                    <div class="flex items-center justify-between text-caption2 font-mono text-label-secondary mb-1.5">
+                        <span class="font-semibold text-label">Spring Settling Curve: x(t)</span>
+                        <span>ζ = @DampingRatio.ToString("0.00") · @SpringRegime</span>
+                    </div>
+                    <svg viewBox="0 0 300 65" class="w-full h-16 overflow-visible">
+                        <!-- Baseline (Resting Position) -->
+                        <line x1="0" y1="42" x2="300" y2="42" stroke="currentColor" stroke-dasharray="3,3" class="text-separator" stroke-width="1" />
+                        <line x1="0" y1="40" x2="300" y2="40" stroke="currentColor" stroke-dasharray="2,4" class="text-separator/40" stroke-width="0.5" />
+                        <line x1="0" y1="44" x2="300" y2="44" stroke="currentColor" stroke-dasharray="2,4" class="text-separator/40" stroke-width="0.5" />
+
+                        <!-- Analytical ODE Spring Curve -->
+                        <path d="@SpringSvgPath" fill="none" stroke="var(--sys-blue, #007aff)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </div>
+
                 <div class="grid grid-cols-2 gap-4">
                     <SliderField Label="Stiffness" Unit="" Min="60" Max="600" Step="10" Value="_state.Stiffness"
                                  ValueChanged="v => Set(() => { _state.Stiffness = v; _state.MarkCustomSpring(); })" />
@@ -206,6 +224,71 @@
     private string PreviewSubtitle => $"{_state.PresetId} · {_state.Style}";
 
     private string SpringSubtitle => $"stiffness {_state.Stiffness:0} · damping {_state.Damping:0} · {_state.SpringId}";
+
+    private double DampingRatio => _state.Damping / (2.0 * Math.Sqrt(Math.Max(1.0, _state.Stiffness)));
+
+    private string SpringRegime => DampingRatio switch
+    {
+        < 0.99 => "Underdamped (Bouncy)",
+        <= 1.01 => "Critically Damped",
+        _ => "Overdamped (Smooth)"
+    };
+
+    private string SpringSvgPath
+    {
+        get
+        {
+            var k = Math.Max(1.0, _state.Stiffness);
+            var c = Math.Max(0.1, _state.Damping);
+            var w0 = Math.Sqrt(k);
+            var zeta = c / (2.0 * w0);
+            var sb = new System.Text.StringBuilder();
+
+            const int samples = 75;
+            const double totalTime = 1.0;
+            const double baselineY = 42.0;
+            const double initialDisplacement = 30.0; // peak start at Y=12
+
+            for (var i = 0; i <= samples; i++)
+            {
+                var t = (i / (double)samples) * totalTime;
+                var x = 0.0;
+
+                if (zeta < 1.0)
+                {
+                    var wd = w0 * Math.Sqrt(1.0 - zeta * zeta);
+                    x = Math.Exp(-zeta * w0 * t) * (Math.Cos(wd * t) + (zeta * w0 / wd) * Math.Sin(wd * t));
+                }
+                else if (Math.Abs(zeta - 1.0) < 0.001)
+                {
+                    x = Math.Exp(-w0 * t) * (1.0 + w0 * t);
+                }
+                else
+                {
+                    var gamma = w0 * Math.Sqrt(zeta * zeta - 1.0);
+                    var r1 = -zeta * w0 + gamma;
+                    var r2 = -zeta * w0 - gamma;
+                    var c1 = r2 / (r2 - r1);
+                    var c2 = 1.0 - c1;
+                    x = c1 * Math.Exp(r1 * t) + c2 * Math.Exp(r2 * t);
+                }
+
+                var px = (i / (double)samples) * 300.0;
+                var py = baselineY - (initialDisplacement * x);
+
+                if (i == 0)
+                {
+                    sb.Append(System.Globalization.CultureInfo.InvariantCulture, $"M {px:0.0} {py:0.0}");
+                }
+                else
+                {
+                    sb.Append(System.Globalization.CultureInfo.InvariantCulture, $" L {px:0.0} {py:0.0}");
+                }
+            }
+
+            return sb.ToString();
+        }
+    }
 
     protected override void OnInitialized() => _state.ApplyPreset("classic");
 

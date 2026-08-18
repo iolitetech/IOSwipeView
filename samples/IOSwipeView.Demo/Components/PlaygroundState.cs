@@ -58,47 +58,81 @@ public sealed class PlaygroundState
     public static IReadOnlyList<(string Id, string Label, double Stiffness, double Damping)> Springs =>
     [
         ("snappy", "Snappy", 420, 40),
+        ("bouncy", "Bouncy", 280, 18),
+        ("smooth", "Smooth", 220, 36),
         ("default", "Default", 300, 32),
-        ("smooth", "Smooth", 240, 28),
-        ("bouncy", "Bouncy", 220, 18),
-        ("gentle", "Gentle", 160, 22),
-        ("wobbly", "Wobbly", 180, 12),
+        ("stiff", "Stiff", 500, 48),
+        ("gentle", "Gentle", 160, 26),
     ];
 
     public void ApplyPreset(string id)
     {
         PresetId = id;
-        Style = SwipeActionStyle.Mask;
-
         switch (id)
         {
             case "classic":
-                (ActionWidth, Spacing, ActionCornerRadius, MaskCornerRadius, FadeStart, FadeEnd) = (80d, 0d, 0d, 0d, 0d, 0d);
+                Style = SwipeActionStyle.Mask;
+                ActionWidth = 80;
+                Spacing = 0;
+                ActionCornerRadius = 0;
+                MaskCornerRadius = 0;
+                FadeStart = 0;
+                FadeEnd = 0;
+                ReadyToExpandPadding = 50;
+                ReadyToTriggerPadding = 20;
+                MinimumPointToTrigger = 200;
                 break;
+
             case "grouped":
-                (ActionWidth, Spacing, ActionCornerRadius, MaskCornerRadius, FadeStart, FadeEnd) = (80d, 0d, 0d, 12d, 0d, 0d);
+                Style = SwipeActionStyle.Mask;
+                ActionWidth = 80;
+                Spacing = 0;
+                ActionCornerRadius = 0;
+                MaskCornerRadius = 12;
+                FadeStart = 0;
+                FadeEnd = 0;
+                ReadyToExpandPadding = 50;
+                ReadyToTriggerPadding = 20;
+                MinimumPointToTrigger = 200;
                 break;
+
             case "notification":
-                (ActionWidth, Spacing, ActionCornerRadius, MaskCornerRadius, FadeStart, FadeEnd) = (76d, 6d, 16d, 16d, 10d, 40d);
+                Style = SwipeActionStyle.Mask;
+                ActionWidth = 72;
+                Spacing = 6;
+                ActionCornerRadius = 16;
+                MaskCornerRadius = 20;
+                FadeStart = 10;
+                FadeEnd = 60;
+                ReadyToExpandPadding = 50;
+                ReadyToTriggerPadding = 20;
+                MinimumPointToTrigger = 200;
                 break;
+
             case "capsule":
-                (ActionWidth, Spacing, ActionCornerRadius, MaskCornerRadius, FadeStart, FadeEnd) = (100d, 8d, 32d, 20d, 20d, 60d);
+                Style = SwipeActionStyle.EqualWidths;
+                ActionWidth = 64;
+                Spacing = 8;
+                ActionCornerRadius = 24;
+                MaskCornerRadius = 28;
+                FadeStart = 20;
+                FadeEnd = 80;
+                ReadyToExpandPadding = 50;
+                ReadyToTriggerPadding = 20;
+                MinimumPointToTrigger = 200;
                 break;
         }
     }
 
     public void ApplySpring(string id)
     {
-        var match = Springs.FirstOrDefault(s => s.Id == id);
-
-        if (match.Id is null)
-        {
-            return;
-        }
-
         SpringId = id;
-        Stiffness = match.Stiffness;
-        Damping = match.Damping;
+        var spring = Springs.FirstOrDefault(s => s.Id == id);
+        if (spring.Id is not null)
+        {
+            Stiffness = spring.Stiffness;
+            Damping = spring.Damping;
+        }
     }
 
     public void MarkCustomSpring() => SpringId = "custom";
