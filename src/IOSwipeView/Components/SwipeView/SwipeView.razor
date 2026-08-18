@@ -4,6 +4,7 @@
      style="@RootCssStyle"
      tabindex="0"
      role="region"
+     aria-roledescription="swipe row"
      aria-expanded="@(OpenSide is not null ? "true" : "false")"
      @onkeydown="HandleKeyDownAsync"
      @attributes="AdditionalAttributes">
@@ -45,4 +46,6 @@
             @ChildContent
         </Gesture>
     </div>
+
+    <span class="sr-only" aria-live="polite" aria-atomic="true">@AriaStatusText</span>
 </div>
