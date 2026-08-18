@@ -136,30 +136,17 @@
     white-space: nowrap;
 }
 
-/* When armed, icon executes elastic spring micro-pop */
+/* When armed, icon and label execute elastic spring micro-pop bidirectionally */
 .ioswipe__action-slot--armed .ioswipe__action-icon,
 .ioswipe__action-slot--armed .ioswipe__action-label {
-    animation: ioswipe-spring-pop var(--ioswipe-spring-duration, 300ms) var(--ioswipe-spring-curve, cubic-bezier(0.175, 0.885, 0.32, 1.275)) forwards;
+    transform: scale(1.18);
     font-weight: 700;
-}
-
-@keyframes ioswipe-spring-pop {
-    0% {
-        transform: scale(1.0);
-    }
-    45% {
-        transform: scale(1.28);
-    }
-    100% {
-        transform: scale(1.15);
-    }
 }
 
 @media (prefers-reduced-motion: reduce) {
     .ioswipe__action-slot--armed .ioswipe__action-icon,
     .ioswipe__action-slot--armed .ioswipe__action-label {
-        animation: none !important;
-        transform: scale(1.1) !important;
+        transform: scale(1.05) !important;
     }
 }
 
