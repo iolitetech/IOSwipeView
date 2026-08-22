@@ -8,7 +8,7 @@ namespace IOSwipeView;
 /// under right-to-left layouts: leading actions are revealed by dragging towards the end of
 /// the reading direction, trailing actions by dragging towards its start.
 /// </remarks>
-public enum SwipeSide
+public enum SwipeSide : byte
 {
     /// <summary>Actions revealed by dragging the row towards its trailing edge.</summary>
     Leading,

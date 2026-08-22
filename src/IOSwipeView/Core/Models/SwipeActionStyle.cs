@@ -3,7 +3,7 @@ namespace IOSwipeView;
 /// <summary>
 /// How a side's actions are laid out as they are revealed.
 /// </summary>
-public enum SwipeActionStyle
+public enum SwipeActionStyle : byte
 {
     /// <summary>
     /// Actions keep their natural width and are progressively uncovered by a mask, so they

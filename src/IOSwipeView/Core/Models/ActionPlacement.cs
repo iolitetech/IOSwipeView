@@ -3,7 +3,7 @@ namespace IOSwipeView;
 /// <summary>
 /// Controls the visual layout and position of an icon relative to its label inside a <see cref="SwipeAction"/>.
 /// </summary>
-public enum ActionPlacement
+public enum ActionPlacement : byte
 {
     /// <summary>
     /// Icon is positioned above the label text (Classic iOS Mail / Notes vertical stack).

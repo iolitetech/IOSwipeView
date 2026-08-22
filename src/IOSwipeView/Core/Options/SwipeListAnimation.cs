@@ -3,7 +3,7 @@ namespace IOSwipeView;
 /// <summary>
 /// Transition style applied when a row is collapsed and deleted from a <see cref="SwipeList{TItem}"/>.
 /// </summary>
-public enum ListDeleteStyle
+public enum ListDeleteStyle : byte
 {
     /// <summary>Vertical spring height collapse and fade.</summary>
     AppleSpring,
