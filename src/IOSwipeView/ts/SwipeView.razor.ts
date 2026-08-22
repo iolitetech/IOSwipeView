@@ -193,12 +193,11 @@ export function setArmed(
         });
     }
 
-    // Only honoured on devices with a vibration motor after user gesture.
     if (haptics && side) {
         try {
             navigator.vibrate?.(pattern ?? 10);
         } catch {
-            // Silently ignore if vibration is restricted by browser policy
+            // Ignore if vibration is unsupported or restricted
         }
     }
 }

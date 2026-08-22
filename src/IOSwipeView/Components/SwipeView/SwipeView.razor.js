@@ -148,7 +148,7 @@ export function setArmed(handle, side, haptics, pattern, armedIndex) {
             navigator.vibrate?.(pattern ?? 10);
         }
         catch {
-            // Silently ignore if vibration is restricted by browser policy
+            // Ignore if vibration is unsupported or restricted
         }
     }
 }

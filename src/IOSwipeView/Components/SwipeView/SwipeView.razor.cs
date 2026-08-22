@@ -5,14 +5,10 @@ using Microsoft.JSInterop;
 namespace IOSwipeView;
 
 /// <summary>
-/// Adds customisable swipe actions to any content.
+/// Renders a swipeable row container with revealable leading and trailing action drawers.
 /// </summary>
 /// <remarks>
-/// <para>
-/// The drag maths live in <see cref="SwipeGeometry"/> as pure functions; this component owns the
-/// state machine and hands the resulting offset to a small JavaScript renderer. That renderer
-/// writes CSS custom properties, so nothing here re-renders while a drag is in flight.
-/// </para>
+/// Example:
 /// <code>
 /// &lt;SwipeView&gt;
 ///     &lt;TrailingActions&gt;

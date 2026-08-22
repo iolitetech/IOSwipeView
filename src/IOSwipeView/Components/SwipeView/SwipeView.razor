@@ -31,11 +31,6 @@
         </div>
     }
 
-    @*
-        The translated element has to be one this component owns: Blazor's CSS isolation only
-        stamps its scope attribute onto elements authored here, never onto a child component's
-        root, so styling <Gesture> directly would silently never match.
-    *@
     <div class="ioswipe__content">
         <Gesture @ref="_gesture"
                  Classes="ioswipe__surface"

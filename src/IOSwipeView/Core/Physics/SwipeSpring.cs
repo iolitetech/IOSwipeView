@@ -1,39 +1,25 @@
 namespace IOSwipeView;
 
 /// <summary>
-/// A critically-tunable spring used to settle the row after a drag is released.
+/// Physical spring configuration used for settling and transition animations.
 /// </summary>
-/// <remarks>
-/// Mass is fixed at 1, matching SwiftUI's <c>interpolatingSpring</c>, so stiffness and damping
-/// alone describe the motion. Higher stiffness snaps faster; higher damping reduces overshoot.
-/// </remarks>
-/// <param name="Stiffness">The spring constant. Higher values pull towards the target harder.</param>
-/// <param name="Damping">The damping coefficient. Higher values settle sooner with less bounce.</param>
+/// <param name="Stiffness">Spring stiffness coefficient.</param>
+/// <param name="Damping">Damping coefficient.</param>
 public readonly record struct SwipeSpring(double Stiffness, double Damping)
 {
-    /// <summary>
-    /// The default snappy iOS spring: quick, responsive, overshoot-free settle (~0.22s).
-    /// </summary>
+    /// <summary>Default spring configuration (Stiffness: 300, Damping: 32).</summary>
     public static SwipeSpring Default { get; } = new(300, 32);
 
-    /// <summary>
-    /// Snappy spring: immediate, zero bounce (~0.18s).
-    /// </summary>
+    /// <summary>Snappy spring with rapid settling (Stiffness: 420, Damping: 40).</summary>
     public static SwipeSpring Snappy { get; } = new(420, 40);
 
-    /// <summary>
-    /// Smooth spring: slightly softer settle (~0.26s).
-    /// </summary>
+    /// <summary>Smooth spring with gentle deceleration (Stiffness: 240, Damping: 28).</summary>
     public static SwipeSpring Smooth { get; } = new(240, 28);
 
-    /// <summary>
-    /// Bouncy spring: gentle oscillation before settling.
-    /// </summary>
+    /// <summary>Bouncy spring with light oscillation (Stiffness: 220, Damping: 18).</summary>
     public static SwipeSpring Bouncy { get; } = new(220, 18);
 
-    /// <summary>
-    /// Stiff spring: high tension, zero bounce.
-    /// </summary>
+    /// <summary>Stiff spring with high resistance (Stiffness: 500, Damping: 38).</summary>
     public static SwipeSpring Stiff { get; } = new(500, 38);
 
     /// <summary>
@@ -43,7 +29,7 @@ public readonly record struct SwipeSpring(double Stiffness, double Damping)
         Math.Clamp((int)Math.Round(8000.0 / Math.Max(Damping, 10)), 160, 420);
 
     /// <summary>
-    /// Optimal CSS bezier easing curve matching this spring's damping ratio.
+    /// CSS bezier easing curve approximation matching this spring's damping ratio.
     /// </summary>
     public string ToCssCurve()
     {

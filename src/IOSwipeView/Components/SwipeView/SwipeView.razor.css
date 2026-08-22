@@ -179,7 +179,6 @@
 
 /* =========================================================================
    ARMED STATE (Drag to trigger)
-   Bulletproof full-width expansion with zero gaps and seamless retrieval
    ========================================================================= */
 
 .ioswipe--armed-leading .ioswipe__actions--leading .ioswipe__strip,
@@ -240,7 +239,6 @@
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.22);
 }
 
-/* Spring-aware Transitions: derived directly from configured SwipeSpring */
 .ioswipe ::deep .ioswipe__action-slot {
     transition: flex var(--ioswipe-spring-duration, 280ms) var(--ioswipe-spring-curve, cubic-bezier(0.16, 1, 0.3, 1)),
                 flex-basis var(--ioswipe-spring-duration, 280ms) var(--ioswipe-spring-curve, cubic-bezier(0.16, 1, 0.3, 1)),
@@ -269,7 +267,6 @@
                 width var(--ioswipe-spring-duration, 280ms) var(--ioswipe-spring-curve, cubic-bezier(0.16, 1, 0.3, 1));
 }
 
-/* Focus management: eliminate focus outline on click/touch/drag */
 .ioswipe:focus {
     outline: none;
 }

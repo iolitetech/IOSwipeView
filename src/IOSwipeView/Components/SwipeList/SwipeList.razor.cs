@@ -3,8 +3,7 @@ using Microsoft.AspNetCore.Components;
 namespace IOSwipeView;
 
 /// <summary>
-/// A generic, coordinated list of swipeable items with built-in accordion behavior,
-/// iOS Edit Mode multi-selection, customizable deletion animations, and templated slots.
+/// A generic list of swipeable items with accordion group coordination, edit mode multi-selection, and transition animations.
 /// </summary>
 /// <typeparam name="TItem">The data item type.</typeparam>
 public partial class SwipeList<TItem> : ComponentBase where TItem : notnull
@@ -34,11 +33,11 @@ public partial class SwipeList<TItem> : ComponentBase where TItem : notnull
     [Parameter]
     public RenderFragment<SwipeItemContext<TItem>>? TrailingActions { get; set; }
 
-    /// <summary>The complete configuration bundle for this list. Defaults to <see cref="SwipeListOptions.Default"/>.</summary>
+    /// <summary>Configuration options for the list. Defaults to <see cref="SwipeListOptions.Default"/>.</summary>
     [Parameter]
     public SwipeListOptions? ListOptions { get; set; }
 
-    /// <summary>The base <see cref="SwipeOptions"/> applied to all rows in the list.</summary>
+    /// <summary>Base <see cref="SwipeOptions"/> applied to all rows in the list.</summary>
     [Parameter]
     public SwipeOptions Options { get; set; } = SwipeOptions.Default;
 
@@ -66,7 +65,7 @@ public partial class SwipeList<TItem> : ComponentBase where TItem : notnull
     [Parameter]
     public RenderFragment? DividerTemplate { get; set; }
 
-    /// <summary>Whether the list is currently in iOS Edit / Multi-Select mode.</summary>
+    /// <summary>Whether the list is currently in Edit / Multi-Select mode.</summary>
     [Parameter]
     public bool IsEditing { get; set; }
 
@@ -98,11 +97,11 @@ public partial class SwipeList<TItem> : ComponentBase where TItem : notnull
     [Parameter]
     public EventCallback<(TItem Item, SwipeStateChange Change)> OnStateChanged { get; set; }
 
-    /// <summary>Whether to automatically play the smooth deletion animation before deleting.</summary>
+    /// <summary>Whether to animate row deletion before removal.</summary>
     [Parameter]
     public bool? AutoAnimateDelete { get; set; }
 
-    /// <summary>Whether to smoothly animate new items entering the list.</summary>
+    /// <summary>Whether to animate new items entering the list.</summary>
     [Parameter]
     public bool? AnimateInsert { get; set; }
 
