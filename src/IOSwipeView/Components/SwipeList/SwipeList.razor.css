@@ -47,7 +47,7 @@
 }
 
 /* =========================================================================
-   Row Lifecycle: Pixel-Perfect Grid Height Collapse (1fr -> 0fr)
+   Row Lifecycle: Grid Height Collapse
    ========================================================================= */
 
 .ioswipe-list__row-wrapper {
@@ -86,7 +86,6 @@
     padding-bottom: 0 !important;
 }
 
-/* Instantly dismiss drawer action buttons during deletion so the clean card collapses */
 .ioswipe-list__row-wrapper--collapsing ::deep .ioswipe__actions {
     display: none !important;
     opacity: 0 !important;
@@ -94,13 +93,12 @@
     pointer-events: none !important;
 }
 
-/* Reset any horizontal drag displacement so transform animations execute on centered card */
 .ioswipe-list__row-wrapper--collapsing ::deep .ioswipe__content {
     transform: none !important;
     transition: none !important;
 }
 
-/* 1. Apple Spring Collapse */
+/* 1. Spring Collapse */
 .ioswipe-list__row-wrapper--collapsing-spring .ioswipe-list__row-inner {
     animation: ioswipe-spring-exit var(--ioswipe-collapse-duration, 320ms) var(--ioswipe-collapse-curve, cubic-bezier(0.16, 1, 0.3, 1)) forwards !important;
 }

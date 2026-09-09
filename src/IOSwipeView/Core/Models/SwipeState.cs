@@ -6,7 +6,7 @@ namespace IOSwipeView;
 /// <remarks>
 /// Each side tracks its own state, and at most one side is ever non-<see cref="Closed"/>.
 /// </remarks>
-public enum SwipeState
+public enum SwipeState : byte
 {
     /// <summary>No actions are showing. The resting state.</summary>
     Closed,

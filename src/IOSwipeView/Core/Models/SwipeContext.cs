@@ -1,11 +1,10 @@
 namespace IOSwipeView;
 
 /// <summary>
-/// Passed to a side's action content, giving it the row's live state and programmatic control.
+/// Provides row state and programmatic drawer controls to action templates.
 /// </summary>
 /// <remarks>
-/// This replaces the SwiftUI original's <c>PassthroughSubject</c> pattern, which has no Blazor
-/// equivalent. An action can close the row it lives in directly:
+/// Example usage:
 /// <code>
 /// &lt;TrailingActions Context="swipe"&gt;
 ///     &lt;SwipeAction OnInvoked="swipe.CloseAsync"&gt;Dismiss&lt;/SwipeAction&gt;

@@ -85,10 +85,9 @@ public class SwipeGeometryTests
     }
 
     [Fact]
-    public void ActionsOpacityIsNeverNaNWhenTheFadeRangeIsZero()
+    public void ActionsOpacityHandlesZeroFadeRangeGracefully()
     {
-        // The SwiftUI original divides by zero here and is rescued by IEEE infinity. The same
-        // expression in .NET yields NaN at offset 0, which would silently blank the actions.
+        // When start and end fade points are identical (no fade range), opacity should be binary without invalid calculations.
         var noFade = Options with { ActionsVisibleStartPoint = 0, ActionsVisibleEndPoint = 0 };
         var geometry = Geometry(options: noFade);
 

@@ -45,8 +45,7 @@ public sealed class SwipeItemContext<TItem> where TItem : notnull
     public Task OpenAsync(SwipeSide side) => _list.OpenItemAsync(Item, side);
 
     /// <summary>
-    /// Smoothly animates this row's height to zero with an iOS spring curve,
-    /// then invokes <see cref="SwipeList{TItem}.OnItemDeleted"/>.
+    /// Animates row collapse and removes the item from the list.
     /// </summary>
     public Task DeleteAsync() => _list.RemoveItemAnimatedAsync(Item);
 }

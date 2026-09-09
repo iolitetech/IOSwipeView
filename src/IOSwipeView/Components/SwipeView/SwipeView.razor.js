@@ -131,6 +131,15 @@ export function setArmed(handle, side, haptics, pattern, armedIndex) {
             const isSiblingCollapsed = side === activeSide && i !== armedIndex;
             slot.classList.toggle('ioswipe__action-slot--armed', isArmedSlot);
             slot.classList.toggle('ioswipe__action-slot--collapsed', isSiblingCollapsed);
+            if (instance.root.classList.contains('ioswipe--cascade')) {
+                if (isArmedSlot) {
+                    slot.style.zIndex = '20';
+                }
+                else {
+                    const baseZ = activeSide === 'leading' ? slots.length - i : i + 1;
+                    slot.style.zIndex = `${baseZ}`;
+                }
+            }
         });
     }
     // Only honoured on devices with a vibration motor after user gesture.
@@ -139,7 +148,7 @@ export function setArmed(handle, side, haptics, pattern, armedIndex) {
             navigator.vibrate?.(pattern ?? 10);
         }
         catch {
-            // Silently ignore if vibration is restricted by browser policy
+            // Ignore if vibration is unsupported or restricted
         }
     }
 }
@@ -161,6 +170,9 @@ export function settle(handle, to, stiffness, damping, velocity) {
     if (reducedMotionQuery?.matches) {
         instance.frame = 0;
         render(instance, to);
+        if (to === 0) {
+            setArmed(handle, null, false);
+        }
         return;
     }
     // Displacement from target so spring solves towards zero
@@ -184,6 +196,9 @@ export function settle(handle, to, stiffness, damping, velocity) {
         if (Math.abs(x) < 0.5 && Math.abs(v) < 5) {
             instance.frame = 0;
             render(instance, to);
+            if (to === 0) {
+                setArmed(handle, null, false);
+            }
             return;
         }
         render(instance, to + x);

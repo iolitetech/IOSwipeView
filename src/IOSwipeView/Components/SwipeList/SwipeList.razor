@@ -44,6 +44,7 @@
 
                     <div @key="key"
                          role="listitem"
+                         aria-roledescription="swipeable item"
                          aria-selected="@(IsEditing ? (isSelected ? "true" : "false") : null)"
                          class="ioswipe-list__row-wrapper @(isCollapsing ? collapseClass : "") @(IsEditing ? "ioswipe-list__row-wrapper--editing" : "") @(ResolvedAnimateInsert ? "ioswipe-list__row-wrapper--enter" : "") @customRowClass">
                         

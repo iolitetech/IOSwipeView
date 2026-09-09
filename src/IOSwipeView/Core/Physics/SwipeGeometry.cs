@@ -1,32 +1,15 @@
 namespace IOSwipeView;
 
 /// <summary>
-/// The complete geometry and state-machine maths for a swipe row, as pure functions.
+/// Geometry calculations and threshold evaluation for swipe gestures.
 /// </summary>
-/// <remarks>
-/// <para>
-/// Everything the control does is derived from a single signed number: the content offset.
-/// Positive reveals leading actions, negative reveals trailing ones, and action widths, opacity
-/// and mask sizes all fall out of it. There is no second source of truth.
-/// </para>
-/// <para>
-/// Nothing here touches the DOM, JavaScript, or Blazor, so the feel of the control is fully
-/// testable in isolation.
-/// </para>
-/// </remarks>
-/// <param name="Options">The tuning to apply.</param>
-/// <param name="Metrics">The measured facts about the row.</param>
+/// <param name="Options">Configuration options for swipe geometry.</param>
+/// <param name="Metrics">Measured layout metrics of the swipe row.</param>
 public readonly record struct SwipeGeometry(SwipeOptions Options, SwipeMetrics Metrics)
 {
     /// <summary>
-    /// How much the projected release position is pulled back towards the finger.
+    /// Velocity prediction damping factor to prevent release overshooting.
     /// </summary>
-    /// <remarks>
-    /// Taking the velocity projection at face value makes the control feel twitchy — a small
-    /// flick throws the predicted position far past anything the user intended. Halving it keeps
-    /// flicks responsive without letting them overshoot. The value is inherited from the SwiftUI
-    /// original, where it appears as an unexplained <c>* 0.5</c>.
-    /// </remarks>
     private const double PredictionDamping = 0.5;
 
     /// <summary>
@@ -68,8 +51,7 @@ public readonly record struct SwipeGeometry(SwipeOptions Options, SwipeMetrics M
     {
         var beyondExpanded = Math.Abs(ExpandedOffset(side)) + Options.ReadyToTriggerPadding;
 
-        // A side holding one narrow action would otherwise arm almost immediately, which makes
-        // destructive actions far too easy to fire by accident.
+        // Enforce minimum threshold to prevent accidental triggering on narrow action slots.
         var baseMagnitude = Math.Max(beyondExpanded, Options.MinimumPointToTrigger);
         var magnitude = stage > 1
             ? baseMagnitude + ((stage - 1) * Options.DeepTriggerPadding)
@@ -106,9 +88,7 @@ public readonly record struct SwipeGeometry(SwipeOptions Options, SwipeMetrics M
         var beyondStart = Math.Max(0, (offset * side.Sign()) - Options.ActionsVisibleStartPoint);
         var range = Options.ActionsVisibleEndPoint - Options.ActionsVisibleStartPoint;
 
-        // A zero-width range means "no fade". The SwiftUI original divides by zero here and is
-        // rescued by IEEE infinity; in .NET that same expression yields NaN when the numerator is
-        // also zero, which would silently blank the actions instead. Handle it explicitly.
+        // When range is 0 (no fade configured), actions become fully opaque once start point is passed.
         if (range <= 0)
         {
             return beyondStart > 0 ? 1 : 0;

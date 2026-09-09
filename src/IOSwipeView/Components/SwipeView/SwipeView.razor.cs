@@ -5,14 +5,10 @@ using Microsoft.JSInterop;
 namespace IOSwipeView;
 
 /// <summary>
-/// Adds customisable swipe actions to any content.
+/// Renders a swipeable row container with revealable leading and trailing action drawers.
 /// </summary>
 /// <remarks>
-/// <para>
-/// The drag maths live in <see cref="SwipeGeometry"/> as pure functions; this component owns the
-/// state machine and hands the resulting offset to a small JavaScript renderer. That renderer
-/// writes CSS custom properties, so nothing here re-renders while a drag is in flight.
-/// </para>
+/// Example:
 /// <code>
 /// &lt;SwipeView&gt;
 ///     &lt;TrailingActions&gt;
@@ -157,6 +153,14 @@ public partial class SwipeView : ComponentBase, IAsyncDisposable
                    Style;
         }
     }
+
+    private string AriaStatusText => State switch
+    {
+        SwipeState.Expanded => $"{OpenSide} actions revealed",
+        SwipeState.Triggering => "Action ready to trigger",
+        SwipeState.Triggered => "Action triggered",
+        _ => string.Empty
+    };
 
     /// <summary>
     /// Handles keyboard interaction for WCAG AA accessible row navigation.
@@ -332,20 +336,32 @@ public partial class SwipeView : ComponentBase, IAsyncDisposable
             return;
         }
 
-        var isDeep = false;
+        var pattern = Options.HapticPattern;
         if (armed is { } s && armedIndex is { } idx)
         {
             var triggers = Geometry.Metrics.TriggerIndices(s);
-            if (triggers.Count >= 2 && idx == triggers[^1])
+            var stageIndex = -1;
+            for (var i = 0; i < triggers.Count; i++)
             {
-                isDeep = true;
+                if (triggers[i] == idx)
+                {
+                    stageIndex = i;
+                    break;
+                }
+            }
+
+            if (stageIndex >= 0 && stageIndex < Options.StageHapticPatterns.Length)
+            {
+                pattern = Options.StageHapticPatterns[stageIndex];
+            }
+            else if (stageIndex >= 1)
+            {
+                pattern = Options.DeepHapticPattern;
             }
         }
 
         _armedSide = armed;
         _armedIndex = armedIndex;
-
-        var pattern = isDeep ? Options.DeepHapticPattern : Options.HapticPattern;
 
         await _module!.InvokeVoidAsync(
             "setArmed",
@@ -384,8 +400,11 @@ public partial class SwipeView : ComponentBase, IAsyncDisposable
         {
             try
             {
-                var armedSide = _armedSide?.ToString().ToLowerInvariant();
-                await _module.InvokeVoidAsync("setArmed", _handle, armedSide, false, null, _armedIndex);
+                if (outcome.State != SwipeState.Closed)
+                {
+                    var armedSide = _armedSide?.ToString().ToLowerInvariant();
+                    await _module.InvokeVoidAsync("setArmed", _handle, armedSide, false, null, _armedIndex);
+                }
 
                 await _module.InvokeVoidAsync(
                     "settle",
