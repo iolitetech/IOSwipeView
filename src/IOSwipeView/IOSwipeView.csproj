@@ -9,7 +9,7 @@
   <PropertyGroup Label="Package">
     <IsPackable>true</IsPackable>
     <PackageId>IOSwipeView</PackageId>
-    <Version>1.0.1</Version>
+    <Version>1.1.0</Version>
     <Title>IOSwipeView</Title>
     <Authors>IOLite</Authors>
     <Description>Customizable swipe actions for any Blazor component. Leading and trailing actions, drag-to-trigger, rubber banding, spring animations, and accordion groups — built on IOGesture.</Description>
